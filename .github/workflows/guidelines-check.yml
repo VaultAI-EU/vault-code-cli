@@ -38,4 +38,12 @@ jobs:
           gh pr review ${{ github.event.pull_request.number }} --comment-body 'This violates the AGENTS.md guideline: [specific rule]. Consider: [suggestion]' --file 'path/to/file.ts' --line [line_number]
           \`\`\`
 
+          When possible, also submit code change suggestions using:
+
+          \`\`\`bash
+          gh pr review ${{ github.event.pull_request.number }} --comment-body 'Suggested fix for AGENTS.md guideline violation:' --file 'path/to/file.ts' --line [line_number] --body '```suggestion
+          [corrected code here]
+          ```'
+          \`\`\`
+
           Only create comments for actual violations. If the code follows all guidelines, don't run any gh commands."
