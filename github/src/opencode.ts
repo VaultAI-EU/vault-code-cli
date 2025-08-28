@@ -5,7 +5,6 @@ import { Auth } from "./auth"
 export namespace Opencode {
   const HOST = "127.0.0.1"
   const PORT = 4096
-  const SERVER_URL = `http://${HOST}:${PORT}`
 
   let state: {
     url: string
@@ -28,8 +27,9 @@ export namespace Opencode {
   }
 
   export async function start(onEvent?: (event: any) => void) {
-    const proc = spawn(`opencode`, [`serve`, `--hostname=${HOST}`, `--port=${PORT}`], {
+    const server = spawn(`opencode`, [`serve`, `--hostname=${HOST}`, `--port=${PORT}`], {
       env: {
+        ...process.env,
         // Add GH_TOKEN for llm to use `gh` cli
         GH_TOKEN: await Auth.token(),
       },
@@ -37,10 +37,11 @@ export namespace Opencode {
 
     const modelInfo = parseModel()
 
+    const url = `http://${HOST}:${PORT}`
     state = {
-      url: SERVER_URL,
-      server: proc,
-      client: createOpencodeClient({ baseUrl: SERVER_URL }),
+      url,
+      server,
+      client: createOpencodeClient({ baseUrl: url }),
       providerID: modelInfo.providerID,
       modelID: modelInfo.modelID,
     }
