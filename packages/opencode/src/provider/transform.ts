@@ -114,7 +114,8 @@ export namespace ProviderTransform {
     return outputLimit
   }
 
-  export function schema(providerID: string, _modelID: string, schema: JSONSchema.BaseSchema) {
+  export function schema(_providerID: string, _modelID: string, schema: JSONSchema.BaseSchema) {
+    /*
     if (["openai", "azure"].includes(providerID)) {
       if (schema.type === "object" && schema.properties) {
         for (const [key, value] of Object.entries(schema.properties)) {
@@ -133,6 +134,7 @@ export namespace ProviderTransform {
 
     if (providerID === "google") {
     }
+    */
 
     return schema
   }
