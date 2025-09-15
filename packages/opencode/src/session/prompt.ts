@@ -855,6 +855,7 @@ export namespace SessionPrompt {
                 if (value.id in reasoningMap) {
                   const part = reasoningMap[value.id]
                   part.text += value.text
+                  if (value.providerMetadata) part.metadata = value.providerMetadata
                   if (part.text) await Session.updatePart(part)
                 }
                 break
@@ -863,7 +864,7 @@ export namespace SessionPrompt {
                 if (value.id in reasoningMap) {
                   const part = reasoningMap[value.id]
                   part.text = part.text.trimEnd()
-                  part.metadata = value.providerMetadata
+
                   part.time = {
                     ...part.time,
                     end: Date.now(),
