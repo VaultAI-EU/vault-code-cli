@@ -31,8 +31,7 @@ export default function SidebarNav() {
                       "bg-background-element text-text": location.pathname.startsWith(item.href),
                       "text-text-muted hover:bg-background-element hover:text-text": location.pathname !== item.href,
                       "flex gap-x-3 rounded-md p-3 text-sm font-semibold": true,
-                      "focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-border-active":
-                        true,
+                      "focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-border-active": true,
                     }}
                   >
                     <Icon name={item.icon} size={20} />
