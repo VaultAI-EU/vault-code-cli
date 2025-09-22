@@ -6,9 +6,10 @@ function init() {
   const client = createOpencodeClient({
     baseUrl: "http://localhost:4096",
     // @ts-ignore
-    fetch: async (a) => {
+    fetch: async (r) => {
+      console.log("fetch", r.url)
       // @ts-ignore
-      return Server.App().fetch(a)
+      return Server.App().fetch(r)
     },
   })
   return client

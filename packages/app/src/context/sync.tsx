@@ -35,8 +35,11 @@ function init() {
 
   const sdk = useSDK()
 
+  console.log("connected")
   sdk.event.subscribe().then(async (events) => {
+    console.log("connected")
     for await (const event of events.stream) {
+      console.log(event.type)
       switch (event.type) {
         case "session.updated": {
           const result = Binary.search(store.session, event.properties.info.id, (s) => s.id)

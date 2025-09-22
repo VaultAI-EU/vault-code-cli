@@ -142,7 +142,7 @@ export function Prompt(props: PromptProps) {
                   input: "",
                   parts: [],
                 })
-                await sdk.session.prompt({
+                sdk.session.prompt({
                   path: {
                     id: sessionID,
                   },
