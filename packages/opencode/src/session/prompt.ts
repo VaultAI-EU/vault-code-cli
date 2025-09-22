@@ -1132,13 +1132,13 @@ export namespace SessionPrompt {
             Session.updatePart({
               ...part,
               state: {
+                ...part.state,
                 status: "error",
                 error: "Tool execution aborted",
                 time: {
                   start: Date.now(),
                   end: Date.now(),
                 },
-                input: {},
               },
             })
           }
