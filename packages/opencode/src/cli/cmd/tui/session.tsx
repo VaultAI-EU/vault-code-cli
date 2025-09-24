@@ -57,6 +57,7 @@ export function Session() {
     {
       title: "Compact session",
       value: "session.compact",
+      keybind: "session_compact",
       category: "Session",
       onSelect: (dialog) => {
         sdk.session.summarize({
@@ -74,6 +75,7 @@ export function Session() {
     {
       title: "Share session",
       value: "session.share",
+      keybind: "session_share",
       disabled: !session()?.share?.url,
       category: "Session",
       onSelect: (dialog) => {
@@ -88,6 +90,7 @@ export function Session() {
     {
       title: "Unshare session",
       value: "session.unshare",
+      keybind: "session_unshare",
       disabled: !!session()?.share?.url,
       category: "Session",
       onSelect: (dialog) => {
@@ -98,12 +101,6 @@ export function Session() {
         })
         dialog.clear()
       },
-    },
-    {
-      title: "Rename session",
-      value: "session.rename",
-      category: "Session",
-      onSelect: () => {},
     },
   ])
 

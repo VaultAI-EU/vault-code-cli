@@ -8,6 +8,7 @@ import * as fuzzysort from "fuzzysort"
 import { isDeepEqual } from "remeda"
 import { useDialog, type DialogContext } from "./dialog"
 import type { KeybindsConfig } from "@opencode-ai/sdk"
+import { useKeybind } from "../context/keybind"
 
 export interface DialogSelectProps<T> {
   title: string
@@ -146,6 +147,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
                     <Option
                       id={JSON.stringify(option.value)}
                       title={option.title}
+                      keybind={option.keybind}
                       description={option.description !== category ? option.description : undefined}
                       active={isDeepEqual(option.value, selected()?.value)}
                       current={isDeepEqual(option.value, props.current)}
@@ -173,7 +175,15 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
   )
 }
 
-function Option(props: { id: string; title: string; description?: string; active?: boolean; current?: boolean }) {
+function Option(props: {
+  id: string
+  title: string
+  description?: string
+  active?: boolean
+  current?: boolean
+  keybind?: string
+}) {
+  const keybind = useKeybind()
   return (
     <box
       id={props.id}
@@ -182,13 +192,18 @@ function Option(props: { id: string; title: string; description?: string; active
       paddingLeft={1}
       paddingRight={1}
     >
-      <text
-        fg={props.active ? Theme.background : props.current ? Theme.primary : Theme.text}
-        attributes={props.active ? TextAttributes.BOLD : undefined}
-      >
-        {props.title}
-      </text>
-      <text fg={props.active ? Theme.background : Theme.textMuted}> {props.description}</text>
+      <box flexGrow={1} flexShrink={0} flexDirection="row">
+        <text
+          fg={props.active ? Theme.background : props.current ? Theme.primary : Theme.text}
+          attributes={props.active ? TextAttributes.BOLD : undefined}
+        >
+          {props.title}
+        </text>
+        <text fg={props.active ? Theme.background : Theme.textMuted}> {props.description}</text>
+      </box>
+      <Show when={props.keybind}>
+        <text fg={Theme.textMuted}>{keybind.print(props.keybind as any)}</text>
+      </Show>
     </box>
   )
 }
