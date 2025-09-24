@@ -7,8 +7,7 @@ import { SplitBorder } from "./component/border"
 import { Theme } from "./context/theme"
 import { BoxRenderable, ScrollBoxRenderable } from "@opentui/core"
 import { Prompt } from "./component/prompt"
-import type { AssistantMessage, Part, ToolPart, UserMessage } from "@opencode-ai/sdk"
-import type { TextPart } from "ai"
+import type { AssistantMessage, Part, ToolPart, UserMessage, TextPart } from "@opencode-ai/sdk"
 import { useLocal } from "./context/local"
 import { Locale } from "../../../util/locale"
 import type { Tool } from "../../../tool/tool"
@@ -265,7 +264,7 @@ function resize(el: BoxRenderable) {
   const index = children.indexOf(el)
   const previous = children[index - 1]
   if (!previous) return
-  if (previous.height > 1 || previous.marginTop === 1) {
+  if (previous.height > 1 || previous.id.startsWith("text-")) {
     el.marginTop = 1
     return
   }
@@ -273,7 +272,7 @@ function resize(el: BoxRenderable) {
 
 function TextPart(props: { part: TextPart; message: AssistantMessage }) {
   return (
-    <box paddingLeft={3} marginTop={1} flexShrink={0}>
+    <box id={"text-" + props.part.id} paddingLeft={3} marginTop={1} flexShrink={0}>
       <text>{props.part.text.trim()}</text>
     </box>
   )
