@@ -28,6 +28,7 @@
     "vscode-languageserver-types": "3.17.5",
     "zod-to-json-schema": "3.24.5"
   },
+  "randomField": "added_by_user_request",
   "dependencies": {
     "@clack/prompts": "1.0.0-alpha.1",
     "@hono/standard-validator": "0.1.5",
