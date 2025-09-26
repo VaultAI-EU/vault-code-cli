@@ -41,14 +41,9 @@ export function Session() {
 
   const keybind = useKeybind()
   useKeyboard((evt) => {
+    console.log(evt.name)
     if (keybind.match("messages_page_up", evt)) scroll.scrollBy(-scroll.height / 2)
     if (keybind.match("messages_page_down", evt)) scroll.scrollBy(scroll.height / 2)
-    if (evt.name === "escape")
-      sdk.session.abort({
-        path: {
-          id: route.sessionID,
-        },
-      })
   })
 
   const local = useLocal()

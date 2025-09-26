@@ -15,6 +15,7 @@ import fuzzysort from "fuzzysort"
 import { useCommandDialog } from "./dialog-command"
 import { useKeybind } from "../context/keybind"
 import { Clipboard } from "../../../../util/clipboard"
+import { useKeyboard } from "@opentui/solid"
 
 export type PromptProps = {
   sessionID?: string
@@ -46,6 +47,14 @@ export function Prompt(props: PromptProps) {
   createEffect(() => {
     if (dialog.stack.length === 0 && input) input.focus()
     if (dialog.stack.length > 0) input.blur()
+  })
+
+  useKeyboard((evt) => {
+    console.log({
+      focused: input.focused,
+      name: evt.name,
+      sessionID: props.sessionID,
+    })
   })
 
   return (
@@ -106,6 +115,14 @@ export function Prompt(props: PromptProps) {
               value={store.input}
               onKeyDown={(e) => {
                 autocomplete.onKeyDown(e)
+                if (e.name === "escape" && props.sessionID && !autocomplete.visible) {
+                  sdk.session.abort({
+                    path: {
+                      id: props.sessionID,
+                    },
+                  })
+                  return
+                }
                 const old = input.cursorPosition
                 setTimeout(() => {
                   const position = input.cursorPosition

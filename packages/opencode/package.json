@@ -18,7 +18,6 @@
   "devDependencies": {
     "@ai-sdk/amazon-bedrock": "2.2.10",
     "@octokit/webhooks-types": "7.6.1",
-    "@opentui/core-win32-x64": "0.1.24",
     "@standard-schema/spec": "1.0.0",
     "@tsconfig/bun": "1.0.7",
     "@types/bun": "catalog:",
@@ -37,8 +36,8 @@
     "@openauthjs/openauth": "catalog:",
     "@opencode-ai/plugin": "workspace:*",
     "@opencode-ai/sdk": "workspace:*",
-    "@opentui/core": "0.0.0-20250924-d06b64fa",
-    "@opentui/solid": "0.0.0-20250924-d06b64fa",
+    "@opentui/core": "0.0.0-20250924-9d06e8e4",
+    "@opentui/solid": "0.0.0-20250924-9d06e8e4",
     "@standard-schema/spec": "1.0.0",
     "@zip.js/zip.js": "2.7.62",
     "ai": "catalog:",
