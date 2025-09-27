@@ -5,13 +5,13 @@ import { Theme } from "@tui/context/theme"
 import { uniqueBy } from "remeda"
 import path from "path"
 import { Global } from "@/global"
+import { iife } from "@/util/iife"
 
 function init() {
   const sync = useSync()
 
-  const agents = createMemo(() => sync.data.agent.filter((x) => x.mode !== "subagent"))
-
-  const agent = (() => {
+  const agent = iife(() => {
+    const agents = createMemo(() => sync.data.agent.filter((x) => x.mode !== "subagent"))
     const [store, setStore] = createStore<{
       current: string
     }>({
@@ -45,9 +45,9 @@ function init() {
         return colors[index % colors.length]
       },
     }
-  })()
+  })
 
-  const model = (() => {
+  const model = iife(() => {
     const [store, setStore] = createStore<{
       model: Record<
         string,
@@ -123,7 +123,7 @@ function init() {
         })
       },
     }
-  })()
+  })
 
   const result = {
     model,

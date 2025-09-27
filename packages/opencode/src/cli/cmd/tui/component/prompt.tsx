@@ -1,6 +1,6 @@
 import { InputRenderable, TextAttributes, BoxRenderable, type ParsedKey } from "@opentui/core"
 import { createEffect, createMemo, createResource, For, Match, onMount, Show, Switch } from "solid-js"
-import { firstBy } from "remeda"
+import { clone, firstBy } from "remeda"
 import { useLocal } from "@tui/context/local"
 import { Theme } from "@tui/context/theme"
 import { useDialog } from "@tui/ui/dialog"
@@ -15,6 +15,10 @@ import fuzzysort from "fuzzysort"
 import { useCommandDialog } from "@tui/component/dialog-command"
 import { useKeybind } from "@tui/context/keybind"
 import { Clipboard } from "@/util/clipboard"
+import path from "path"
+import { Global } from "@/global"
+import { appendFile } from "fs/promises"
+import { iife } from "@/util/iife"
 
 export type PromptProps = {
   sessionID?: string
@@ -25,6 +29,49 @@ type Prompt = {
   input: string
   parts: Omit<FilePart, "id" | "messageID" | "sessionID">[]
 }
+
+const History = iife(async () => {
+  const historyFile = Bun.file(path.join(Global.Path.state, "prompt-history.jsonl"))
+  const text = await historyFile.text().catch(() => "")
+  const lines = text
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => JSON.parse(line))
+
+  const [store, setStore] = createStore({
+    index: 0,
+    history: lines as Prompt[],
+  })
+
+  return {
+    move(direction: 1 | -1) {
+      setStore(
+        produce((draft) => {
+          const next = store.index + direction
+          if (Math.abs(next) > store.history.length) return
+          if (next > 0) return
+          draft.index = next
+        }),
+      )
+      if (store.index === 0)
+        return {
+          input: "",
+          parts: [],
+        }
+      return store.history.at(store.index)!
+    },
+    append(item: Prompt) {
+      item = clone(item)
+      appendFile(historyFile.name!, JSON.stringify(item) + "\n")
+      setStore(
+        produce((draft) => {
+          draft.history.push(item)
+          draft.index = 0
+        }),
+      )
+    },
+  }
+})
 
 export function Prompt(props: PromptProps) {
   let input: InputRenderable
@@ -104,15 +151,24 @@ export function Prompt(props: PromptProps) {
                 autocomplete.onInput(value)
               }}
               value={store.input}
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 autocomplete.onKeyDown(e)
-                if (e.name === "escape" && props.sessionID && !autocomplete.visible) {
-                  sdk.session.abort({
-                    path: {
-                      id: props.sessionID,
-                    },
-                  })
-                  return
+                if (!autocomplete.visible) {
+                  if (e.name === "up" || e.name === "down") {
+                    const direction = e.name === "up" ? -1 : 1
+                    const item = await History.then((h) => h.move(direction))
+                    setStore(item)
+                    input.cursorPosition = item.input.length
+                    return
+                  }
+                  if (e.name === "escape" && props.sessionID) {
+                    sdk.session.abort({
+                      path: {
+                        id: props.sessionID,
+                      },
+                    })
+                    return
+                  }
                 }
                 const old = input.cursorPosition
                 setTimeout(() => {
@@ -169,10 +225,13 @@ export function Prompt(props: PromptProps) {
                   return
                 }
                 const parts = store.parts
-                setStore({
-                  input: "",
-                  parts: [],
-                })
+                await History.then((h) => h.append(store))
+                setStore(
+                  produce((draft) => {
+                    draft.input = ""
+                    draft.parts = []
+                  }),
+                )
                 sdk.session.prompt({
                   path: {
                     id: sessionID,

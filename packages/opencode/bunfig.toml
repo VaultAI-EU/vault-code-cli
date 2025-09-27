@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 preload = ["@opentui/solid/preload"]
 
-=======
 [test]
 preload = ["./test/preload.ts"]
->>>>>>> dev
