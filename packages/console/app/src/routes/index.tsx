@@ -1,6 +1,6 @@
 import "./index.css"
 import { Title } from "@solidjs/meta"
-import { onCleanup, onMount } from "solid-js"
+import { Match, onCleanup, onMount, Show, Switch } from "solid-js"
 import logoLight from "../asset/logo-ornate-light.svg"
 import logoDark from "../asset/logo-ornate-dark.svg"
 import video from "../asset/lander/opencode-min.mp4"
@@ -11,6 +11,7 @@ import { createAsync, query } from "@solidjs/router"
 import { getActor } from "~/context/auth"
 import { withActor } from "~/context/auth.withActor"
 import { Account } from "@opencode/console-core/account.js"
+import { createStore } from "solid-js/store"
 
 function CopyStatus() {
   return (
@@ -32,6 +33,10 @@ const defaultWorkspace = query(async () => {
 
 export default function Home() {
   const workspace = createAsync(() => defaultWorkspace())
+  const [store, setStore] = createStore({
+    mobileMenuOpen: false,
+  })
+
   onMount(() => {
     const commands = document.querySelectorAll("[data-copy]")
     for (const button of commands) {
@@ -180,63 +185,70 @@ export default function Home() {
               aria-expanded="false"
               aria-controls="nav-mobile-menu"
               class="nav-toggle"
+              onClick={() => setStore("mobileMenuOpen", !store.mobileMenuOpen)}
             >
               <span class="sr-only">Open menu</span>
-
-              {/*hamburger*/}
-              <svg
-                class="icon icon-hamburger"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M19 17H5V16H19V17Z" fill="currentColor" />
-                <path d="M19 8H5V7H19V8Z" fill="currentColor" />
-              </svg>
-
-              {/*close*/}
-              <svg
-                class="icon icon-close"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12.7071 11.9993L18.0104 17.3026L17.3033 18.0097L12 12.7064L6.6967 18.0097L5.98959 17.3026L11.2929 11.9993L5.98959 6.69595L6.6967 5.98885L12 11.2921L17.3033 5.98885L18.0104 6.69595L12.7071 11.9993Z"
-                  fill="currentColor"
-                />
-              </svg>
+              <Switch>
+                <Match when={!store.mobileMenuOpen}>
+                  {/*hamburger*/}
+                  <svg
+                    class="icon icon-hamburger"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M19 17H5V16H19V17Z" fill="currentColor" />
+                    <path d="M19 8H5V7H19V8Z" fill="currentColor" />
+                  </svg>
+                </Match>
+                <Match when={store.mobileMenuOpen}>
+                  {/*close*/}
+                  <svg
+                    class="icon icon-close"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12.7071 11.9993L18.0104 17.3026L17.3033 18.0097L12 12.7064L6.6967 18.0097L5.98959 17.3026L11.2929 11.9993L5.98959 6.69595L6.6967 5.98885L12 11.2921L17.3033 5.98885L18.0104 6.69595L12.7071 11.9993Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </Match>
+              </Switch>
             </button>
 
-            <div id="nav-mobile-menu" data-component="nav-mobile" hidden>
-              <nav data-component="nav-mobile-menu-list">
-                <ul>
-                  <li>
-                    <a href="/">Home</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/sst/opencode" target="_blank">
-                      GitHub <span>[25K]</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="../docs">Docs</a>
-                  </li>
-                  <li>
-                    <a href="/zen">Zen</a>
-                  </li>
-                  <li>
-                    <a href="/auth">Login</a>
-                  </li>
-                </ul>
-              </nav>
-            </div>
+            <Show when={store.mobileMenuOpen}>
+              <div id="nav-mobile-menu" data-component="nav-mobile">
+                <nav data-component="nav-mobile-menu-list">
+                  <ul>
+                    <li>
+                      <a href="/">Home</a>
+                    </li>
+                    <li>
+                      <a href="https://github.com/sst/opencode" target="_blank">
+                        GitHub <span>[25K]</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="../docs">Docs</a>
+                    </li>
+                    <li>
+                      <a href="/zen">Zen</a>
+                    </li>
+                    <li>
+                      <a href="/auth">Login</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </Show>
           </nav>
         </section>
 

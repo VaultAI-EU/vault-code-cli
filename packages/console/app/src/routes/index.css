@@ -8,6 +8,18 @@
   }
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 [data-page="opencode"] {
   --color-background: hsl(0, 20%, 99%);
   --color-background-weak: hsl(0, 8%, 97%);
@@ -146,7 +158,6 @@
         }
 
         [data-component="nav-mobile-menu-list"] {
-          display: none;
           position: fixed;
           background: var(--color-background);
           top: 80px;
