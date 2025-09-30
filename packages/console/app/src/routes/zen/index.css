@@ -96,6 +96,10 @@
     margin: 0 auto;
     border: 1px solid var(--color-border-weak);
     border-top: none;
+
+    @media (max-width: 80rem) {
+      border: none;
+    }
   }
 
   [data-component="content"] {
@@ -115,7 +119,7 @@
     z-index: 10;
 
     img {
-      height: 28px;
+      height: 34px;
       width: auto;
     }
 

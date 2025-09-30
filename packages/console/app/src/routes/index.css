@@ -99,7 +99,7 @@
     border: 1px solid var(--color-border-weak);
     border-top: none;
 
-    @media (max-width: 40rem) {
+    @media (max-width: 80rem) {
       border: none;
     }
   }
