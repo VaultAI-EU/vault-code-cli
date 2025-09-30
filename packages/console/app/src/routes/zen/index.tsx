@@ -1,5 +1,6 @@
 import "./index.css"
 import { Title } from "@solidjs/meta"
+import { HttpHeader } from "@solidjs/start"
 import zenLogoLight from "../../asset/zen-ornate-light.svg"
 import zenLogoDark from "../../asset/zen-ornate-dark.svg"
 import compareVideo from "../../asset/lander/opencode-comparison-min.mp4"
@@ -33,6 +34,7 @@ export default function Home() {
 
   return (
     <main data-page="zen">
+      <HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, stale-while-revalidate=86400" />
       <Title>OpenCode Zen | A curated set of reliable optimized models for coding agents</Title>
 
       <div data-component="container">
@@ -198,10 +200,8 @@ export default function Home() {
               <div>
                 <span>[*]</span>
                 <p>
-                  All Zen models are hosted in the US. Providers follow a
-                  zero-retention policy and do
-                  not use your data for model training, with the <A
-                  href="../docs/zen/#privacy">following exceptions</A>.
+                  All Zen models are hosted in the US. Providers follow a zero-retention policy and do not use your data
+                  for model training, with the <A href="../docs/zen/#privacy">following exceptions</A>.
                 </p>
               </div>
             </div>
@@ -217,7 +217,8 @@ export default function Home() {
                   <span>ex-CEO, Terminal Products</span>
                 </div>
                 <div data-slot="quote">
-                  It's clear from using <span>@OpenCode</span> Zen that the team behind it are smart, funny, and excellent lovers.
+                  It's clear from using <span>@OpenCode</span> Zen that the team behind it are smart, funny, and
+                  excellent lovers.
                 </div>
               </div>
             </A>
@@ -268,9 +269,7 @@ export default function Home() {
                   <strong>Frank Wang</strong>
                   <span>ex-Intern, Nvidia (4 times)</span>
                 </div>
-                <div data-slot="quote">
-                  I wish I was still at Nvidia.
-                </div>
+                <div data-slot="quote">I wish I was still at Nvidia.</div>
               </div>
             </A>
           </section>
@@ -300,14 +299,15 @@ export default function Home() {
               </li>
               <li>
                 <Faq question="How much does Zen cost?">
-                  Zen charges per request with zero markups, so you pay exactly what the model provider charges. Your total cost depends on usage, and you can set monthly spend limits in your <a href="auth">account</a>. To cover costs, OpenCode adds only a small payment processing fee of $1.23 per $20 balance top-up.
+                  Zen charges per request with zero markups, so you pay exactly what the model provider charges. Your
+                  total cost depends on usage, and you can set monthly spend limits in your <a href="auth">account</a>.
+                  To cover costs, OpenCode adds only a small payment processing fee of $1.23 per $20 balance top-up.
                 </Faq>
               </li>
               <li>
                 <Faq question="What about data and privacy?">
-                  All Zen models are hosted in the US. Providers follow a
-                  zero-retention policy and do not use your data for model training, with the{" "}
-                  <A href="../docs/zen/#privacy">following exceptions</A>.
+                  All Zen models are hosted in the US. Providers follow a zero-retention policy and do not use your data
+                  for model training, with the <A href="../docs/zen/#privacy">following exceptions</A>.
                 </Faq>
               </li>
               <li>
@@ -320,7 +320,8 @@ export default function Home() {
               </li>
               <li>
                 <Faq question="Can I use Zen with other coding agents?">
-                  While Zen works great with OpenCode, you can use Zen with any agent. Follow the setup instructions in your preferred coding agent.
+                  While Zen works great with OpenCode, you can use Zen with any agent. Follow the setup instructions in
+                  your preferred coding agent.
                 </Faq>
               </li>
             </ul>
