@@ -1,5 +1,5 @@
 import "./index.css"
-import { Title } from "@solidjs/meta"
+import { Title, Meta, Link } from "@solidjs/meta"
 import { HttpHeader } from "@solidjs/start"
 import video from "../asset/lander/opencode-min.mp4"
 import videoPoster from "../asset/lander/opencode-poster.png"
@@ -56,6 +56,9 @@ export default function Home() {
     <main data-page="opencode">
       <HttpHeader name="Cache-Control" value="public, max-age=1, s-maxage=3600, stale-while-revalidate=86400" />
       <Title>OpenCode | The AI coding agent built for the terminal</Title>
+      <Link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <Meta property="og:image" content="/social-share.png" />
+      <Meta name="twitter:image" content="/social-share.png" />
       <div data-component="container">
         <Header />
 
@@ -71,14 +74,12 @@ export default function Home() {
               </a>
               <strong>The AI coding agent built for the terminal</strong>
               <p>
-                OpenCode is fully open source, giving you control and freedom to
-                use any provider, any model, and any
+                OpenCode is fully open source, giving you control and freedom to use any provider, any model, and any
                 editor.
               </p>
               <A href="/docs">
                 <span>Read docs </span>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M6.5 12L17 12M13 16.5L17.5 12L13 7.5"
                     stroke="currentColor"
@@ -113,59 +114,54 @@ export default function Home() {
                   <Tabs.Trigger value="paru" data-slot="tab">
                     paru
                   </Tabs.Trigger>
-                  <Tabs.Indicator/>
+                  <Tabs.Indicator />
                 </Tabs.List>
                 <div data-slot="panels">
                   <Tabs.Content as="pre" data-slot="panel" value="curl">
-                    <button data-copy data-slot="command"
-                            onClick={handleCopyClick}>
-                        <span data-slot="command-script">
-                          <span>curl -fsSL </span>
-                          <span data-slot="protocol">https://</span>
-                          <span data-slot="highlight">opencode.ai/install</span>
-                          <span> | bash</span>
-                        </span>
-                      <CopyStatus/>
+                    <button data-copy data-slot="command" onClick={handleCopyClick}>
+                      <span data-slot="command-script">
+                        <span>curl -fsSL </span>
+                        <span data-slot="protocol">https://</span>
+                        <span data-slot="highlight">opencode.ai/install</span>
+                        <span> | bash</span>
+                      </span>
+                      <CopyStatus />
                     </button>
                   </Tabs.Content>
                   <Tabs.Content as="pre" data-slot="panel" value="npm">
-                    <button data-copy data-slot="command"
-                            onClick={handleCopyClick}>
-                        <span>
-                          <span data-slot="protocol">npm i -g </span>
-                          <span data-slot="highlight">opencode</span>
-                        </span>
-                      <CopyStatus/>
+                    <button data-copy data-slot="command" onClick={handleCopyClick}>
+                      <span>
+                        <span data-slot="protocol">npm i -g </span>
+                        <span data-slot="highlight">opencode</span>
+                      </span>
+                      <CopyStatus />
                     </button>
                   </Tabs.Content>
                   <Tabs.Content as="pre" data-slot="panel" value="bun">
-                    <button data-copy data-slot="command"
-                            onClick={handleCopyClick}>
-                        <span>
-                          <span data-slot="protocol">bun add -g </span>
-                          <span data-slot="highlight">opencode</span>
-                        </span>
-                      <CopyStatus/>
+                    <button data-copy data-slot="command" onClick={handleCopyClick}>
+                      <span>
+                        <span data-slot="protocol">bun add -g </span>
+                        <span data-slot="highlight">opencode</span>
+                      </span>
+                      <CopyStatus />
                     </button>
                   </Tabs.Content>
                   <Tabs.Content as="pre" data-slot="panel" value="brew">
-                    <button data-copy data-slot="command"
-                            onClick={handleCopyClick}>
-                        <span>
-                          <span data-slot="protocol">brew install </span>
-                          <span data-slot="highlight">opencode</span>
-                        </span>
-                      <CopyStatus/>
+                    <button data-copy data-slot="command" onClick={handleCopyClick}>
+                      <span>
+                        <span data-slot="protocol">brew install </span>
+                        <span data-slot="highlight">opencode</span>
+                      </span>
+                      <CopyStatus />
                     </button>
                   </Tabs.Content>
                   <Tabs.Content as="pre" data-slot="panel" value="paru">
-                    <button data-copy data-slot="command"
-                            onClick={handleCopyClick}>
-                        <span>
-                          <span data-slot="protocol">paru -S </span>
-                          <span data-slot="highlight">opencode</span>
-                        </span>
-                      <CopyStatus/>
+                    <button data-copy data-slot="command" onClick={handleCopyClick}>
+                      <span>
+                        <span data-slot="protocol">paru -S </span>
+                        <span data-slot="highlight">opencode</span>
+                      </span>
+                      <CopyStatus />
                     </button>
                   </Tabs.Content>
                 </div>
@@ -174,8 +170,7 @@ export default function Home() {
           </section>
 
           <section data-component="video">
-            <video src={video} autoplay playsinline loop muted preload="auto"
-                   poster={videoPoster}>
+            <video src={video} autoplay playsinline loop muted preload="auto" poster={videoPoster}>
               Your browser does not support the video tag.
             </video>
           </section>
@@ -183,33 +178,29 @@ export default function Home() {
           <section data-component="what">
             <div data-slot="section-title">
               <h3>What is OpenCode?</h3>
-              <p>OpenCode is an open source agent that helps you write and run
-                code directly from the terminal.</p>
+              <p>OpenCode is an open source agent that helps you write and run code directly from the terminal.</p>
             </div>
             <ul>
               <li>
                 <span>[*]</span>
                 <div>
-                  <strong>Native TUI</strong> A responsive, native, themeable
-                  terminal UI
+                  <strong>Native TUI</strong> A responsive, native, themeable terminal UI
                 </div>
               </li>
               <li>
                 <span>[*]</span>
                 <div>
-                  <strong>LSP enabled</strong> Automatically loads the right
-                  LSPs for the LLM
+                  <strong>LSP enabled</strong> Automatically loads the right LSPs for the LLM
                 </div>
               </li>
               <li>
                 <span>[*]</span>
                 <div>
-                  <strong>Multi-session</strong> Start multiple agents in
-                  parallel on the same project
+                  <strong>Multi-session</strong> Start multiple agents in parallel on the same project
                 </div>
               </li>
               <li>
-              <span>[*]</span>
+                <span>[*]</span>
                 <div>
                   <strong>Share links</strong> Share a link to any session for reference or to debug
                 </div>
