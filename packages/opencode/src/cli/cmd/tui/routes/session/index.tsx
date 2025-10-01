@@ -482,8 +482,6 @@ function ReasoningPart(props: { part: ReasoningPart; message: AssistantMessage }
   )
 }
 
-function resize(el: BoxRenderable) {}
-
 function TextPart(props: { part: TextPart; message: AssistantMessage }) {
   return (
     <box id={"text-" + props.part.id} paddingLeft={3} marginTop={1} flexShrink={0}>
