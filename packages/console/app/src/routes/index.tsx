@@ -79,7 +79,7 @@ export default function Home() {
                 OpenCode is fully open source, giving you control and freedom to use any provider, any model, and any
                 editor.
               </p>
-              <A href="/docs">
+              <a href="/docs">
                 <span>Read docs </span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -89,7 +89,7 @@ export default function Home() {
                     stroke-linecap="square"
                   />
                 </svg>
-              </A>
+              </a>
             </div>
             <div data-slot="installation">
               <Tabs
@@ -953,8 +953,8 @@ export default function Home() {
                 <p>
                   OpenCode does not store any of your code or context data, so
                   that it can operate in privacy sensitive
-                  environments. Learn more about <A href="/docs/enterprise/ ">privacy
-                  and enterprise</A>.
+                  environments. Learn more about <a href="/docs/enterprise/ ">privacy
+                  and enterprise</a>.
                 </p>
               </div>
             </div>
@@ -976,8 +976,8 @@ export default function Home() {
               </li>
               <li>
                 <Faq question="How do I use OpenCode?">
-                  The easiest way to get started is to read the <A
-                  href="/docs">intro</A>.
+                  The easiest way to get started is to read the <a
+                  href="/docs">intro</a>.
                 </Faq>
               </li>
               <li>
@@ -986,10 +986,10 @@ export default function Home() {
                   Not necessarily, but probably. You’ll need an AI subscription
                   if you want to connect OpenCode to a
                   paid provider, although you can work with{" "}
-                  <A href="https://opencode.ai/docs/providers/#lm-studio"
+                  <a href="/docs/providers/#lm-studio"
                      target="_blank">
                     local models
-                  </A>{" "}
+                  </a>{" "}
                   for free. While we encourage users to use <A
                   href="/zen">Zen</A>, OpenCode works with all popular
                   providers such as OpenAI, Anthropic, xAI etc.
@@ -1013,22 +1013,22 @@ export default function Home() {
                 <Faq question="What about data and privacy?">
                   Your data and information is only stored when you create
                   sharable links in OpenCode. Learn more about{" "}
-                  <A href="/docs/share/#privacy">share pages</A>.
+                  <a href="/docs/share/#privacy">share pages</a>.
                 </Faq>
               </li>
               <li>
                 <Faq question="Is OpenCode open source?">
                   Yes, OpenCode is fully open source. The source code is public
                   on{" "}
-                  <A href="https://github.com/sst/opencode" target="_blank">
+                  <a href="https://github.com/sst/opencode" target="_blank">
                     GitHub
-                  </A>{" "}
+                  </a>{" "}
                   under the{" "}
-                  <A
+                  <a
                     href="https://github.com/sst/opencode?tab=MIT-1-ov-file#readme"
                     target="_blank">
                     MIT License
-                  </A>
+                  </a>
                   , meaning anyone can use, modify, or contribute to its
                   development. Anyone from the community can file
                   issues, submit pull requests, and extend functionality.

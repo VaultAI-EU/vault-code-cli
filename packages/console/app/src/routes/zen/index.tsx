@@ -116,7 +116,7 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
-              <A href="../auth">
+              <A href="/auth">
                 <span>Get started with Zen </span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -175,15 +175,15 @@ export default function Home() {
                 <span>[1]</span>
                 <div>
                   <strong>Sign up and add $20 balance</strong> - follow the{" "}
-                  <A href="" title="setup instructions">
+                  <a href="/docs/zen/#how-it-works" title="setup instructions">
                     setup instructions
-                  </A>
+                  </a>
                 </div>
               </li>
               <li>
                 <span>[2]</span>
                 <div>
-                  <strong>Use Zen with transparent pricing</strong> - <a href="./../docs/zen/#pricing">pay per request</a> with zero markups
+                  <strong>Use Zen with transparent pricing</strong> - <a href="/docs/zen/#pricing">pay per request</a> with zero markups
                 </div>
               </li>
               <li>
@@ -202,7 +202,7 @@ export default function Home() {
                 <span>[*]</span>
                 <p>
                   All Zen models are hosted in the US. Providers follow a zero-retention policy and do not use your data
-                  for model training, with the <A href="../docs/zen/#privacy">following exceptions</A>.
+                  for model training, with the <a href="/docs/zen/#privacy">following exceptions</a>.
                 </p>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function Home() {
 
           <section data-component="testimonials">
             {/*Dax*/}
-            <A href="https://x.com/iamdavidhill/status/1971693263498141817">
+            <a href="https://x.com/iamdavidhill/status/1971693263498141817">
               <div data-slot="testimonial">
                 <div data-slot="name">
                   <img src={avatarDax} alt="" />
@@ -222,9 +222,9 @@ export default function Home() {
                   excellent lovers.
                 </div>
               </div>
-            </A>
+            </a>
             {/*Jay*/}
-            <A href="https://x.com/iamdavidhill/status/1971693263498141817">
+            <a href="https://x.com/iamdavidhill/status/1971693263498141817">
               <div data-slot="testimonial">
                 <div data-slot="name">
                   <img src={avatarJay} alt="" />
@@ -235,9 +235,9 @@ export default function Home() {
                   4 out 5 people on our team love using <span>@OpenCode</span> Zen.
                 </div>
               </div>
-            </A>
+            </a>
             {/*Adam*/}
-            <A href="https://x.com/iamdavidhill/status/1971693263498141817">
+            <a href="https://x.com/iamdavidhill/status/1971693263498141817">
               <div data-slot="testimonial">
                 <div data-slot="name">
                   <img src={avatarAdam} alt="" />
@@ -248,9 +248,9 @@ export default function Home() {
                   I can't recommend <span>@OpenCode</span> Zen enough. Seriously, it’s really good.
                 </div>
               </div>
-            </A>
+            </a>
             {/*David*/}
-            <A href="https://x.com/iamdavidhill/status/1971693263498141817">
+            <a href="https://x.com/iamdavidhill/status/1971693263498141817">
               <div data-slot="testimonial">
                 <div data-slot="name">
                   <img src={avatarDavid} alt="" />
@@ -261,9 +261,9 @@ export default function Home() {
                   With <span>@OpenCode</span> Zen I know all the models are tested and perfect for coding agents.
                 </div>
               </div>
-            </A>
+            </a>
             {/*Frank*/}
-            <A href="https://x.com/iamdavidhill/status/1971693263498141817">
+            <a href="https://x.com/iamdavidhill/status/1971693263498141817">
               <div data-slot="testimonial">
                 <div data-slot="name">
                   <img src={avatarFrank} alt="" />
@@ -272,7 +272,7 @@ export default function Home() {
                 </div>
                 <div data-slot="quote">I wish I was still at Nvidia.</div>
               </div>
-            </A>
+            </a>
           </section>
 
           <section data-component="faq">
@@ -300,15 +300,15 @@ export default function Home() {
               </li>
               <li>
                 <Faq question="How much does Zen cost?">
-                  Zen <a href="/../docs/zen/#pricing">charges per request</a> with zero markups, so you pay exactly what the model provider charges. Your
-                  total cost depends on usage, and you can set monthly spend limits in your <a href="auth">account</a>.
+                  Zen <a href="/docs/zen/#pricing">charges per request</a> with zero markups, so you pay exactly what the model provider charges. Your
+                  total cost depends on usage, and you can set monthly spend limits in your <A href="/auth">account</A>.
                   To cover costs, OpenCode adds only a small payment processing fee of $1.23 per $20 balance top-up.
                 </Faq>
               </li>
               <li>
                 <Faq question="What about data and privacy?">
                   All Zen models are hosted in the US. Providers follow a zero-retention policy and do not use your data
-                  for model training, with the <A href="../docs/zen/#privacy">following exceptions</A>.
+                  for model training, with the <a href="/docs/zen/#privacy">following exceptions</a>.
                 </Faq>
               </li>
               <li>
