@@ -235,7 +235,7 @@ export default function Home() {
                 <span>[*]</span>
                 <p>
                   With over <strong>26,000</strong> GitHub
-                  stars, <strong>200</strong> contributors, and almost{" "}
+                  stars, <strong>188</strong> contributors, and almost{" "}
                   <strong>3,000</strong> commits, OpenCode is used and trusted
                   by over <strong>200,000</strong>{" "}
                   developers every month.
