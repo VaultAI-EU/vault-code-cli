@@ -50,6 +50,7 @@
     "esbuild",
     "protobufjs",
     "sharp",
+    "@tailwindcss/oxide",
     "tree-sitter",
     "tree-sitter-bash",
     "web-tree-sitter"

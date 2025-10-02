@@ -1,0 +1,12 @@
+{
+  "name": "@opencode-ai/css",
+  "version": "0.13.9",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.css",
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "tailwindcss": "4.1.14"
+  }
+}
