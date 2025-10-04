@@ -12,13 +12,14 @@ export namespace Workspace {
   export const create = fn(z.void(), async () => {
     const account = Actor.assert("account")
     const workspaceID = Identifier.create("workspace")
+    const userID = Identifier.create("user")
     await Database.transaction(async (tx) => {
       await tx.insert(WorkspaceTable).values({
         id: workspaceID,
       })
       await tx.insert(UserTable).values({
         workspaceID,
-        id: Identifier.create("user"),
+        id: userID,
         accountID: account.properties.accountID,
         name: "",
         role: "admin",
@@ -34,7 +35,7 @@ export namespace Workspace {
       {
         workspaceID,
       },
-      () => Key.create({ name: "Default API Key" }),
+      () => Key.create({ userID, name: "Default API Key" }),
     )
     return workspaceID
   })
