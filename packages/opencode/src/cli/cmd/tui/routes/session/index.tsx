@@ -116,7 +116,7 @@ export function Session() {
       title: "Share session",
       value: "session.share",
       keybind: "session_share",
-      disabled: !session()?.share?.url,
+      disabled: !!session()?.share?.url,
       category: "Session",
       onSelect: (dialog) => {
         sdk.session.share({
@@ -131,7 +131,7 @@ export function Session() {
       title: "Unshare session",
       value: "session.unshare",
       keybind: "session_unshare",
-      disabled: !!session()?.share?.url,
+      disabled: !session()?.share?.url,
       category: "Session",
       onSelect: (dialog) => {
         sdk.session.unshare({
@@ -143,7 +143,7 @@ export function Session() {
       },
     },
     {
-      title: "Undo",
+      title: "Undo previous message",
       value: "session.undo",
       keybind: "messages_undo",
       category: "Session",
@@ -177,6 +177,7 @@ export function Session() {
       title: "Redo",
       value: "session.redo",
       keybind: "messages_redo",
+      disabled: !session().revert?.messageID,
       category: "Session",
       onSelect: (dialog) => {
         dialog.clear()

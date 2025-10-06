@@ -50,7 +50,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
     const needle = store.filter.toLowerCase()
     const result = pipe(
       props.options,
-      filter((x) => x.disabled !== false),
+      filter((x) => x.disabled !== true),
       take(props.limit ?? Infinity),
       (x) => (!needle ? x : fuzzysort.go(needle, x, { keys: ["title", "category"] }).map((x) => x.obj)),
     )
