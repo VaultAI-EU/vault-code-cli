@@ -1,7 +1,7 @@
 import { createMemo } from "solid-js"
 import { useLocal } from "@tui/context/local"
 import { useSync } from "@tui/context/sync"
-import { map, pipe, flatMap, entries, filter, isDeepEqual } from "remeda"
+import { map, pipe, flatMap, entries, filter, isDeepEqual, sortBy } from "remeda"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useDialog } from "@tui/ui/dialog"
 
@@ -27,6 +27,10 @@ export function DialogModel() {
     }),
     ...pipe(
       sync.data.provider,
+      sortBy(
+        (provider) => provider.id !== "opencode",
+        (provider) => provider.name,
+      ),
       flatMap((provider) =>
         pipe(
           provider.models,
