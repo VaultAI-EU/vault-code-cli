@@ -16,4 +16,9 @@ export namespace Locale {
     }
     return num.toString()
   }
+
+  export function truncate(str: string, len: number): string {
+    if (str.length <= len) return str
+    return str.slice(0, len - 1) + "…"
+  }
 }

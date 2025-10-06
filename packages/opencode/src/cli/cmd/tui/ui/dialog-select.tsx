@@ -9,6 +9,7 @@ import { isDeepEqual } from "remeda"
 import { useDialog, type DialogContext } from "@tui/ui/dialog"
 import { useKeybind } from "@tui/context/keybind"
 import { Keybind } from "@/util/keybind"
+import { Locale } from "@/util/locale"
 
 export interface DialogSelectProps<T> {
   title: string
@@ -238,7 +239,7 @@ function Option(props: {
         overflow="hidden"
         wrap={false}
       >
-        {props.title}
+        {Locale.truncate(props.title, 62)}
         <span style={{ fg: props.active ? Theme.background : Theme.textMuted }}> {props.description}</span>
       </text>
       <Show when={props.footer}>

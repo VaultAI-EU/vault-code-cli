@@ -6,28 +6,18 @@ import { Theme } from "@tui/context/theme"
 
 export function Home() {
   return (
-    <box flexGrow={1} justifyContent="center" alignItems="center">
+    <box flexGrow={1} justifyContent="center" alignItems="center" paddingLeft={2} paddingRight={2}>
       <box>
         <Logo />
         <box paddingTop={2}>
-          <HelpRow slash="new">
-            new session
-          </HelpRow>
-          <HelpRow slash="help">
-            show help
-          </HelpRow>
-          <HelpRow slash="share">
-            share session
-          </HelpRow>
-          <HelpRow slash="models">
-            list models
-          </HelpRow>
-          <HelpRow slash="agents">
-            list agents
-          </HelpRow>
+          <HelpRow slash="new">new session</HelpRow>
+          <HelpRow slash="help">show help</HelpRow>
+          <HelpRow slash="share">share session</HelpRow>
+          <HelpRow slash="models">list models</HelpRow>
+          <HelpRow slash="agents">list agents</HelpRow>
         </box>
       </box>
-      <box paddingTop={3} minWidth={75}>
+      <box paddingTop={3} width="100%" maxWidth={75}>
         <Prompt />
       </box>
     </box>
