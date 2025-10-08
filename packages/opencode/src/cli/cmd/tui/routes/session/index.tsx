@@ -44,6 +44,8 @@ export function Session() {
   const messages = createMemo(() => sync.data.message[route.sessionID] ?? [])
   const permissions = createMemo(() => sync.data.permission[route.sessionID] ?? [])
   const dimensions = useTerminalDimensions()
+  const [sidebar, setSidebar] = createSignal<"show" | "hide" | "auto">("auto")
+  const wide = createMemo(() => dimensions().width > 120)
 
   createEffect(() => sync.session.sync(route.sessionID))
 
@@ -226,6 +228,19 @@ export function Session() {
         })
       },
     },
+    {
+      title: "Toggle sidebar",
+      value: "session.sidebar.toggle",
+      category: "Session",
+      onSelect: (dialog) => {
+        setSidebar((prev) => {
+          if (prev === "auto") return wide() ? "hide" : "show"
+          if (prev === "show") return "hide"
+          return "show"
+        })
+        dialog.clear()
+      },
+    },
   ])
 
   const revert = createMemo(() => {
@@ -380,7 +395,7 @@ export function Session() {
           </box>
         </Show>
       </box>
-      <Show when={dimensions().width > 120}>
+      <Show when={sidebar() === "show" || (sidebar() === "auto" && wide())}>
         <Sidebar sessionID={route.sessionID} />
       </Show>
     </box>
