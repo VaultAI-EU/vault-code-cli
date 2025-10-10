@@ -730,13 +730,17 @@ export type FilePart = {
 
 export type ToolStatePending = {
   status: "pending"
-  input: unknown
+  input: {
+    [key: string]: unknown
+  }
   raw: string
 }
 
 export type ToolStateRunning = {
   status: "running"
-  input: unknown
+  input: {
+    [key: string]: unknown
+  }
   title?: string
   metadata?: {
     [key: string]: unknown
