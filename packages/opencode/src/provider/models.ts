@@ -43,6 +43,11 @@ export namespace ModelsDev {
     })
   export type Model = z.infer<typeof Model>
 
+  export const ProviderModel = Model.extend({
+    providerModelId: z.string().optional(),
+  })
+  export type ProviderModel = z.infer<typeof ProviderModel>
+
   export const Provider = z
     .object({
       api: z.string().optional(),
@@ -50,7 +55,7 @@ export namespace ModelsDev {
       env: z.array(z.string()),
       id: z.string(),
       npm: z.string().optional(),
-      models: z.record(z.string(), Model),
+      models: z.record(z.string(), ProviderModel),
     })
     .meta({
       ref: "Provider",

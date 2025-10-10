@@ -203,7 +203,7 @@ export namespace Provider {
     } = {}
     const models = new Map<
       string,
-      { providerID: string; modelID: string; info: ModelsDev.Model; language: LanguageModel; npm?: string }
+      { providerID: string; modelID: string; info: ModelsDev.ProviderModel; language: LanguageModel; npm?: string }
     >()
     const sdk = new Map<number, SDK>()
 
@@ -248,8 +248,10 @@ export namespace Provider {
 
       for (const [modelID, model] of Object.entries(provider.models ?? {})) {
         const existing = parsed.models[modelID]
-        const parsedModel: ModelsDev.Model = {
-          id: model.id ?? modelID,
+        // "modelID" stays user-facing; "providerModelId" keeps the provider's canonical identifier.
+        const parsedModel: ModelsDev.ProviderModel = {
+          providerModelId: model.id,
+          id: modelID,
           name: model.name ?? existing?.name ?? modelID,
           release_date: model.release_date ?? existing?.release_date,
           attachment: model.attachment ?? existing?.attachment ?? false,
@@ -432,7 +434,10 @@ export namespace Provider {
     const sdk = await getSDK(provider.info, info)
 
     try {
-      const language = provider.getModel ? await provider.getModel(sdk, modelID) : sdk.languageModel(modelID)
+      const resolvedModelId = info.providerModelId ?? modelID
+      const language = provider.getModel
+        ? await provider.getModel(sdk, resolvedModelId)
+        : sdk.languageModel(resolvedModelId)
       log.info("found", { providerID, modelID })
       s.models.set(key, {
         providerID,
