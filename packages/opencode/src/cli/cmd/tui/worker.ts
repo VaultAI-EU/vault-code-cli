@@ -23,7 +23,7 @@ onmessage = async (evt) => {
   const parsed = JSON.parse(evt.data)
   if (parsed.type === "shutdown") {
     await Instance.disposeAll()
-    server.stop()
+    await server.stop(true)
     postMessage(JSON.stringify({ type: "shutdown.complete" }))
   }
 }

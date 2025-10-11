@@ -9,7 +9,9 @@ process.chdir(dir)
 
 import pkg from "../package.json"
 
-const targets = [
+const singleFlag = process.argv.includes("--single")
+
+const allTargets = [
   ["windows", "x64"],
   ["linux", "arm64"],
   ["linux", "x64"],
@@ -18,6 +20,10 @@ const targets = [
   ["darwin", "x64-baseline"],
   ["darwin", "arm64"],
 ]
+
+const targets = singleFlag
+  ? allTargets.filter(([os, arch]) => os === process.platform && arch === process.arch)
+  : allTargets
 
 await $`rm -rf dist`
 
@@ -48,7 +54,11 @@ for (const [os, arch] of targets) {
       execArgv: [`--user-agent=opencode/${version}`, `--env-file=""`, `--`],
       windows: {},
     },
-    entrypoints: ["./src/index.ts", path.resolve(dir, "./node_modules/@opentui/core/parser.worker.js")],
+    entrypoints: [
+      "./src/index.ts",
+      path.resolve(dir, "./node_modules/@opentui/core/parser.worker.js"),
+      "./src/cli/cmd/tui/worker.ts",
+    ],
     define: {
       OPENCODE_VERSION: `'${version}'`,
       OTUI_TREE_SITTER_WORKER_PATH: "/$bunfs/root/../../node_modules/@opentui/core/parser.worker.js",

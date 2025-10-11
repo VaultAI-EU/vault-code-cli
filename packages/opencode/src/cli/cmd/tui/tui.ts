@@ -54,7 +54,7 @@ export const TuiCommand = cmd({
       const code = proc.exitCode
       if (code === 0) break
     }
-    await server.stop(true)
     await Instance.disposeAll()
+    await server.stop(true)
   },
 })
