@@ -740,7 +740,7 @@ ToolRegistry.register<typeof BashTool>({
   name: "bash",
   container: "block",
   render(props) {
-    const output = createMemo(() => Bun.stripANSI(props.output?.trim() ?? ""))
+    const output = createMemo(() => Bun.stripANSI(props.metadata.output?.trim() ?? ""))
     return (
       <>
         <ToolTitle icon="#" fallback="Writing command..." when={props.input.command}>
