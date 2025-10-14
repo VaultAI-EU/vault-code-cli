@@ -62,6 +62,7 @@ for (const [os, arch] of targets) {
     define: {
       OPENCODE_VERSION: `'${Script.version}'`,
       OTUI_TREE_SITTER_WORKER_PATH: "/$bunfs/root/../../node_modules/@opentui/core/parser.worker.js",
+      OPENCODE_CHANNEL: `'${Script.channel}'`,
     },
   })
 
