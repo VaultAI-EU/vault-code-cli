@@ -73,7 +73,41 @@ export function Prompt(props: PromptProps) {
           }
         },
       },
+      {
+        title: "Clear prompt",
+        value: "prompt.clear",
+        disabled: true,
+        keybind: "input_clear",
+        category: "Prompt",
+        onSelect: (dialog) => {
+          setStore("prompt", {
+            input: "",
+            parts: [],
+          })
+          dialog.clear()
+        },
+      },
+      {
+        title: "Submit prompt",
+        value: "prompt.submit",
+        disabled: true,
+        keybind: "input_submit",
+        category: "Prompt",
+        onSelect: (dialog) => {
+          submit()
+          dialog.clear()
+        },
+      },
     ]
+  })
+
+  sdk.event.on("tui.prompt.append", (evt) => {
+    setStore(
+      "prompt",
+      produce((draft) => {
+        draft.input += evt.properties.text
+      }),
+    )
   })
 
   createEffect(() => {
@@ -125,13 +159,13 @@ export function Prompt(props: PromptProps) {
     const sessionID = props.sessionID
       ? props.sessionID
       : await (async () => {
-          const sessionID = await sdk.session.create({}).then((x) => x.data!.id)
+          const sessionID = await sdk.client.session.create({}).then((x) => x.data!.id)
           return sessionID
         })()
     const messageID = Identifier.ascending("message")
     const input = store.prompt.input
     if (store.mode === "shell") {
-      sdk.session.shell({
+      sdk.client.session.shell({
         path: {
           id: sessionID,
         },
@@ -143,7 +177,7 @@ export function Prompt(props: PromptProps) {
       setStore("mode", "normal")
     } else if (input.startsWith("/")) {
       const [command, ...args] = input.split(" ")
-      sdk.session.command({
+      sdk.client.session.command({
         path: {
           id: sessionID,
         },
@@ -160,7 +194,7 @@ export function Prompt(props: PromptProps) {
         parts: [],
       })
     } else {
-      sdk.session.prompt({
+      sdk.client.session.prompt({
         path: {
           id: sessionID,
         },
@@ -296,7 +330,7 @@ export function Prompt(props: PromptProps) {
                     return
                   }
                   if (e.name === "escape" && props.sessionID) {
-                    sdk.session.abort({
+                    sdk.client.session.abort({
                       path: {
                         id: props.sessionID,
                       },

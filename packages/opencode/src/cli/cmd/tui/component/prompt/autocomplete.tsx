@@ -53,7 +53,7 @@ export function Autocomplete(props: {
       if (store.visible === "/") return []
 
       // Get files from SDK
-      const result = await sdk.find.files({
+      const result = await sdk.client.find.files({
         query: {
           query: filter() ?? "",
         },

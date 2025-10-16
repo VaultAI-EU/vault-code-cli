@@ -6,7 +6,7 @@ import { Switch, Match, createEffect, untrack } from "solid-js"
 import { Installation } from "@/installation"
 import { Global } from "@/global"
 import { DialogProvider, useDialog } from "@tui/ui/dialog"
-import { SDKProvider } from "@tui/context/sdk"
+import { SDKProvider, useSDK } from "@tui/context/sdk"
 import { SyncProvider } from "@tui/context/sync"
 import { LocalProvider, useLocal } from "@tui/context/local"
 import { DialogModel } from "@tui/component/dialog-model"
@@ -64,17 +64,9 @@ function App() {
   const dialog = useDialog()
   const local = useLocal()
   const command = useCommandDialog()
-  const keybind = useKeybind()
+  const { event } = useSDK()
 
   useKeyboard(async (evt) => {
-    if (keybind.match("agent_cycle", evt)) {
-      local.agent.move(1)
-      return
-    }
-    if (keybind.match("agent_cycle_reverse", evt)) {
-      local.agent.move(-1)
-    }
-
     if (evt.meta && evt.name === "t") {
       renderer.toggleDebugOverlay()
       return
@@ -131,6 +123,26 @@ function App() {
       },
     },
     {
+      title: "Agent cycle",
+      value: "agent.cycle",
+      keybind: "agent_cycle",
+      category: "Agent",
+      disabled: true,
+      onSelect: () => {
+        local.agent.move(1)
+      },
+    },
+    {
+      title: "Agent cycle reverse",
+      value: "agent.cycle.reverse",
+      keybind: "agent_cycle_reverse",
+      category: "Agent",
+      disabled: true,
+      onSelect: () => {
+        local.agent.move(-1)
+      },
+    },
+    {
       title: "View status",
       keybind: "status_view",
       value: "opencode.status",
@@ -152,6 +164,10 @@ function App() {
         ).then(() => local.kv.set("openrouter_warning", true))
       })
     }
+  })
+
+  event.on("tui.command.execute", (evt) => {
+    command.trigger(evt.properties.command)
   })
 
   return (
