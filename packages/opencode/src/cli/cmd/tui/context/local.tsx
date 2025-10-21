@@ -116,7 +116,6 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
           }
         }
         const provider = sync.data.provider[0]
-        console.log(provider)
         const model = Object.values(provider.models)[0]
         return {
           providerID: provider.id,
