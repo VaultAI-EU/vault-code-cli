@@ -211,10 +211,12 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
 
     // non-blocking
     Promise.all([
-      sdk.client.session.list().then((x) => {
-        const sessions = (x.data ?? []).slice().sort((a, b) => a.id.localeCompare(b.id))
-        setStore("session", sessions)
-      }),
+      sdk.client.session.list().then((x) =>
+        setStore(
+          "session",
+          (x.data ?? []).toSorted((a, b) => a.id.localeCompare(b.id)),
+        ),
+      ),
       sdk.client.command.list().then((x) => setStore("command", x.data ?? [])),
       sdk.client.lsp.status().then((x) => setStore("lsp", x.data!)),
       sdk.client.mcp.status().then((x) => setStore("mcp", x.data!)),
