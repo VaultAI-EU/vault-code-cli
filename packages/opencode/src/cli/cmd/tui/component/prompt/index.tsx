@@ -58,6 +58,29 @@ export function Prompt(props: PromptProps) {
   const command = useCommandDialog()
   const renderer = useRenderer()
 
+  const textareaKeybindings = createMemo(() => {
+    const newlineBindings = keybind.all.input_newline || []
+    const submitBindings = keybind.all.input_submit || []
+
+    return [
+      { name: "return", action: "submit" },
+      ...newlineBindings.map((binding) => ({
+        name: binding.name,
+        ctrl: binding.ctrl || undefined,
+        meta: binding.meta || undefined,
+        shift: binding.shift || undefined,
+        action: "newline" as const,
+      })),
+      ...submitBindings.map((binding) => ({
+        name: binding.name,
+        ctrl: binding.ctrl || undefined,
+        meta: binding.meta || undefined,
+        shift: binding.shift || undefined,
+        action: "submit" as const,
+      })),
+    ]
+  })
+
   const fileStyleId = syntaxTheme.getStyleId("extmark.file")!
   const agentStyleId = syntaxTheme.getStyleId("extmark.agent")!
   const pasteStyleId = syntaxTheme.getStyleId("extmark.paste")!
@@ -384,7 +407,7 @@ export function Prompt(props: PromptProps) {
             <textarea
               placeholder={
                 props.showPlaceholder
-                  ? t`${dim(fg(Theme.primary)("  → meta+↑↓"))} ${dim(fg("#64748b")("history"))} ${dim(fg("#a78bfa")("•"))} ${dim(fg(Theme.primary)("meta+return"))} ${dim(fg("#64748b")("newline"))} ${dim(fg("#a78bfa")("•"))} ${dim(fg(Theme.primary)("return"))} ${dim(fg("#64748b")("submit"))}`
+                  ? t`${dim(fg(Theme.primary)("  → meta+↑↓"))} ${dim(fg("#64748b")("history"))} ${dim(fg("#a78bfa")("•"))} ${dim(fg(Theme.primary)(keybind.print("input_newline")))} ${dim(fg("#64748b")("newline"))} ${dim(fg("#a78bfa")("•"))} ${dim(fg(Theme.primary)(keybind.print("input_submit")))} ${dim(fg("#64748b")("submit"))}`
                   : undefined
               }
               textColor={Theme.text}
@@ -397,10 +420,7 @@ export function Prompt(props: PromptProps) {
                 autocomplete.onInput(value)
                 syncExtmarksWithPromptParts()
               }}
-              keyBindings={[
-                { name: "return", meta: true, action: "newline" },
-                { name: "return", action: "submit" },
-              ]}
+              keyBindings={textareaKeybindings()}
               onKeyDown={async (e: KeyEvent) => {
                 if (props.disabled) {
                   e.preventDefault()

@@ -143,5 +143,5 @@ const DEFAULT_KEYBINDS: KeybindsConfig = {
   input_clear: "ctrl+c",
   input_paste: "ctrl+v",
   input_submit: "enter",
-  input_newline: "shift+enter,ctrl+j",
+  input_newline: "ctrl+j,shift+enter",
 }
