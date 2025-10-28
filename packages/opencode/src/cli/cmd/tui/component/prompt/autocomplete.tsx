@@ -290,7 +290,8 @@ export function Autocomplete(props: {
   }
 
   function hide() {
-    if (store.visible === "/" && !props.value.endsWith(" ")) {
+    const text = props.input().plainText
+    if (store.visible === "/" && !text.endsWith(" ")) {
       const cursor = props.input().logicalCursor
       props.input().deleteRange(0, 0, cursor.row, cursor.col)
     }
