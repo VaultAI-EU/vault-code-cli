@@ -1,129 +1,843 @@
-INFO  2025-11-07T19:00:19 +115ms service=default version=local args=["acp"] opencode
-INFO  2025-11-07T19:00:19 +0ms service=project directory=/Users/aidencline/development/opencode2/packages/opencode fromDirectory
-INFO  2025-11-07T19:00:20 +218ms service=config path=/Users/aidencline/.config/opencode/config.json loading
-INFO  2025-11-07T19:00:20 +1ms service=config path=/Users/aidencline/.config/opencode/opencode.json loading
-INFO  2025-11-07T19:00:20 +1ms service=config path=/Users/aidencline/.config/opencode/opencode.jsonc loading
-INFO  2025-11-07T19:00:20 +10ms service=config path=/Users/aidencline/development/opencode2/opencode.json loading
-INFO  2025-11-07T19:00:20 +9ms service=plugin path=opencode-openai-codex-auth loading plugin
-INFO  2025-11-07T19:00:20 +27ms service=plugin path=file:///Users/aidencline/.config/opencode/plugin/plugin.ts loading plugin
-INFO  2025-11-07T19:00:20 +1ms service=plugin path=opencode-copilot-auth@0.0.4 loading plugin
-INFO  2025-11-07T19:00:20 +3ms service=plugin path=opencode-anthropic-auth@0.0.2 loading plugin
-INFO  2025-11-07T19:00:20 +1ms service=bus type=* subscribing
-INFO  2025-11-07T19:00:20 +0ms service=bus type=session.updated subscribing
-INFO  2025-11-07T19:00:20 +0ms service=bus type=message.updated subscribing
-INFO  2025-11-07T19:00:20 +0ms service=bus type=message.part.updated subscribing
-INFO  2025-11-07T19:00:20 +0ms service=format init
-INFO  2025-11-07T19:00:20 +0ms service=lsp serverIds=deno, typescript, vue, eslint, gopls, ruby-lsp, pyright, elixir-ls, zls, csharp, rust, clangd, svelte, astro, jdtls, lua-ls enabled LSP servers
-INFO  2025-11-07T19:00:20 +1ms service=bus type=command.executed subscribing
-INFO  2025-11-07T19:00:20 +12ms service=server method=GET path=/config request
-INFO  2025-11-07T19:00:20 +1ms service=server duration=1 response
-INFO  2025-11-07T19:00:20 +1ms service=acp-command setup connection
-INFO  2025-11-07T19:00:20 +1ms service=acp-agent protocolVersion=1 initialize
-INFO  2025-11-07T19:00:20 +3ms service=server method=POST path=/session request
-INFO  2025-11-07T19:00:20 +0ms service=project directory=/Users/aidencline/development/opencode2 fromDirectory
-INFO  2025-11-07T19:00:20 +54ms service=config path=/Users/aidencline/development/opencode2/opencode.json loading
-INFO  2025-11-07T19:00:20 +1ms service=plugin path=opencode-openai-codex-auth loading plugin
-INFO  2025-11-07T19:00:20 +1ms service=plugin path=file:///Users/aidencline/.config/opencode/plugin/plugin.ts loading plugin
-INFO  2025-11-07T19:00:20 +0ms service=plugin path=opencode-copilot-auth@0.0.4 loading plugin
-INFO  2025-11-07T19:00:20 +0ms service=plugin path=opencode-anthropic-auth@0.0.2 loading plugin
-INFO  2025-11-07T19:00:20 +0ms service=bus type=* subscribing
-INFO  2025-11-07T19:00:20 +0ms service=bus type=session.updated subscribing
-INFO  2025-11-07T19:00:20 +0ms service=bus type=message.updated subscribing
-INFO  2025-11-07T19:00:20 +0ms service=bus type=message.part.updated subscribing
-INFO  2025-11-07T19:00:20 +0ms service=format init
-INFO  2025-11-07T19:00:20 +0ms service=lsp serverIds=deno, typescript, vue, eslint, gopls, ruby-lsp, pyright, elixir-ls, zls, csharp, rust, clangd, svelte, astro, jdtls, lua-ls enabled LSP servers
-INFO  2025-11-07T19:00:20 +0ms service=bus type=command.executed subscribing
-INFO  2025-11-07T19:00:20 +1ms service=session id=ses_5a04f19a0ffeJKEIITzQLVT2lM version=local projectID=4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 directory=/Users/aidencline/development/opencode2 title=ACP Session 82ad3f07-82f6-4ae4-9e02-a27305bbbecc time={"created":1762542020191,"updated":1762542020191} created
-INFO  2025-11-07T19:00:20 +1ms service=bus type=session.created publishing
-INFO  2025-11-07T19:00:20 +0ms service=bus type=session.updated publishing
-INFO  2025-11-07T19:00:20 +0ms service=server duration=58 response
-INFO  2025-11-07T19:00:20 +1ms service=acp-session-manager state={"id":"ses_5a04f19a0ffeJKEIITzQLVT2lM","cwd":"/Users/aidencline/development/opencode2","mcpServers":[],"createdAt":"2025-11-07T19:00:20.193Z","model":{"providerID":"opencode","modelID":"big-pickle"}} creating_session
-INFO  2025-11-07T19:00:20 +0ms service=acp-agent sessionId=ses_5a04f19a0ffeJKEIITzQLVT2lM mcpServers=0 creating_session
-INFO  2025-11-07T19:00:20 +2ms service=server method=GET path=/config/providers request
-INFO  2025-11-07T19:00:20 +1ms service=models.dev file={} refreshing
-INFO  2025-11-07T19:00:20 +2ms service=provider init
-INFO  2025-11-07T19:00:20 +4ms service=provider providerID=azure found
-INFO  2025-11-07T19:00:20 +0ms service=provider providerID=openai found
-INFO  2025-11-07T19:00:20 +0ms service=provider providerID=openrouter found
-INFO  2025-11-07T19:00:20 +0ms service=provider providerID=anthropic found
-INFO  2025-11-07T19:00:20 +0ms service=provider providerID=opencode found
-INFO  2025-11-07T19:00:20 +1ms service=provider providerID=github-copilot found
-INFO  2025-11-07T19:00:20 +2ms service=server duration=9 response
-INFO  2025-11-07T19:00:20 +2ms service=server method=GET path=/agent request
-INFO  2025-11-07T19:00:20 +1ms service=server duration=1 response
-INFO  2025-11-07T19:00:20 +0ms service=server method=GET path=/command request
-INFO  2025-11-07T19:00:20 +0ms service=server duration=0 response
-INFO  2025-11-07T19:00:20 +2ms service=server method=GET path=/event request
-INFO  2025-11-07T19:00:20 +0ms service=server event connected
-INFO  2025-11-07T19:00:20 +1ms service=bus type=* subscribing
-INFO  2025-11-07T19:00:20 +0ms service=server duration=1 response
-INFO  2025-11-07T19:00:21 +1183ms service=acp-agent parts=[{"type":"text","text":"Hello"}] parts
-INFO  2025-11-07T19:00:21 +1ms service=server method=POST path=/session/ses_5a04f19a0ffeJKEIITzQLVT2lM/message request
-INFO  2025-11-07T19:00:21 +2ms service=session.prompt session=ses_5a04f19a0ffeJKEIITzQLVT2lM prompt
-INFO  2025-11-07T19:00:21 +0ms service=server duration=2 response
-INFO  2025-11-07T19:00:21 +4ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:21 +1ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:21 +1ms service=bus type=session.updated publishing
-INFO  2025-11-07T19:00:21 +0ms service=provider providerID=opencode modelID=big-pickle getModel
-INFO  2025-11-07T19:00:21 +1ms service=provider status=started providerID=opencode getSDK
-INFO  2025-11-07T19:00:21 +57ms service=provider status=completed duration=57 providerID=opencode getSDK
-INFO  2025-11-07T19:00:21 +1ms service=provider providerID=opencode modelID=big-pickle found
-INFO  2025-11-07T19:00:21 +0ms service=session.lock sessionID=ses_5a04f19a0ffeJKEIITzQLVT2lM locked
-INFO  2025-11-07T19:00:21 +0ms service=session.prompt session=ses_5a04f19a0ffeJKEIITzQLVT2lM sessionID=ses_5a04f19a0ffeJKEIITzQLVT2lM locking
-INFO  2025-11-07T19:00:21 +34ms service=mcp key=context7 type=remote found
-INFO  2025-11-07T19:00:21 +0ms service=mcp key=gh_grep type=remote found
-INFO  2025-11-07T19:00:21 +0ms service=mcp key=weather type=local found
-INFO  2025-11-07T19:00:21 +348ms service=mcp key=context7 transport=StreamableHTTP connected
-INFO  2025-11-07T19:00:22 +160ms service=mcp key=gh_grep transport=StreamableHTTP connected
-INFO  2025-11-07T19:00:23 +1265ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:23 +5ms service=session.prompt session=ses_5a04f19a0ffeJKEIITzQLVT2lM process
-INFO  2025-11-07T19:00:23 +6ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:23 +0ms service=provider providerID=opencode modelID=claude-haiku-4-5 getModel
-INFO  2025-11-07T19:00:23 +1ms service=provider status=started providerID=opencode getSDK
-INFO  2025-11-07T19:00:23 +0ms service=bus type=session.updated publishing
-INFO  2025-11-07T19:00:23 +0ms service=bus type=session.diff publishing
-INFO  2025-11-07T19:00:23 +5ms service=provider status=completed duration=5 providerID=opencode getSDK
-INFO  2025-11-07T19:00:23 +0ms service=provider providerID=opencode modelID=claude-haiku-4-5 found
-INFO  2025-11-07T19:00:24 +1455ms service=snapshot hash=af2dd1a43d3ed11688756bc848a1803307be9925
+INFO  2025-11-07T19:08:03 +102ms service=default version=local args=["acp"] opencode
+INFO  2025-11-07T19:08:03 +0ms service=project directory=/Users/aidencline/development/opencode2/packages/opencode fromDirectory
+INFO  2025-11-07T19:08:03 +193ms service=config path=/Users/aidencline/.config/opencode/config.json loading
+INFO  2025-11-07T19:08:03 +0ms service=config path=/Users/aidencline/.config/opencode/opencode.json loading
+INFO  2025-11-07T19:08:03 +0ms service=config path=/Users/aidencline/.config/opencode/opencode.jsonc loading
+INFO  2025-11-07T19:08:03 +7ms service=config path=/Users/aidencline/development/opencode2/opencode.json loading
+INFO  2025-11-07T19:08:03 +8ms service=plugin path=opencode-openai-codex-auth loading plugin
+INFO  2025-11-07T19:08:03 +20ms service=plugin path=file:///Users/aidencline/.config/opencode/plugin/plugin.ts loading plugin
+INFO  2025-11-07T19:08:03 +1ms service=plugin path=opencode-copilot-auth@0.0.4 loading plugin
+INFO  2025-11-07T19:08:03 +2ms service=plugin path=opencode-anthropic-auth@0.0.2 loading plugin
+INFO  2025-11-07T19:08:03 +1ms service=bus type=* subscribing
+INFO  2025-11-07T19:08:03 +0ms service=bus type=session.updated subscribing
+INFO  2025-11-07T19:08:03 +0ms service=bus type=message.updated subscribing
+INFO  2025-11-07T19:08:03 +0ms service=bus type=message.part.updated subscribing
+INFO  2025-11-07T19:08:03 +0ms service=format init
+INFO  2025-11-07T19:08:03 +0ms service=lsp serverIds=deno, typescript, vue, eslint, gopls, ruby-lsp, pyright, elixir-ls, zls, csharp, rust, clangd, svelte, astro, jdtls, lua-ls enabled LSP servers
+INFO  2025-11-07T19:08:03 +1ms service=bus type=command.executed subscribing
+INFO  2025-11-07T19:08:03 +12ms service=server method=GET path=/config request
+INFO  2025-11-07T19:08:03 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:03 +1ms service=acp-command setup connection
+INFO  2025-11-07T19:08:03 +1ms service=acp-agent protocolVersion=1 initialize
+INFO  2025-11-07T19:08:03 +30ms service=server method=POST path=/session request
+INFO  2025-11-07T19:08:03 +0ms service=project directory=/Users/aidencline/development/opencode2 fromDirectory
+INFO  2025-11-07T19:08:03 +53ms service=config path=/Users/aidencline/development/opencode2/opencode.json loading
+INFO  2025-11-07T19:08:03 +1ms service=plugin path=opencode-openai-codex-auth loading plugin
+INFO  2025-11-07T19:08:03 +0ms service=plugin path=file:///Users/aidencline/.config/opencode/plugin/plugin.ts loading plugin
+INFO  2025-11-07T19:08:03 +0ms service=plugin path=opencode-copilot-auth@0.0.4 loading plugin
+INFO  2025-11-07T19:08:03 +0ms service=plugin path=opencode-anthropic-auth@0.0.2 loading plugin
+INFO  2025-11-07T19:08:03 +0ms service=bus type=* subscribing
+INFO  2025-11-07T19:08:03 +0ms service=bus type=session.updated subscribing
+INFO  2025-11-07T19:08:03 +0ms service=bus type=message.updated subscribing
+INFO  2025-11-07T19:08:03 +0ms service=bus type=message.part.updated subscribing
+INFO  2025-11-07T19:08:03 +0ms service=format init
+INFO  2025-11-07T19:08:03 +1ms service=lsp serverIds=deno, typescript, vue, eslint, gopls, ruby-lsp, pyright, elixir-ls, zls, csharp, rust, clangd, svelte, astro, jdtls, lua-ls enabled LSP servers
+INFO  2025-11-07T19:08:03 +0ms service=bus type=command.executed subscribing
+INFO  2025-11-07T19:08:03 +0ms service=session id=ses_5a0480763ffeHd0rZW7Mj4voIn version=local projectID=4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 directory=/Users/aidencline/development/opencode2 title=ACP Session 4bc0d9c4-a2dc-487d-951f-dad32358e566 time={"created":1762542483612,"updated":1762542483612} created
+INFO  2025-11-07T19:08:03 +1ms service=bus type=session.created publishing
+INFO  2025-11-07T19:08:03 +0ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:03 +0ms service=server duration=56 response
+INFO  2025-11-07T19:08:03 +1ms service=acp-session-manager state={"id":"ses_5a0480763ffeHd0rZW7Mj4voIn","cwd":"/Users/aidencline/development/opencode2","mcpServers":[],"createdAt":"2025-11-07T19:08:03.614Z","model":{"providerID":"opencode","modelID":"big-pickle"}} creating_session
+INFO  2025-11-07T19:08:03 +0ms service=acp-agent sessionId=ses_5a0480763ffeHd0rZW7Mj4voIn mcpServers=0 creating_session
+INFO  2025-11-07T19:08:03 +0ms service=server method=GET path=/config/providers request
+INFO  2025-11-07T19:08:03 +1ms service=models.dev file={} refreshing
+INFO  2025-11-07T19:08:03 +2ms service=provider init
+INFO  2025-11-07T19:08:03 +3ms service=provider providerID=azure found
+INFO  2025-11-07T19:08:03 +0ms service=provider providerID=openai found
+INFO  2025-11-07T19:08:03 +0ms service=provider providerID=openrouter found
+INFO  2025-11-07T19:08:03 +0ms service=provider providerID=anthropic found
+INFO  2025-11-07T19:08:03 +0ms service=provider providerID=opencode found
+INFO  2025-11-07T19:08:03 +0ms service=provider providerID=github-copilot found
+INFO  2025-11-07T19:08:03 +2ms service=server duration=8 response
+INFO  2025-11-07T19:08:03 +3ms service=server method=GET path=/agent request
+INFO  2025-11-07T19:08:03 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:03 +3ms service=server method=GET path=/command request
+INFO  2025-11-07T19:08:03 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:03 +2ms service=server method=GET path=/event request
+INFO  2025-11-07T19:08:03 +0ms service=server event connected
+INFO  2025-11-07T19:08:03 +0ms service=bus type=* subscribing
+INFO  2025-11-07T19:08:03 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:04 +1344ms service=acp-agent parts=[{"type":"text","text":"Hello"}] parts
+INFO  2025-11-07T19:08:04 +2ms service=server method=POST path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message request
+INFO  2025-11-07T19:08:04 +4ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn prompt
+INFO  2025-11-07T19:08:04 +0ms service=server duration=4 response
+INFO  2025-11-07T19:08:04 +4ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:04 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:04 +1ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:04 +0ms service=provider providerID=opencode modelID=big-pickle getModel
+INFO  2025-11-07T19:08:04 +1ms service=provider status=started providerID=opencode getSDK
+INFO  2025-11-07T19:08:05 +56ms service=provider status=completed duration=56 providerID=opencode getSDK
+INFO  2025-11-07T19:08:05 +1ms service=provider providerID=opencode modelID=big-pickle found
+INFO  2025-11-07T19:08:05 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locked
+INFO  2025-11-07T19:08:05 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locking
+INFO  2025-11-07T19:08:05 +0ms service=acp-agent event={"part":{"id":"prt_a5fb7fdf7002zx3m5XYA00fwVI","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb7fdf7001I10DxKs7cZO436","type":"text","text":"Hello"}} message part updated
+INFO  2025-11-07T19:08:05 +2ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb7fdf7001I10DxKs7cZO436 request
+INFO  2025-11-07T19:08:05 +5ms service=server duration=5 response
+INFO  2025-11-07T19:08:05 +22ms service=mcp key=context7 type=remote found
+INFO  2025-11-07T19:08:05 +1ms service=mcp key=gh_grep type=remote found
+INFO  2025-11-07T19:08:05 +0ms service=mcp key=weather type=local found
+INFO  2025-11-07T19:08:05 +281ms service=mcp key=context7 transport=StreamableHTTP connected
+INFO  2025-11-07T19:08:05 +410ms service=mcp key=gh_grep transport=StreamableHTTP connected
+INFO  2025-11-07T19:08:06 +1098ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:06 +6ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn process
+INFO  2025-11-07T19:08:06 +9ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:06 +0ms service=provider providerID=opencode modelID=claude-haiku-4-5 getModel
+INFO  2025-11-07T19:08:06 +0ms service=provider status=started providerID=opencode getSDK
+INFO  2025-11-07T19:08:06 +1ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:06 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:08:06 +5ms service=provider status=completed duration=6 providerID=opencode getSDK
+INFO  2025-11-07T19:08:06 +0ms service=provider providerID=opencode modelID=claude-haiku-4-5 found
+INFO  2025-11-07T19:08:08 +1546ms service=snapshot hash=698aec42e98446a47dfa78916755b238fa8c58bd
  cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
-INFO  2025-11-07T19:00:24 +1ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +62ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +47ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +50ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +1ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +46ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +1ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +34ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:24 +8ms service=session.summary title=Greeting title
-INFO  2025-11-07T19:00:24 +0ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:25 +615ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:25 +0ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:25 +33ms service=snapshot hash=8fe0798d0105e13db6691dddbda02aa2facc14fb
+INFO  2025-11-07T19:08:08 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +1ms service=acp-agent event={"part":{"id":"prt_a5fb80b70001A5FhU1Fwx1TUZE","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"step-start","snapshot":"698aec42e98446a47dfa78916755b238fa8c58bd"}} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +1ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b710013pERVEV2DiJek9","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"reasoning","text":"\n","time":{"start":1762542488433}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\n","time":{"start":1762542488434}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:08 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello","time":{"start":1762542488434}},"delta":"Hello"} message part updated
+INFO  2025-11-07T19:08:08 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +17ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello!","time":{"start":1762542488434}},"delta":"!"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How","time":{"start":1762542488434}},"delta":" How"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:08 +31ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +1ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can","time":{"start":1762542488434}},"delta":" can"} message part updated
+INFO  2025-11-07T19:08:08 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +1ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I","time":{"start":1762542488434}},"delta":" I"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help","time":{"start":1762542488434}},"delta":" help"} message part updated
+INFO  2025-11-07T19:08:08 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you","time":{"start":1762542488434}},"delta":" you"} message part updated
+INFO  2025-11-07T19:08:08 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +37ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you with","time":{"start":1762542488434}},"delta":" with"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you with your","time":{"start":1762542488434}},"delta":" your"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you with your development","time":{"start":1762542488434}},"delta":" development"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you with your development tasks","time":{"start":1762542488434}},"delta":" tasks"} message part updated
+INFO  2025-11-07T19:08:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:08 +16ms service=session.summary title=Hello title
+INFO  2025-11-07T19:08:08 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:08 +12ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you with your development tasks today","time":{"start":1762542488434}},"delta":" today"} message part updated
+INFO  2025-11-07T19:08:08 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:08 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you with your development tasks today?","time":{"start":1762542488434}},"delta":"?"} message part updated
+INFO  2025-11-07T19:08:08 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:08 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:09 +617ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:09 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:09 +4ms service=acp-agent event={"part":{"id":"prt_a5fb80b710013pERVEV2DiJek9","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"reasoning","text":"","time":{"start":1762542488433,"end":1762542489183}}} message part updated
+INFO  2025-11-07T19:08:09 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:09 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:09 +1ms service=acp-agent event={"part":{"id":"prt_a5fb80b72001utjI7SgMVzkf24","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"text","text":"\nHello! How can I help you with your development tasks today?","time":{"start":1762542489184,"end":1762542489184}}} message part updated
+INFO  2025-11-07T19:08:09 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:09 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:09 +34ms service=snapshot hash=7dd96151df978ec396960998a6688d82b477628e
  cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
-INFO  2025-11-07T19:00:25 +1ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:25 +0ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:25 +29ms service=bus type=message.part.updated publishing
-INFO  2025-11-07T19:00:25 +0ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:25 +1ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:25 +0ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:25 +0ms service=session.compaction pruning
-INFO  2025-11-07T19:00:25 +0ms service=session.lock sessionID=ses_5a04f19a0ffeJKEIITzQLVT2lM unlocked
-INFO  2025-11-07T19:00:25 +0ms service=session.prompt session=ses_5a04f19a0ffeJKEIITzQLVT2lM sessionID=ses_5a04f19a0ffeJKEIITzQLVT2lM unlocking
-INFO  2025-11-07T19:00:25 +1ms service=bus type=session.idle publishing
-INFO  2025-11-07T19:00:25 +0ms service=server method=POST path=/tui/show-toast request
-INFO  2025-11-07T19:00:25 +0ms service=bus type=tui.toast.show publishing
-INFO  2025-11-07T19:00:25 +0ms service=server duration=0 response
-INFO  2025-11-07T19:00:25 +2ms service=session.compaction pruned=0 total=0 found
-INFO  2025-11-07T19:00:25 +22ms service=bus type=message.updated publishing
-INFO  2025-11-07T19:00:25 +1ms service=bus type=session.updated publishing
-INFO  2025-11-07T19:00:25 +1ms service=bus type=session.diff publishing
-INFO  2025-11-07T19:00:27 +2162ms service=session.summary body=I greeted you and offered assistance with your development tasks. I was initiating a conversation to understand how I could best help you. body
-INFO  2025-11-07T19:00:27 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:09 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:09 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:09 +1ms service=acp-agent event={"part":{"id":"prt_a5fb80e63001tFyCFMEaCqm3Kd","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"step-finish","reason":"stop","snapshot":"7dd96151df978ec396960998a6688d82b477628e","cost":0,"tokens":{"input":12536,"output":18,"reasoning":0,"cache":{"read":12535,"write":0}}}} message part updated
+INFO  2025-11-07T19:08:09 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:09 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:09 +28ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:09 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:09 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:09 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:09 +0ms service=session.compaction pruning
+INFO  2025-11-07T19:08:09 +1ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocked
+INFO  2025-11-07T19:08:09 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocking
+INFO  2025-11-07T19:08:09 +0ms service=acp-agent event={"part":{"id":"prt_a5fb80ea8001LjLbZxSNIk7nCD","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8054f00183111JbuCJZHl1","type":"patch","hash":"698aec42e98446a47dfa78916755b238fa8c58bd","files":["/Users/aidencline/development/opencode2/packages/opencode/dev.log"]}} message part updated
+INFO  2025-11-07T19:08:09 +0ms service=bus type=session.idle publishing
+INFO  2025-11-07T19:08:09 +0ms service=server method=POST path=/tui/show-toast request
+INFO  2025-11-07T19:08:09 +1ms service=bus type=tui.toast.show publishing
+INFO  2025-11-07T19:08:09 +0ms service=server duration=1 response
+INFO  2025-11-07T19:08:09 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8054f00183111JbuCJZHl1 request
+INFO  2025-11-07T19:08:09 +2ms service=session.compaction pruned=0 total=0 found
+INFO  2025-11-07T19:08:09 +0ms service=server duration=2 response
+INFO  2025-11-07T19:08:09 +21ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:09 +1ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:09 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:08:10 +1554ms service=session.summary body=I greeted you and asked how I could assist you with your development tasks. I did this to open the conversation and understand what you needed help with. body
+INFO  2025-11-07T19:08:10 +2ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:44 +33421ms service=acp-agent parts=[{"type":"text","text":"What do you see in my project?"}] parts
+INFO  2025-11-07T19:08:44 +1ms service=server method=POST path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message request
+INFO  2025-11-07T19:08:44 +1ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn prompt
+INFO  2025-11-07T19:08:44 +0ms service=server duration=1 response
+INFO  2025-11-07T19:08:44 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:44 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:44 +1ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:44 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locked
+INFO  2025-11-07T19:08:44 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locking
+INFO  2025-11-07T19:08:44 +1ms service=acp-agent event={"part":{"id":"prt_a5fb89768002LuHnExUxXxmFo6","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb89768001Fc13lOHfFN0FCc","type":"text","text":"What do you see in my project?"}} message part updated
+INFO  2025-11-07T19:08:44 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb89768001Fc13lOHfFN0FCc request
+INFO  2025-11-07T19:08:44 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:44 +359ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:44 +2ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn process
+INFO  2025-11-07T19:08:44 +3ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:44 +30ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:44 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:08:46 +1422ms service=session.summary title=Reviewing project structure title
+INFO  2025-11-07T19:08:46 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:46 +194ms service=snapshot hash=91918109853c0087a04359b131b64d89ff349c4a
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:08:46 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:46 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:46 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:46 +1ms service=acp-agent event={"part":{"id":"prt_a5fb89f47001E2wMczCweOBHtS","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"step-start","snapshot":"91918109853c0087a04359b131b64d89ff349c4a"}} message part updated
+INFO  2025-11-07T19:08:46 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:46 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:46 +0ms service=acp-agent event={"part":{"id":"prt_a5fb89f47002genKgZ7L03a5Vb","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"reasoning","text":"\n","time":{"start":1762542526279}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:46 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:46 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:46 +0ms service=acp-agent event={"part":{"id":"prt_a5fb89f480014n3H5pCBkn28Ct","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"text","text":"\n","time":{"start":1762542526280}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:46 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:46 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:46 +309ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:46 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:46 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a07e001IkkiyHhMTBIFrp","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"tool","callID":"call_a17aa2355cba442b8b03839b","tool":"list","state":{"status":"pending","input":{},"raw":""}}} message part updated
+INFO  2025-11-07T19:08:46 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:46 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:46 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a07e001IkkiyHhMTBIFrp","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"tool","callID":"call_a17aa2355cba442b8b03839b","tool":"list","state":{"status":"running","input":{"path":"/Users/aidencline/development/opencode2"},"time":{"start":1762542526594}}}} message part updated
+INFO  2025-11-07T19:08:46 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:46 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:46 +15ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:46 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a07e001IkkiyHhMTBIFrp","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"tool","callID":"call_a17aa2355cba442b8b03839b","tool":"list","state":{"status":"completed","input":{"path":"/Users/aidencline/development/opencode2"},"output":"/Users/aidencline/development/opencode2/\n  .github/\n    ISSUE_TEMPLATE/\n      bug-report.yml\n      config.yml\n      feature-request.yml\n      question.yml\n    actions/\n      setup-bun/\n        action.yml\n    workflows/\n      auto-label-tui.yml\n      deploy.yml\n      guidelines-check.yml\n      notify-discord.yml\n      opencode.yml\n      publish-github-action.yml\n      publish.yml\n      snapshot.yml\n      typecheck.yml\n    publish-python-sdk.yml\n  .opencode/\n    command/\n      commit.md\n      hello.md\n      spellcheck.md\n  github/\n    action.yml\n    index.ts\n    package.json\n    tsconfig.json\n  infra/\n    console.ts\n  packages/\n    console/\n      function/\n        src/\n          auth.ts\n          log-processor.ts\n        package.json\n        sst-env.d.ts\n        tsconfig.json\n      mail/\n        emails/\n          templates/\n            InviteEmail.tsx\n          components.tsx\n          styles.ts\n        package.json\n        sst-env.d.ts\n      resource/\n        bun.lock\n        package.json\n        resource.cloudflare.ts\n        resource.node.ts\n        sst-env.d.ts\n        tsconfig.json\n    identity/\n      avatar-light.png\n    opencode/\n      bin/\n        opencode\n        opencode.cmd\n      .gitignore\n      AGENTS.md\n      README.md\n      bunfig.toml\n      dev.log\n      package.json\n      parsers-config.ts\n      sst-env.d.ts\n      tsconfig.json\n    slack/\n      src/\n        index.ts\n      .env.example\n      .gitignore\n      README.md\n      package.json\n      sst-env.d.ts\n      tsconfig.json\n  patches/\n    @solidjs%2Fstart@1.1.7.patch\n  script/\n    format.ts\n    hooks\n    publish.ts\n    release\n    stats.ts\n  sdks/\n    vscode/\n      images/\n        button-dark.svg\n        button-light.svg\n        icon.png\n      script/\n        release\n      src/\n        extension.ts\n      .gitignore\n      .vscode-test.mjs\n      README.md\n      bun.lock\n      esbuild.js\n      eslint.config.mjs\n      package.json\n      sst-env.d.ts\n      tsconfig.json\n  specs/\n    project.md\n  .editorconfig\n  .git\n  .gitignore\n  AGENTS.md\n  CONTRIBUTING.md\n  LICENSE\n  README.md\n  bun.lock\n  bunfig.toml\n  install\n  opencode.json\n  package.json\n  proxy.local.ts\n  script.local.ts\n  shell.local.ts\n  sst-env.d.ts\n  sst.config.ts\n  test.local.ts\n  theme-test.tsx\n  tsconfig.json\n  turbo.json\n","title":"","metadata":{"count":100,"truncated":true},"time":{"start":1762542526594,"end":1762542526612}}}} message part updated
+INFO  2025-11-07T19:08:46 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:46 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:47 +455ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:47 +2ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:47 +2ms service=acp-agent event={"part":{"id":"prt_a5fb89f47002genKgZ7L03a5Vb","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"reasoning","text":"","time":{"start":1762542526279,"end":1762542527070}}} message part updated
+INFO  2025-11-07T19:08:47 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:47 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:47 +0ms service=acp-agent event={"part":{"id":"prt_a5fb89f480014n3H5pCBkn28Ct","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"text","text":"","time":{"start":1762542527071,"end":1762542527071}}} message part updated
+INFO  2025-11-07T19:08:47 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:47 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:47 +30ms service=snapshot hash=db4485e7009e900a24a4faf912b7d62be7d918d2
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:08:47 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:47 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:47 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a260001DB5IIeE5kvWRgJ","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"step-finish","reason":"tool-calls","snapshot":"db4485e7009e900a24a4faf912b7d62be7d918d2","cost":0,"tokens":{"input":12564,"output":26,"reasoning":0,"cache":{"read":12553,"write":0}}}} message part updated
+INFO  2025-11-07T19:08:47 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:47 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:47 +27ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:47 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:47 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a29e0014fJxVUZw9CyEE6","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb898d2001AUHZRwH40sjFY8","type":"patch","hash":"91918109853c0087a04359b131b64d89ff349c4a","files":["/Users/aidencline/development/opencode2/packages/opencode/dev.log"]}} message part updated
+INFO  2025-11-07T19:08:47 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:47 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:47 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb898d2001AUHZRwH40sjFY8 request
+INFO  2025-11-07T19:08:47 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:47 +2ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:47 +1ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn process
+INFO  2025-11-07T19:08:47 +25ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:47 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:08:47 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:48 +1068ms service=snapshot hash=5f11da99b21001e793c4a723372b1b2416101d8f
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:08:48 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6ea001bp1yslHH9ycolg","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"step-start","snapshot":"5f11da99b21001e793c4a723372b1b2416101d8f"}} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb001TGn3W31BTOjwMm","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"reasoning","text":"\n","time":{"start":1762542528235}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:48 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\n","time":{"start":1762542528235}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI","time":{"start":1762542528235}},"delta":"I"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see","time":{"start":1762542528235}},"delta":" see"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a","time":{"start":1762542528235}},"delta":" a"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript","time":{"start":1762542528235}},"delta":" TypeScript"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +23ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project","time":{"start":1762542528235}},"delta":" project"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +33ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called","time":{"start":1762542528235}},"delta":" called"} message part updated
+INFO  2025-11-07T19:08:48 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"","time":{"start":1762542528235}},"delta":" \""} message part updated
+INFO  2025-11-07T19:08:48 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"op","time":{"start":1762542528235}},"delta":"op"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode","time":{"start":1762542528235}},"delta":"encode"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +35ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\"","time":{"start":1762542528235}},"delta":"\""} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with","time":{"start":1762542528235}},"delta":" with"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple","time":{"start":1762542528235}},"delta":" multiple"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +28ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages","time":{"start":1762542528235}},"delta":" packages"} message part updated
+INFO  2025-11-07T19:08:48 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including","time":{"start":1762542528235}},"delta":" including"} message part updated
+INFO  2025-11-07T19:08:48 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console","time":{"start":1762542528235}},"delta":" console"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +52ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console,","time":{"start":1762542528235}},"delta":","} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, op","time":{"start":1762542528235}},"delta":" op"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +25ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode","time":{"start":1762542528235}},"delta":"encode"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI","time":{"start":1762542528235}},"delta":" CLI"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +49ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI,","time":{"start":1762542528235}},"delta":","} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack","time":{"start":1762542528235}},"delta":" slack"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +69ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration","time":{"start":1762542528235}},"delta":" integration"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration,","time":{"start":1762542528235}},"delta":","} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and","time":{"start":1762542528235}},"delta":" and"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:48 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a","time":{"start":1762542528235}},"delta":" a"} message part updated
+INFO  2025-11-07T19:08:48 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:48 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +646ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VS","time":{"start":1762542528235}},"delta":" VS"} message part updated
+INFO  2025-11-07T19:08:49 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode","time":{"start":1762542528235}},"delta":"Code"} message part updated
+INFO  2025-11-07T19:08:49 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension","time":{"start":1762542528235}},"delta":" extension"} message part updated
+INFO  2025-11-07T19:08:49 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension.","time":{"start":1762542528235}},"delta":"."} message part updated
+INFO  2025-11-07T19:08:49 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It","time":{"start":1762542528235}},"delta":" It"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses","time":{"start":1762542528235}},"delta":" uses"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +9ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun","time":{"start":1762542528235}},"delta":" Bun"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +29ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as","time":{"start":1762542528235}},"delta":" as"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the","time":{"start":1762542528235}},"delta":" the"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package","time":{"start":1762542528235}},"delta":" package"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +53ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager","time":{"start":1762542528235}},"delta":" manager"} message part updated
+INFO  2025-11-07T19:08:49 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and","time":{"start":1762542528235}},"delta":" and"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and has","time":{"start":1762542528235}},"delta":" has"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and has infrastructure","time":{"start":1762542528235}},"delta":" infrastructure"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:49 +27ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and has infrastructure setup","time":{"start":1762542528235}},"delta":" setup"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and has infrastructure setup with","time":{"start":1762542528235}},"delta":" with"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and has infrastructure setup with SST","time":{"start":1762542528235}},"delta":" SST"} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:49 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and has infrastructure setup with SST.","time":{"start":1762542528235}},"delta":"."} message part updated
+INFO  2025-11-07T19:08:49 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:49 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:50 +684ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:50 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:50 +2ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb001TGn3W31BTOjwMm","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"reasoning","text":"","time":{"start":1762542528235,"end":1762542530039}}} message part updated
+INFO  2025-11-07T19:08:50 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:50 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:50 +3ms service=acp-agent event={"part":{"id":"prt_a5fb8a6eb002I8ZNsxB5erasi1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"text","text":"\nI see a TypeScript project called \"opencode\" with multiple packages including console, opencode CLI, slack integration, and a VSCode extension. It uses Bun as the package manager and has infrastructure setup with SST.","time":{"start":1762542530042,"end":1762542530042}}} message part updated
+INFO  2025-11-07T19:08:50 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:50 +3ms service=server duration=3 response
+INFO  2025-11-07T19:08:50 +25ms service=snapshot hash=4022cfc004d295df864cf6edccc5ac2417b4a4dd
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:08:50 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:50 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:50 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8adfa0017y1OE5vM1yBACz","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"step-finish","reason":"stop","snapshot":"4022cfc004d295df864cf6edccc5ac2417b4a4dd","cost":0,"tokens":{"input":13196,"output":48,"reasoning":0,"cache":{"read":12589,"write":0}}}} message part updated
+INFO  2025-11-07T19:08:50 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:50 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:50 +27ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:50 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:50 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8ae3a001X9e1WnqZDcGH7F","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8a2a2001UXq63LXBOhA2MI","type":"patch","hash":"5f11da99b21001e793c4a723372b1b2416101d8f","files":["/Users/aidencline/development/opencode2/packages/opencode/dev.log"]}} message part updated
+INFO  2025-11-07T19:08:50 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:50 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:50 +1ms service=session.compaction pruning
+INFO  2025-11-07T19:08:50 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocked
+INFO  2025-11-07T19:08:50 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocking
+INFO  2025-11-07T19:08:50 +0ms service=bus type=session.idle publishing
+INFO  2025-11-07T19:08:50 +0ms service=server method=POST path=/tui/show-toast request
+INFO  2025-11-07T19:08:50 +0ms service=bus type=tui.toast.show publishing
+INFO  2025-11-07T19:08:50 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:50 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8a2a2001UXq63LXBOhA2MI request
+INFO  2025-11-07T19:08:50 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:50 +2ms service=session.compaction pruned=0 total=0 found
+INFO  2025-11-07T19:08:50 +20ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:50 +2ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:50 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:08:52 +2063ms service=session.summary body=I accessed the project directory and provided an overview of its structure. The project is a TypeScript monorepo called "opencode" that includes multiple packages (console, CLI, Slack integration, VSCode extension) built with Bun and SST for infrastructure. body
+INFO  2025-11-07T19:08:52 +2ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:55 +3792ms service=acp-agent parts=[{"type":"text","text":"try to rm my readme"}] parts
+INFO  2025-11-07T19:08:55 +2ms service=server method=POST path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message request
+INFO  2025-11-07T19:08:55 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn prompt
+INFO  2025-11-07T19:08:55 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:55 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:55 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:55 +0ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:55 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locked
+INFO  2025-11-07T19:08:55 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locking
+INFO  2025-11-07T19:08:55 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8c539002qW1NnCShxjzohI","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c539001cQVCaL7asDLnj9","type":"text","text":"try to rm my readme"}} message part updated
+INFO  2025-11-07T19:08:55 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c539001cQVCaL7asDLnj9 request
+INFO  2025-11-07T19:08:55 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:56 +358ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:56 +1ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn process
+INFO  2025-11-07T19:08:56 +4ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:56 +24ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:08:56 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:08:58 +2056ms service=session.summary title=Removing readme title
+INFO  2025-11-07T19:08:58 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:08:59 +1357ms service=snapshot hash=e83fcb156eaa55bb3b9bcefd8386f217ee14e9ff
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:08:59 +4ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:59 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:59 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8d4170016wU3AhtyZW1YUx","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"step-start","snapshot":"e83fcb156eaa55bb3b9bcefd8386f217ee14e9ff"}} message part updated
+INFO  2025-11-07T19:08:59 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:08:59 +1ms service=server duration=1 response
+INFO  2025-11-07T19:08:59 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8d418001tC4HHfHQ6LM13X","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"reasoning","text":"\n","time":{"start":1762542539800}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:59 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:08:59 +0ms service=server duration=0 response
+INFO  2025-11-07T19:08:59 +53ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:08:59 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8d44e0018NfyJHAFfuWCsG","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"text","text":"\n","time":{"start":1762542539854}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:08:59 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:08:59 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:00 +333ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:00 +6ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:00 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8d59a001PIi32gZYP2LQYu","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"tool","callID":"call_ce1a2604da36462081740153","tool":"bash","state":{"status":"pending","input":{},"raw":""}}} message part updated
+INFO  2025-11-07T19:09:00 +4ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:09:00 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:00 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8d59a001PIi32gZYP2LQYu","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"tool","callID":"call_ce1a2604da36462081740153","tool":"bash","state":{"status":"running","input":{"command":"rm README.md","description":"Remove README.md file"},"time":{"start":1762542540195}}}} message part updated
+INFO  2025-11-07T19:09:00 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:09:00 +2ms service=server duration=2 response
+INFO  2025-11-07T19:09:00 +12ms service=bash-tool arg=README.md resolved=/Users/aidencline/development/opencode2/packages/opencode/README.md resolved path
+INFO  2025-11-07T19:09:00 +0ms service=permission sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn messageID=msg_a5fb8c6a1001zJV5lswKjQ7kPq toolCallID=call_ce1a2604da36462081740153 pattern=["rm README.md *"] asking
+INFO  2025-11-07T19:09:00 +1ms service=bus type=permission.updated publishing
+INFO  2025-11-07T19:09:00 +374ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:00 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:02 +2248ms service=server method=POST path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/permissions/per_a5fb8d5b7001HvQcG5qsdryHLq request
+INFO  2025-11-07T19:09:02 +1ms service=permission sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn permissionID=per_a5fb8d5b7001HvQcG5qsdryHLq response=reject response
+INFO  2025-11-07T19:09:02 +0ms service=bus type=permission.replied publishing
+INFO  2025-11-07T19:09:02 +1ms service=server duration=2 response
+INFO  2025-11-07T19:09:02 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:02 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8d418001tC4HHfHQ6LM13X","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"reasoning","text":"","time":{"start":1762542539800,"end":1762542540589}}} message part updated
+INFO  2025-11-07T19:09:02 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:09:02 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:02 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8d44e0018NfyJHAFfuWCsG","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"text","text":"","time":{"start":1762542540590,"end":1762542540590}}} message part updated
+INFO  2025-11-07T19:09:02 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:09:02 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:02 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8d59a001PIi32gZYP2LQYu","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"tool","callID":"call_ce1a2604da36462081740153","tool":"bash","state":{"status":"error","input":{"command":"rm README.md","description":"Remove README.md file"},"error":"Error: The user rejected permission to use this specific tool call. You may try again with different parameters.","metadata":{"command":"rm README.md","patterns":["rm README.md *"]},"time":{"start":1762542540195,"end":1762542542840}}}} message part updated
+INFO  2025-11-07T19:09:02 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:09:02 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:02 +30ms service=snapshot hash=78c8408556cd01391bf06dc1c617c085303832fb
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:09:02 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:02 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:02 +2ms service=acp-agent event={"part":{"id":"prt_a5fb8dff90013W8fuiILPInR8U","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"step-finish","reason":"tool-calls","snapshot":"78c8408556cd01391bf06dc1c617c085303832fb","cost":0,"tokens":{"input":13251,"output":30,"reasoning":0,"cache":{"read":12553,"write":0}}}} message part updated
+INFO  2025-11-07T19:09:02 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:09:02 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:02 +24ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:02 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:02 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8e037001r34dEsYne81qgg","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8c6a1001zJV5lswKjQ7kPq","type":"patch","hash":"e83fcb156eaa55bb3b9bcefd8386f217ee14e9ff","files":["/Users/aidencline/development/opencode2/packages/opencode/dev.log"]}} message part updated
+INFO  2025-11-07T19:09:02 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8c6a1001zJV5lswKjQ7kPq request
+INFO  2025-11-07T19:09:02 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:02 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:02 +0ms service=session.compaction pruning
+INFO  2025-11-07T19:09:02 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocked
+INFO  2025-11-07T19:09:02 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocking
+INFO  2025-11-07T19:09:02 +1ms service=bus type=session.idle publishing
+INFO  2025-11-07T19:09:02 +0ms service=server method=POST path=/tui/show-toast request
+INFO  2025-11-07T19:09:02 +0ms service=bus type=tui.toast.show publishing
+INFO  2025-11-07T19:09:02 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:02 +0ms service=server duration=2 response
+INFO  2025-11-07T19:09:02 +3ms service=session.compaction pruned=0 total=0 found
+INFO  2025-11-07T19:09:02 +23ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:02 +0ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:02 +1ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:09:08 +5595ms service=acp-agent parts=[{"type":"text","text":"actually dont delete it plz :)"}] parts
+INFO  2025-11-07T19:09:08 +1ms service=server method=POST path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message request
+INFO  2025-11-07T19:09:08 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn prompt
+INFO  2025-11-07T19:09:08 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:08 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:08 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:08 +0ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:08 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locked
+INFO  2025-11-07T19:09:08 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locking
+INFO  2025-11-07T19:09:08 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8f632002WZIRAVVp4Uriov","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f632001diW9uBywVIIcYN","type":"text","text":"actually dont delete it plz :)"}} message part updated
+INFO  2025-11-07T19:09:08 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f632001diW9uBywVIIcYN request
+INFO  2025-11-07T19:09:08 +1ms service=server duration=0 response
+INFO  2025-11-07T19:09:08 +358ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:08 +2ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn process
+INFO  2025-11-07T19:09:08 +5ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:08 +30ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:08 +1ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:09:10 +1505ms service=session.summary title=Requesting not to delete title
+INFO  2025-11-07T19:09:10 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:10 +489ms service=snapshot hash=12609a88d348097a1c049b486590ea9a276f0ecb
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:09:10 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:10 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:10 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8ff8c0018xwizYdyrGwedE","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"step-start","snapshot":"12609a88d348097a1c049b486590ea9a276f0ecb"}} message part updated
+INFO  2025-11-07T19:09:10 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:10 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:10 +0ms service=acp-agent event={"part":{"id":"prt_a5fb8ff8d001IRuQoSN971U9Nk","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"reasoning","text":"\n","time":{"start":1762542550925}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:09:10 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:10 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:11 +167ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\n","time":{"start":1762542551093}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:09:11 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +65ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo","time":{"start":1762542551093}},"delta":"No"} message part updated
+INFO  2025-11-07T19:09:11 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +1ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem","time":{"start":1762542551093}},"delta":" problem"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem!","time":{"start":1762542551093}},"delta":"!"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your","time":{"start":1762542551093}},"delta":" Your"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +58ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +1ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your README","time":{"start":1762542551093}},"delta":" README"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +1ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your README.md","time":{"start":1762542551093}},"delta":".md"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your README.md file","time":{"start":1762542551093}},"delta":" file"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:11 +57ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your README.md file is","time":{"start":1762542551093}},"delta":" is"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your README.md file is safe","time":{"start":1762542551093}},"delta":" safe"} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your README.md file is safe.","time":{"start":1762542551093}},"delta":"."} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +425ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +1ms service=acp-agent event={"part":{"id":"prt_a5fb8ff8d001IRuQoSN971U9Nk","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"reasoning","text":"","time":{"start":1762542550925,"end":1762542551709}}} message part updated
+INFO  2025-11-07T19:09:11 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb90035001nMkhofJpv8oTzv","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"text","text":"\nNo problem! Your README.md file is safe.","time":{"start":1762542551710,"end":1762542551710}}} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:11 +27ms service=snapshot hash=903d2db2d0fad7268b8378d9d3e192f87bd2c5f6
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:09:11 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:11 +1ms service=acp-agent event={"part":{"id":"prt_a5fb9029e001OByM78e1WUQQS0","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"step-finish","reason":"stop","snapshot":"903d2db2d0fad7268b8378d9d3e192f87bd2c5f6","cost":0,"tokens":{"input":13316,"output":15,"reasoning":0,"cache":{"read":6435,"write":0}}}} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:11 +26ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:11 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=acp-agent event={"part":{"id":"prt_a5fb902d8001sc39oKxhScJb60","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb8f79b00112NG8vkCNtLYMP","type":"patch","hash":"12609a88d348097a1c049b486590ea9a276f0ecb","files":["/Users/aidencline/development/opencode2/packages/opencode/dev.log"]}} message part updated
+INFO  2025-11-07T19:09:11 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb8f79b00112NG8vkCNtLYMP request
+INFO  2025-11-07T19:09:11 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=session.compaction pruning
+INFO  2025-11-07T19:09:11 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocked
+INFO  2025-11-07T19:09:11 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocking
+INFO  2025-11-07T19:09:11 +0ms service=bus type=session.idle publishing
+INFO  2025-11-07T19:09:11 +0ms service=server method=POST path=/tui/show-toast request
+INFO  2025-11-07T19:09:11 +0ms service=bus type=tui.toast.show publishing
+INFO  2025-11-07T19:09:11 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:11 +2ms service=server duration=4 response
+INFO  2025-11-07T19:09:11 +3ms service=session.compaction pruned=0 total=572 found
+INFO  2025-11-07T19:09:11 +21ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:11 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:11 +1ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:09:13 +1619ms service=session.summary body=I acknowledged your request to preserve the README.md file and reassured you that it would remain safe. I did this to respect your change of mind and provide you with the confirmation you needed. body
+INFO  2025-11-07T19:09:13 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:15 +2039ms service=acp-agent parts=[{"type":"text","text":"can u run \"pwd\""}] parts
+INFO  2025-11-07T19:09:15 +1ms service=server method=POST path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message request
+INFO  2025-11-07T19:09:15 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn prompt
+INFO  2025-11-07T19:09:15 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:15 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:15 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:15 +0ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:15 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locked
+INFO  2025-11-07T19:09:15 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn locking
+INFO  2025-11-07T19:09:15 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91142002dPjjxq5J8BG79g","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb911420019tcP0aeOdMV89Z","type":"text","text":"can u run \"pwd\""}} message part updated
+INFO  2025-11-07T19:09:15 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb911420019tcP0aeOdMV89Z request
+INFO  2025-11-07T19:09:15 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:15 +387ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:15 +1ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn process
+INFO  2025-11-07T19:09:15 +5ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:15 +23ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:15 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:09:17 +1487ms service=snapshot hash=6661c16c25d8ef676271ca6a7add01d30352b3fc
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:09:17 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:17 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:17 +0ms service=acp-agent event={"part":{"id":"prt_a5fb918b3001OKMfY2nIjSAsur","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"step-start","snapshot":"6661c16c25d8ef676271ca6a7add01d30352b3fc"}} message part updated
+INFO  2025-11-07T19:09:17 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:17 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:17 +0ms service=acp-agent event={"part":{"id":"prt_a5fb918b4001Brcb4fuaXg63xM","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"reasoning","text":"\n","time":{"start":1762542557364}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:09:17 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:17 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:17 +7ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:17 +1ms service=acp-agent event={"part":{"id":"prt_a5fb918bd001IMDPG5fR9w0XVH","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"text","text":"\n","time":{"start":1762542557373}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:09:17 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:17 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:17 +170ms service=session.summary title=Running pwd command title
+INFO  2025-11-07T19:09:17 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:17 +82ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:17 +3ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:17 +0ms service=acp-agent event={"part":{"id":"prt_a5fb919ba001jI9pBdpvqZprIA","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"tool","callID":"call_c381dbac5b4141e98a9af45b","tool":"bash","state":{"status":"pending","input":{},"raw":""}}} message part updated
+INFO  2025-11-07T19:09:17 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:17 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:17 +0ms service=acp-agent event={"part":{"id":"prt_a5fb919ba001jI9pBdpvqZprIA","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"tool","callID":"call_c381dbac5b4141e98a9af45b","tool":"bash","state":{"status":"running","input":{"command":"pwd","description":"Show current working directory"},"time":{"start":1762542557629}}}} message part updated
+INFO  2025-11-07T19:09:17 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:17 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:17 +4ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:17 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:17 +0ms service=acp-agent event={"part":{"id":"prt_a5fb919ba001jI9pBdpvqZprIA","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"tool","callID":"call_c381dbac5b4141e98a9af45b","tool":"bash","state":{"status":"running","input":{"command":"pwd","description":"Show current working directory"},"metadata":{"output":"/Users/aidencline/development/opencode2\n","description":"Show current working directory"},"time":{"start":1762542557636}}}} message part updated
+INFO  2025-11-07T19:09:17 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:17 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:17 +1ms service=acp-agent event={"part":{"id":"prt_a5fb919ba001jI9pBdpvqZprIA","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"tool","callID":"call_c381dbac5b4141e98a9af45b","tool":"bash","state":{"status":"completed","input":{"command":"pwd","description":"Show current working directory"},"output":"/Users/aidencline/development/opencode2\n","title":"pwd","metadata":{"output":"/Users/aidencline/development/opencode2\n","exit":0,"description":"Show current working directory"},"time":{"start":1762542557629,"end":1762542557637}}}} message part updated
+INFO  2025-11-07T19:09:17 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:17 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:18 +459ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:18 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:18 +2ms service=acp-agent event={"part":{"id":"prt_a5fb918b4001Brcb4fuaXg63xM","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"reasoning","text":"","time":{"start":1762542557364,"end":1762542558097}}} message part updated
+INFO  2025-11-07T19:09:18 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:18 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:18 +1ms service=acp-agent event={"part":{"id":"prt_a5fb918bd001IMDPG5fR9w0XVH","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"text","text":"","time":{"start":1762542558098,"end":1762542558098}}} message part updated
+INFO  2025-11-07T19:09:18 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:18 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:18 +31ms service=snapshot hash=68c58c91e9875f48787e77a24d4c72799ae191a4
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:09:18 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:18 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:18 +1ms service=acp-agent event={"part":{"id":"prt_a5fb91b92001l1ZK4Nubu7tSYA","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"step-finish","reason":"tool-calls","snapshot":"68c58c91e9875f48787e77a24d4c72799ae191a4","cost":0,"tokens":{"input":13339,"output":28,"reasoning":0,"cache":{"read":13243,"write":0}}}} message part updated
+INFO  2025-11-07T19:09:18 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:18 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:18 +26ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:18 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:18 +1ms service=acp-agent event={"part":{"id":"prt_a5fb91bd10017BHTb7ZKr5C6Um","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb912c7001BpdYCPrgYKHJPc","type":"patch","hash":"6661c16c25d8ef676271ca6a7add01d30352b3fc","files":["/Users/aidencline/development/opencode2/packages/opencode/dev.log"]}} message part updated
+INFO  2025-11-07T19:09:18 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:18 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:18 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb912c7001BpdYCPrgYKHJPc request
+INFO  2025-11-07T19:09:18 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:18 +4ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:18 +1ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn process
+INFO  2025-11-07T19:09:18 +19ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:18 +1ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:09:18 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:19 +945ms service=snapshot hash=f363519fcebec73896a61a0793baf8dd254049f2
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:09:19 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=acp-agent event={"part":{"id":"prt_a5fb91f9d001wf4ZBIvF30kAyc","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"step-start","snapshot":"f363519fcebec73896a61a0793baf8dd254049f2"}} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91f9e001dNwmRyh9O1p22e","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"reasoning","text":"\n","time":{"start":1762542559134}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:09:19 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +2ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=server duration=2 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n","time":{"start":1762542559137}},"delta":"\n"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users","time":{"start":1762542559137}},"delta":"/Users"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +38ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/","time":{"start":1762542559137}},"delta":"/"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +4ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aid","time":{"start":1762542559137}},"delta":"aid"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +1ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aiden","time":{"start":1762542559137}},"delta":"en"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aidencline","time":{"start":1762542559137}},"delta":"cline"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:19 +37ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aidencline/","time":{"start":1762542559137}},"delta":"/"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aidencline/development","time":{"start":1762542559137}},"delta":"development"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aidencline/development/op","time":{"start":1762542559137}},"delta":"/op"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aidencline/development/opencode","time":{"start":1762542559137}},"delta":"encode"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +1ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +43ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aidencline/development/opencode2","time":{"start":1762542559137}},"delta":"2"} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +482ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=acp-agent event={"part":{"id":"prt_a5fb91f9e001dNwmRyh9O1p22e","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"reasoning","text":"","time":{"start":1762542559134,"end":1762542559752}}} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb91fa1001CUSO0HcaXBNB1l","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"text","text":"\n/Users/aidencline/development/opencode2","time":{"start":1762542559753,"end":1762542559753}}} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +1ms service=server duration=1 response
+INFO  2025-11-07T19:09:19 +30ms service=snapshot hash=cea60704eb4b6c6d8b83c4d2a1a935571335d455
+ cwd=/Users/aidencline/development/opencode2 git=/Users/aidencline/.local/share/opencode/snapshot/4b0ea68d7af9a6031a7ffda7ad66e0cb83315750 tracking
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=acp-agent event={"part":{"id":"prt_a5fb92209001OUGzcEcQ7ZUZC1","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"step-finish","reason":"stop","snapshot":"cea60704eb4b6c6d8b83c4d2a1a935571335d455","cost":0,"tokens":{"input":13383,"output":15,"reasoning":0,"cache":{"read":13366,"write":0}}}} message part updated
+INFO  2025-11-07T19:09:19 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +33ms service=bus type=message.part.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=acp-agent event={"part":{"id":"prt_a5fb9224d001OTaiFADULOwo0t","sessionID":"ses_5a0480763ffeHd0rZW7Mj4voIn","messageID":"msg_a5fb91bd7001dy4hCig9Ufw7KZ","type":"patch","hash":"f363519fcebec73896a61a0793baf8dd254049f2","files":["/Users/aidencline/development/opencode2/packages/opencode/dev.log"]}} message part updated
+INFO  2025-11-07T19:09:19 +0ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:19 +1ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=session.compaction pruning
+INFO  2025-11-07T19:09:19 +0ms service=session.lock sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocked
+INFO  2025-11-07T19:09:19 +0ms service=session.prompt session=ses_5a0480763ffeHd0rZW7Mj4voIn sessionID=ses_5a0480763ffeHd0rZW7Mj4voIn unlocking
+INFO  2025-11-07T19:09:19 +0ms service=bus type=session.idle publishing
+INFO  2025-11-07T19:09:19 +0ms service=server method=POST path=/tui/show-toast request
+INFO  2025-11-07T19:09:19 +0ms service=bus type=tui.toast.show publishing
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +1ms service=server method=GET path=/session/ses_5a0480763ffeHd0rZW7Mj4voIn/message/msg_a5fb91bd7001dy4hCig9Ufw7KZ request
+INFO  2025-11-07T19:09:19 +0ms service=server duration=0 response
+INFO  2025-11-07T19:09:19 +5ms service=session.compaction pruned=0 total=572 found
+INFO  2025-11-07T19:09:19 +20ms service=bus type=message.updated publishing
+INFO  2025-11-07T19:09:19 +4ms service=bus type=session.updated publishing
+INFO  2025-11-07T19:09:19 +0ms service=bus type=session.diff publishing
+INFO  2025-11-07T19:09:21 +1910ms service=session.summary body=I executed the `pwd` command to display the current working directory because you requested it. The command returned the path `/Users/aidencline/development/opencode2`. body
+INFO  2025-11-07T19:09:21 +2ms service=bus type=message.updated publishing

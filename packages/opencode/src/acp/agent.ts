@@ -68,7 +68,7 @@ export namespace ACP {
         { optionId: "always", kind: "allow_always", name: "Always allow" },
         { optionId: "reject", kind: "reject_once", name: "Reject" },
       ]
-      this.config.sdk.event.subscribe().then(async (events) => {
+      this.config.sdk.event.subscribe({ query: { directory } }).then(async (events) => {
         for await (const event of events.stream) {
           switch (event.type) {
             case "permission.updated":
