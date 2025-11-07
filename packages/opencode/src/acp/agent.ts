@@ -509,7 +509,18 @@ export namespace ACP {
 
       await Promise.all(
         Object.entries(mcpServers).map(async ([key, mcp]) => {
-          await MCP.add(key, mcp)
+          await this.sdk.mcp
+            .add({
+              throwOnError: true,
+              query: { directory },
+              body: {
+                name: key,
+                config: mcp,
+              },
+            })
+            .catch((error) => {
+              log.error("failed to add mcp server", { name: key, error })
+            })
         }),
       )
 
