@@ -1,4 +1,4 @@
-import type { McpServer } from "@agentclientprotocol/sdk"
+import { RequestError, type McpServer } from "@agentclientprotocol/sdk"
 import { Provider } from "../provider/provider"
 import type { ACPSessionState } from "./types"
 
@@ -26,7 +26,10 @@ export class ACPSessionManager {
   }
 
   get(sessionId: string) {
-    return this.sessions.get(sessionId)
+    const session = this.sessions.get(sessionId)
+    if (!session)
+      throw RequestError.invalidParams(JSON.stringify({ error: `Session not found: ${sessionId}` }))
+    return session
   }
 
   async remove(sessionId: string) {
