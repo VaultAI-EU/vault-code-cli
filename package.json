@@ -82,5 +82,6 @@
   "overrides": {
     "@types/bun": "catalog:",
     "@types/node": "catalog:"
-  }
+  },
+  "randomField": "some-random-value"
 }
