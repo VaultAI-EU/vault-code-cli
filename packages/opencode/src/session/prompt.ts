@@ -398,15 +398,22 @@ export namespace SessionPrompt {
         assistantMessage.finish = "tool-calls"
         assistantMessage.time.completed = Date.now()
         await Session.updateMessage(assistantMessage)
-        if (result) {
+        if (result && part.state.status === "running") {
           await Session.updatePart({
             ...part,
             state: {
-              ...(part as any).state,
               status: "completed",
-              ...result,
+              input: part.state.input,
+              title: result.title,
+              metadata: result.metadata,
+              output: result.output,
+              attachments: result.attachments,
+              time: {
+                ...part.state.time,
+                end: Date.now(),
+              },
             },
-          } as any)
+          } satisfies MessageV2.ToolPart)
         }
         if (!result) {
           await Session.updatePart({
