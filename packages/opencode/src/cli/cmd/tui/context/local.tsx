@@ -30,24 +30,6 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       }
     }
 
-    // Automatically update model when agent changes
-    createEffect(() => {
-      const value = agent.current()
-      if (value.model) {
-        if (isModelValid(value.model))
-          model.set({
-            providerID: value.model.providerID,
-            modelID: value.model.modelID,
-          })
-        else
-          toast.show({
-            variant: "warning",
-            message: `Agent ${value.name}'s configured model ${value.model.providerID}/${value.model.modelID} is not valid`,
-            duration: 3000,
-          })
-      }
-    })
-
     const agent = iife(() => {
       const agents = createMemo(() => sync.data.agent.filter((x) => x.mode !== "subagent"))
       const [agentStore, setAgentStore] = createStore<{
@@ -165,11 +147,36 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         }
       })
 
+      // Track previous agent to detect agent switches
+      let previousAgentName: string | undefined
+      createEffect(() => {
+        const currentAgent = agent.current()
+        const agentName = currentAgent.name
+
+        // Only update model when agent switches and has a configured model
+        // and user hasn't manually set a model for this agent
+        if (previousAgentName !== agentName && currentAgent.model && !modelStore.model[agentName]) {
+          if (isModelValid(currentAgent.model))
+            model.set({
+              providerID: currentAgent.model.providerID,
+              modelID: currentAgent.model.modelID,
+            })
+          else
+            toast.show({
+              variant: "warning",
+              message: `Agent ${agentName}'s configured model ${currentAgent.model.providerID}/${currentAgent.model.modelID} is not valid`,
+              duration: 3000,
+            })
+        }
+
+        previousAgentName = agentName
+      })
+
       const currentModel = createMemo(() => {
         const a = agent.current()
         return getFirstValidModel(
-          () => modelStore.model[a.name],
-          () => a.model,
+          () => modelStore.model[a.name], // User's manual selection for this agent
+          () => a.model, // Agent's configured model
           fallbackModel,
         )!
       })
