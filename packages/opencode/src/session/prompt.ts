@@ -1085,6 +1085,12 @@ export namespace SessionPrompt {
   export const ShellInput = z.object({
     sessionID: Identifier.schema("session"),
     agent: z.string(),
+    model: z
+      .object({
+        providerID: z.string(),
+        modelID: z.string(),
+      })
+      .optional(),
     command: z.string(),
   })
   export type ShellInput = z.infer<typeof ShellInput>
@@ -1094,7 +1100,7 @@ export namespace SessionPrompt {
       SessionRevert.cleanup(session)
     }
     const agent = await Agent.get(input.agent)
-    const model = agent.model ?? (await lastModel(input.sessionID))
+    const model = input.model ?? agent.model ?? (await lastModel(input.sessionID))
     const userMsg: MessageV2.User = {
       id: Identifier.ascending("message"),
       sessionID: input.sessionID,
