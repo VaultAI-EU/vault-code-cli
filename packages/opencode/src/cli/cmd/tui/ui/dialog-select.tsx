@@ -285,7 +285,11 @@ function Option(props: {
   return (
     <>
       <Show when={props.current && !props.disabled}>
-        <text flexShrink={0} fg={textColor} marginRight={0.5}>
+        <text
+          flexShrink={0}
+          fg={props.active ? theme.background : props.current ? theme.primary : theme.text}
+          marginRight={0.5}
+        >
           ●
         </text>
       </Show>
@@ -296,30 +300,17 @@ function Option(props: {
       </Show>
       <text
         flexGrow={1}
-        fg={textColor}
-        attributes={
-          props.active && !props.disabled ? TextAttributes.BOLD : props.disabled ? TextAttributes.DIM : undefined
-        }
+        fg={props.active ? theme.background : props.current ? theme.primary : theme.text}
+        attributes={props.active ? TextAttributes.BOLD : undefined}
         overflow="hidden"
         wrapMode="none"
       >
         {Locale.truncate(props.title, 62)}
-        <span
-          style={{
-            fg: props.disabled ? theme.textMuted : props.active && !props.disabled ? theme.background : theme.textMuted,
-          }}
-        >
-          {" "}
-          {props.description}
-        </span>
+        <span style={{ fg: props.active ? theme.background : theme.textMuted }}> {props.description}</span>
       </text>
       <Show when={props.footer}>
         <box flexShrink={0}>
-          <text
-            fg={props.disabled ? theme.textMuted : props.active && !props.disabled ? theme.background : theme.textMuted}
-          >
-            {props.footer}
-          </text>
+          <text fg={props.active ? theme.background : theme.textMuted}>{props.footer}</text>
         </box>
       </Show>
     </>
