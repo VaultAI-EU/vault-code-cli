@@ -46,8 +46,8 @@
     }
   }
 
-  [data-slot="session-review-accordion-trigger"] {
-    background-color: var(--background-stronger);
+  [data-slot="accordion-trigger"] {
+    background-color: var(--background-stronger) !important;
   }
 
   [data-slot="session-review-trigger-content"] {
@@ -64,12 +64,6 @@
     align-items: center;
     gap: 20px;
     min-width: 0;
-  }
-
-  [data-slot="session-review-file-icon"] {
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
   }
 
   [data-slot="session-review-file-name-container"] {

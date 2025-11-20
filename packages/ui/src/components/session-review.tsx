@@ -68,7 +68,7 @@ export const SessionReview = (props: SessionReviewProps) => {
                 <Accordion.Trigger>
                   <div data-slot="session-review-trigger-content">
                     <div data-slot="session-review-file-info">
-                      <FileIcon node={{ path: diff.file, type: "file" }} class="shrink-0 size-4" />
+                      <FileIcon node={{ path: diff.file, type: "file" }} />
                       <div data-slot="session-review-file-name-container">
                         <Show when={diff.file.includes("/")}>
                           <span data-slot="session-review-directory">{getDirectory(diff.file)}&lrm;</span>

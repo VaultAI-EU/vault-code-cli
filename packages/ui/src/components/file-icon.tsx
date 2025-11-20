@@ -13,10 +13,10 @@ export const FileIcon: Component<FileIconProps> = (props) => {
   const name = createMemo(() => chooseIconName(local.node.path, local.node.type, local.expanded || false))
   return (
     <svg
+      data-component="file-icon"
       {...rest}
       classList={{
         ...(local.classList ?? {}),
-        "shrink-0 size-4": true,
         [local.class ?? ""]: !!local.class,
       }}
     >
