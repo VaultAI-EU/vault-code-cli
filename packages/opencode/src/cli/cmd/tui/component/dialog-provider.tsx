@@ -33,7 +33,12 @@ export function createDialogProviderOptions() {
               anthropic: "Claude Max or API key",
             }[provider.id],
         async onSelect() {
-          const methods = sync.data.provider_auth[provider.id]
+          const methods = sync.data.provider_auth[provider.id] ?? [
+            {
+              type: "api",
+              label: "API key",
+            },
+          ]
           let index: number | null = 0
           if (methods.length > 1) {
             index = await new Promise<number | null>((resolve) => {
@@ -55,7 +60,6 @@ export function createDialogProviderOptions() {
           }
           if (index == null) return
           const method = methods[index]
-
           if (method.type === "oauth") {
             const result = await sdk.client.provider.oauth.authorize({
               path: {
@@ -65,9 +69,10 @@ export function createDialogProviderOptions() {
                 method: index,
               },
             })
-            if (result.data?.method === "code") {
+            if (result.data?.method === "code")
               await DialogPrompt.show(dialog, result.data.url + " " + result.data.instructions)
-            }
+            if (result.data?.method === "auto")
+              await DialogPrompt.show(dialog, result.data.url + " " + result.data.instructions)
           }
         },
       })),

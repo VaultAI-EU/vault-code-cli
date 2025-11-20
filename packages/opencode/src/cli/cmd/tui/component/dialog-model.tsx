@@ -3,7 +3,7 @@ import { useLocal } from "@tui/context/local"
 import { useSync } from "@tui/context/sync"
 import { map, pipe, flatMap, entries, filter, isDeepEqual, sortBy } from "remeda"
 import { DialogSelect, type DialogSelectOption, type DialogSelectRef } from "@tui/ui/dialog-select"
-import { useDialog } from "@tui/ui/dialog"
+import { DialogProvider, useDialog } from "@tui/ui/dialog"
 import { useTheme } from "../context/theme"
 import { DialogPrompt } from "../ui/dialog-prompt"
 import { useSDK } from "../context/sdk"
@@ -108,7 +108,7 @@ export function DialogModel() {
             sync.data.provider_next.all,
             map((provider) => ({
               title: provider.name,
-              category: "Connect a provider",
+              category: "Popular providers",
               value: provider.id,
               footer: {
                 opencode: "Recommended",
@@ -137,5 +137,21 @@ export function DialogModel() {
     ]
   })
 
-  return <DialogSelect ref={setRef} title="Select model" current={local.model.current()} options={options()} />
+  return (
+    <DialogSelect
+      keybind={[
+        {
+          keybind: { ctrl: true, name: "a", meta: false, shift: false, leader: false },
+          title: "Connect provider",
+          onTrigger(option) {
+            dialog.replace(() => <DialogProvider />)
+          },
+        },
+      ]}
+      ref={setRef}
+      title="Select model"
+      current={local.model.current()}
+      options={options()}
+    />
+  )
 }

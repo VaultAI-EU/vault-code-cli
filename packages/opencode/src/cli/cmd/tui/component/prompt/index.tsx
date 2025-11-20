@@ -534,7 +534,7 @@ export function Prompt(props: PromptProps) {
   }
 
   const highlight = createMemo(() => {
-    if (keybind.leader) return theme.accent
+    if (keybind.leader) return theme.border
     if (store.mode === "shell") return theme.primary
     return local.agent.color(local.agent.current().name)
   })
@@ -759,18 +759,16 @@ export function Prompt(props: PromptProps) {
             />
             <box flexDirection="row" flexShrink={0} paddingTop={1} gap={1}>
               <text fg={highlight()}>
-                {keybind.leader
-                  ? "Leader"
-                  : store.mode === "shell"
-                    ? "Shell"
-                    : Locale.titlecase(local.agent.current().name)}{" "}
+                {store.mode === "shell" ? "Shell" : Locale.titlecase(local.agent.current().name)}{" "}
               </text>
-              <box flexDirection="row" gap={1}>
-                <text fg={theme.textMuted}>{local.model.parsed().provider}</text>
-                <text flexShrink={0} fg={theme.text}>
-                  {local.model.parsed().model}
-                </text>
-              </box>
+              <Show when={store.mode === "normal"}>
+                <box flexDirection="row" gap={1}>
+                  <text fg={theme.textMuted}>{local.model.parsed().provider}</text>
+                  <text flexShrink={0} fg={theme.text}>
+                    {local.model.parsed().model}
+                  </text>
+                </box>
+              </Show>
             </box>
           </box>
         </box>
