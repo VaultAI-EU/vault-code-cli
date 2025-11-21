@@ -23,11 +23,11 @@ import { Instance } from "../project/instance"
 import { Agent } from "../agent/agent"
 import { Auth } from "../auth"
 import { Command } from "../command"
+import { ProviderAuth } from "../provider/auth"
 import { Global } from "../global"
 import { ProjectRoute } from "./project"
 import { ToolRegistry } from "../tool/registry"
 import { zodToJsonSchema } from "zod-to-json-schema"
-import { SessionLock } from "../session/lock"
 import { SessionPrompt } from "../session/prompt"
 import { SessionCompaction } from "../session/compaction"
 import { SessionRevert } from "../session/revert"
@@ -40,6 +40,11 @@ import type { ContentfulStatusCode } from "hono/utils/http-status"
 import { TuiEvent } from "@/cli/cmd/tui/event"
 import { Snapshot } from "@/snapshot"
 import { SessionSummary } from "@/session/summary"
+import { GlobalBus } from "@/bus/global"
+import { SessionStatus } from "@/session/status"
+
+// @ts-ignore This global is needed to prevent ai-sdk from logging warnings to stdout https://github.com/vercel/ai/blob/2dc67e0ef538307f21368db32d5a12345d98831b/packages/ai/src/logger/log-warnings.ts#L85
+globalThis.AI_SDK_LOG_WARNINGS = false
 
 const ERRORS = {
   400: {
@@ -49,7 +54,7 @@ const ERRORS = {
         schema: resolver(
           z
             .object({
-              data: z.any().nullable(),
+              data: z.any(),
               errors: z.array(z.record(z.string(), z.any())),
               success: z.literal(false),
             })
@@ -117,8 +122,53 @@ export namespace Server {
           timer.stop()
         }
       })
+      .use(cors())
+      .get(
+        "/global/event",
+        describeRoute({
+          description: "Get events",
+          operationId: "global.event",
+          responses: {
+            200: {
+              description: "Event stream",
+              content: {
+                "text/event-stream": {
+                  schema: resolver(
+                    z
+                      .object({
+                        directory: z.string(),
+                        payload: Bus.payloads(),
+                      })
+                      .meta({
+                        ref: "GlobalEvent",
+                      }),
+                  ),
+                },
+              },
+            },
+          },
+        }),
+        async (c) => {
+          log.info("global event connected")
+          return streamSSE(c, async (stream) => {
+            async function handler(event: any) {
+              await stream.writeSSE({
+                data: JSON.stringify(event),
+              })
+            }
+            GlobalBus.on("event", handler)
+            await new Promise<void>((resolve) => {
+              stream.onAbort(() => {
+                GlobalBus.off("event", handler)
+                resolve()
+                log.info("global event disconnected")
+              })
+            })
+          })
+        },
+      )
       .use(async (c, next) => {
-        const directory = c.req.query("directory") ?? process.cwd()
+        const directory = c.req.query("directory") ?? c.req.header("x-opencode-directory") ?? process.cwd()
         return Instance.provide({
           directory,
           init: InstanceBootstrap,
@@ -127,7 +177,6 @@ export namespace Server {
           },
         })
       })
-      .use(cors())
       .get(
         "/doc",
         openAPIRouteHandler(app, {
@@ -258,6 +307,27 @@ export namespace Server {
           )
         },
       )
+      .post(
+        "/instance/dispose",
+        describeRoute({
+          description: "Dispose the current instance",
+          operationId: "instance.dispose",
+          responses: {
+            200: {
+              description: "Instance disposed",
+              content: {
+                "application/json": {
+                  schema: resolver(z.boolean()),
+                },
+              },
+            },
+          },
+        }),
+        async (c) => {
+          await Instance.dispose()
+          return c.json(true)
+        },
+      )
       .get(
         "/path",
         describeRoute({
@@ -314,6 +384,28 @@ export namespace Server {
           const sessions = await Array.fromAsync(Session.list())
           sessions.sort((a, b) => b.time.updated - a.time.updated)
           return c.json(sessions)
+        },
+      )
+      .get(
+        "/session/status",
+        describeRoute({
+          description: "Get session status",
+          operationId: "session.status",
+          responses: {
+            200: {
+              description: "Get session status",
+              content: {
+                "application/json": {
+                  schema: resolver(z.record(z.string(), SessionStatus.Info)),
+                },
+              },
+            },
+            ...errors(400),
+          },
+        }),
+        async (c) => {
+          const result = SessionStatus.list()
+          return c.json(result)
         },
       )
       .get(
@@ -586,7 +678,8 @@ export namespace Server {
           }),
         ),
         async (c) => {
-          return c.json(SessionLock.abort(c.req.valid("param").id))
+          SessionPrompt.cancel(c.req.valid("param").id)
+          return c.json(true)
         },
       )
       .post(
@@ -720,7 +813,14 @@ export namespace Server {
         async (c) => {
           const id = c.req.valid("param").id
           const body = c.req.valid("json")
-          await SessionCompaction.run({ ...body, sessionID: id })
+          await SessionCompaction.create({
+            sessionID: id,
+            model: {
+              providerID: body.providerID,
+              modelID: body.modelID,
+            },
+          })
+          await SessionPrompt.loop(id)
           return c.json(true)
         },
       )
@@ -1086,6 +1186,138 @@ export namespace Server {
         },
       )
       .get(
+        "/provider",
+        describeRoute({
+          description: "List all providers",
+          operationId: "provider.list",
+          responses: {
+            200: {
+              description: "List of providers",
+              content: {
+                "application/json": {
+                  schema: resolver(
+                    z.object({
+                      all: ModelsDev.Provider.array(),
+                      default: z.record(z.string(), z.string()),
+                      connected: z.array(z.string()),
+                    }),
+                  ),
+                },
+              },
+            },
+          },
+        }),
+        async (c) => {
+          const providers = await ModelsDev.get()
+          const connected = await Provider.list().then((x) => Object.keys(x))
+          return c.json({
+            all: Object.values(providers),
+            default: mapValues(providers, (item) => Provider.sort(Object.values(item.models))[0].id),
+            connected,
+          })
+        },
+      )
+      .get(
+        "/provider/auth",
+        describeRoute({
+          description: "Get provider authentication methods",
+          operationId: "provider.auth",
+          responses: {
+            200: {
+              description: "Provider auth methods",
+              content: {
+                "application/json": {
+                  schema: resolver(z.record(z.string(), z.array(ProviderAuth.Method))),
+                },
+              },
+            },
+          },
+        }),
+        async (c) => {
+          return c.json(await ProviderAuth.methods())
+        },
+      )
+      .post(
+        "/provider/:id/oauth/authorize",
+        describeRoute({
+          description: "Authorize a provider using OAuth",
+          operationId: "provider.oauth.authorize",
+          responses: {
+            200: {
+              description: "Authorization URL and method",
+              content: {
+                "application/json": {
+                  schema: resolver(ProviderAuth.Authorization.optional()),
+                },
+              },
+            },
+            ...errors(400),
+          },
+        }),
+        validator(
+          "param",
+          z.object({
+            id: z.string().meta({ description: "Provider ID" }),
+          }),
+        ),
+        validator(
+          "json",
+          z.object({
+            method: z.number().meta({ description: "Auth method index" }),
+          }),
+        ),
+        async (c) => {
+          const id = c.req.valid("param").id
+          const { method } = c.req.valid("json")
+          const result = await ProviderAuth.authorize({
+            providerID: id,
+            method,
+          })
+          return c.json(result)
+        },
+      )
+      .post(
+        "/provider/:id/oauth/callback",
+        describeRoute({
+          description: "Handle OAuth callback for a provider",
+          operationId: "provider.oauth.callback",
+          responses: {
+            200: {
+              description: "OAuth callback processed successfully",
+              content: {
+                "application/json": {
+                  schema: resolver(z.boolean()),
+                },
+              },
+            },
+            ...errors(400),
+          },
+        }),
+        validator(
+          "param",
+          z.object({
+            id: z.string().meta({ description: "Provider ID" }),
+          }),
+        ),
+        validator(
+          "json",
+          z.object({
+            method: z.number().meta({ description: "Auth method index" }),
+            code: z.string().optional().meta({ description: "OAuth authorization code" }),
+          }),
+        ),
+        async (c) => {
+          const id = c.req.valid("param").id
+          const { method, code } = c.req.valid("json")
+          await ProviderAuth.callback({
+            providerID: id,
+            method,
+            code,
+          })
+          return c.json(true)
+        },
+      )
+      .get(
         "/find",
         describeRoute({
           description: "Find text in files",
@@ -1137,7 +1369,7 @@ export namespace Server {
           "query",
           z.object({
             query: z.string(),
-            dirs: z.union([z.literal("true"), z.literal("false")]).optional(),
+            dirs: z.enum(["true", "false"]).optional(),
           }),
         ),
         async (c) => {
@@ -1721,11 +1953,7 @@ export namespace Server {
               description: "Event stream",
               content: {
                 "text/event-stream": {
-                  schema: resolver(
-                    Bus.payloads().meta({
-                      ref: "Event",
-                    }),
-                  ),
+                  schema: resolver(Bus.payloads()),
                 },
               },
             },

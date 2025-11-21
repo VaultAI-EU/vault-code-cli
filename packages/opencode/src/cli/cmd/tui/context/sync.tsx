@@ -11,12 +11,17 @@ import type {
   LspStatus,
   McpStatus,
   FormatterStatus,
+  SessionStatus,
+  ProviderListResponse,
+  ProviderAuthMethod,
 } from "@opencode-ai/sdk"
 import { createStore, produce, reconcile } from "solid-js/store"
 import { useSDK } from "@tui/context/sdk"
 import { Binary } from "@/util/binary"
 import { createSimpleContext } from "./helper"
 import type { Snapshot } from "@/snapshot"
+import { useExit } from "./exit"
+import { batch, onMount } from "solid-js"
 
 export const { use: useSync, provider: SyncProvider } = createSimpleContext({
   name: "Sync",
@@ -24,6 +29,9 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
     const [store, setStore] = createStore<{
       status: "loading" | "partial" | "complete"
       provider: Provider[]
+      provider_default: Record<string, string>
+      provider_next: ProviderListResponse
+      provider_auth: Record<string, ProviderAuthMethod[]>
       agent: Agent[]
       command: Command[]
       permission: {
@@ -31,6 +39,9 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       }
       config: Config
       session: Session[]
+      session_status: {
+        [sessionID: string]: SessionStatus
+      }
       session_diff: {
         [sessionID: string]: Snapshot.FileDiff[]
       }
@@ -49,13 +60,21 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       }
       formatter: FormatterStatus[]
     }>({
+      provider_next: {
+        all: [],
+        default: {},
+        connected: [],
+      },
+      provider_auth: {},
       config: {},
       status: "loading",
       agent: [],
       permission: {},
       command: [],
       provider: [],
+      provider_default: {},
       session: [],
+      session_status: {},
       session_diff: {},
       todo: {},
       message: {},
@@ -138,6 +157,12 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
             }),
           )
           break
+
+        case "session.status": {
+          setStore("session_status", event.properties.sessionID, event.properties.status)
+          break
+        }
+
         case "message.updated": {
           const messages = store.message[event.properties.info.sessionID]
           if (!messages) {
@@ -215,28 +240,52 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
       }
     })
 
-    // blocking
-    Promise.all([
-      sdk.client.config.providers({ throwOnError: true }).then((x) => setStore("provider", x.data!.providers)),
-      sdk.client.app.agents({ throwOnError: true }).then((x) => setStore("agent", x.data ?? [])),
-      sdk.client.config.get({ throwOnError: true }).then((x) => setStore("config", x.data!)),
-    ]).then(() => {
-      setStore("status", "partial")
-      // non-blocking
-      Promise.all([
-        sdk.client.session.list().then((x) =>
-          setStore(
-            "session",
-            (x.data ?? []).toSorted((a, b) => a.id.localeCompare(b.id)),
-          ),
-        ),
-        sdk.client.command.list().then((x) => setStore("command", x.data ?? [])),
-        sdk.client.lsp.status().then((x) => setStore("lsp", x.data!)),
-        sdk.client.mcp.status().then((x) => setStore("mcp", x.data!)),
-        sdk.client.formatter.status().then((x) => setStore("formatter", x.data!)),
-      ]).then(() => {
-        setStore("status", "complete")
-      })
+    const exit = useExit()
+
+    async function bootstrap() {
+      // blocking
+      await Promise.all([
+        sdk.client.config.providers({ throwOnError: true }).then((x) => {
+          batch(() => {
+            setStore("provider", x.data!.providers)
+            setStore("provider_default", x.data!.default)
+          })
+        }),
+        sdk.client.provider.list({ throwOnError: true }).then((x) => {
+          batch(() => {
+            setStore("provider_next", x.data!)
+          })
+        }),
+        sdk.client.app.agents({ throwOnError: true }).then((x) => setStore("agent", x.data ?? [])),
+        sdk.client.config.get({ throwOnError: true }).then((x) => setStore("config", x.data!)),
+      ])
+        .then(() => {
+          if (store.status !== "complete") setStore("status", "partial")
+          // non-blocking
+          Promise.all([
+            sdk.client.session.list().then((x) =>
+              setStore(
+                "session",
+                (x.data ?? []).toSorted((a, b) => a.id.localeCompare(b.id)),
+              ),
+            ),
+            sdk.client.command.list().then((x) => setStore("command", x.data ?? [])),
+            sdk.client.lsp.status().then((x) => setStore("lsp", x.data!)),
+            sdk.client.mcp.status().then((x) => setStore("mcp", x.data!)),
+            sdk.client.formatter.status().then((x) => setStore("formatter", x.data!)),
+            sdk.client.session.status().then((x) => setStore("session_status", x.data!)),
+            sdk.client.provider.auth().then((x) => setStore("provider_auth", x.data ?? {})),
+          ]).then(() => {
+            setStore("status", "complete")
+          })
+        })
+        .catch(async (e) => {
+          await exit(e)
+        })
+    }
+
+    onMount(() => {
+      bootstrap()
     })
 
     const result = {
@@ -291,6 +340,7 @@ export const { use: useSync, provider: SyncProvider } = createSimpleContext({
           console.log("synced in " + (Date.now() - now), sessionID)
         },
       },
+      bootstrap,
     }
     return result
   },
