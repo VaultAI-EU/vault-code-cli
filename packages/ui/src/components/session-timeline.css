@@ -95,13 +95,6 @@
     }
   }
 
-  .spinner {
-    color: var(--text-base);
-    flex-shrink: 0;
-    width: 18px;
-    aspect-ratio: 1;
-  }
-
   [data-slot="session-timeline-message-title-preview"] {
     font-size: 14px; /* text-14-regular */
     color: var(--text-weak);
@@ -175,6 +168,13 @@
     white-space: nowrap;
     font-size: inherit;
     font-weight: inherit;
+  }
+
+  [data-slot="session-timeline-typewriter"] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   [data-slot="session-timeline-summary-section"] {

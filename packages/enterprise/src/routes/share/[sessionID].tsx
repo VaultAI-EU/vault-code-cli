@@ -90,6 +90,7 @@ export default function () {
             )
             const provider = createMemo(() => firstUserMessage()?.model?.providerID)
             const model = createMemo(() => firstUserMessage()?.model?.modelID)
+            const diffs = createMemo(() => data.session_diff[params.sessionID!] ?? [])
 
             return (
               <div class="relative bg-background-stronger w-screen h-screen overflow-hidden flex flex-col">
@@ -116,11 +117,17 @@ export default function () {
                     />
                   </div>
                 </header>
-                <div class="@container select-text flex flex-col flex-1 min-h-0">
+                <div class="select-text flex flex-col flex-1 min-h-0">
                   <div class="w-full flex-1 min-h-0 flex">
-                    <div class="relative shrink-0 px-21 pt-14 flex flex-col gap-10 flex-1 min-h-0 w-full max-w-xl mx-auto">
-                      <div class="flex flex-col gap-4">
-                        <div class="h-8 flex gap-2.5 items-center justify-start self-stretch">
+                    <div
+                      classList={{
+                        "@container relative shrink-0 pt-14 flex flex-col gap-10 min-h-0 w-full mx-auto": true,
+                        "px-21 @4xl:px-6 max-w-2xl": diffs().length > 0,
+                        "px-6 max-w-2xl": diffs().length === 0,
+                      }}
+                    >
+                      <div class="flex flex-col gap-4 shrink-0">
+                        <div class="h-8 flex gap-4 items-center justify-start self-stretch">
                           <div class="pl-[2.5px] pr-2 flex items-center gap-1.75 bg-surface-strong shadow-xs-border-base">
                             <Mark class="shrink-0 w-3 my-0.5" />
                             <div class="text-12-mono text-text-base">v{info().version}</div>
@@ -140,17 +147,17 @@ export default function () {
                       </div>
                       <SessionTimeline
                         sessionID={params.sessionID!}
-                        class="z-10 bg-background-stronger"
-                        containerClass="pb-20"
+                        classes={{ root: "grow", content: "flex flex-col justify-between", container: "pb-20" }}
                         expanded
-                      />
-                      <div class="absolute bottom-10 inset-x-0 flex items-center justify-center z-0">
-                        <Logo class="w-58.5 opacity-12" />
-                      </div>
+                      >
+                        <div class="flex items-center justify-center pb-8 shrink-0">
+                          <Logo class="w-58.5 opacity-12" />
+                        </div>
+                      </SessionTimeline>
                     </div>
-                    <Show when={data.session_diff[params.sessionID!]?.length}>
+                    <Show when={diffs().length}>
                       <div class="relative grow px-6 pt-14 flex-1 min-h-0 border-l border-border-weak-base">
-                        <SessionReview diffs={data.session_diff[params.sessionID!]} class="pb-20" />
+                        <SessionReview diffs={diffs()} class="pb-20" />
                       </div>
                     </Show>
                   </div>

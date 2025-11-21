@@ -1,4 +1,6 @@
 [data-component="spinner"] {
-  width: 1rem;
-  height: 1rem;
+  color: var(--text-base);
+  flex-shrink: 0;
+  width: 18px;
+  aspect-ratio: 1;
 }

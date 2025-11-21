@@ -2,7 +2,7 @@ import { AssistantMessage } from "@opencode-ai/sdk"
 import { useData } from "../context"
 import { Binary } from "@opencode-ai/util/binary"
 import { getDirectory, getFilename } from "@opencode-ai/util/path"
-import { createEffect, createMemo, createSignal, For, Match, Show, Switch } from "solid-js"
+import { createEffect, createMemo, createSignal, For, Match, ParentProps, Show, Switch } from "solid-js"
 import { createStore } from "solid-js/store"
 import { DiffChanges } from "./diff-changes"
 import { Spinner } from "./spinner"
@@ -18,12 +18,17 @@ import { Card } from "./card"
 import { MessageProgress } from "./message-progress"
 import { Collapsible } from "./collapsible"
 
-export function SessionTimeline(props: {
-  sessionID: string
-  class?: string
-  containerClass?: string
-  expanded?: boolean
-}) {
+export function SessionTimeline(
+  props: ParentProps<{
+    sessionID: string
+    classes?: {
+      root?: string
+      content?: string
+      container?: string
+    }
+    expanded?: boolean
+  }>,
+) {
   const data = useData()
   const [store, setStore] = createStore({
     messageId: undefined as string | undefined,
@@ -54,7 +59,7 @@ export function SessionTimeline(props: {
   const working = createMemo(() => status()?.type !== "idle")
 
   return (
-    <div data-component="session-timeline" class={props.class}>
+    <div data-component="session-timeline" class={props.classes?.root}>
       <Show when={userMessages().length > 1}>
         <ul role="list" data-slot="session-timeline-timeline-list" data-expanded={props.expanded}>
           <For each={userMessages()}>
@@ -79,7 +84,7 @@ export function SessionTimeline(props: {
                   >
                     <Switch>
                       <Match when={messageWorking()}>
-                        <Spinner class="spinner" />
+                        <Spinner />
                       </Match>
                       <Match when={true}>
                         <DiffChanges changes={message.summary?.diffs ?? []} variant="bars" />
@@ -100,7 +105,7 @@ export function SessionTimeline(props: {
           </For>
         </ul>
       </Show>
-      <div data-slot="session-timeline-content">
+      <div data-slot="session-timeline-content" class={props.classes?.content}>
         <For each={userMessages()}>
           {(message) => {
             const isActive = createMemo(() => activeMessage()?.id === message.id)
@@ -144,7 +149,7 @@ export function SessionTimeline(props: {
                 <div
                   data-message={message.id}
                   data-slot="session-timeline-message-container"
-                  class={props.containerClass}
+                  class={props.classes?.container}
                 >
                   {/* Title */}
                   <div data-slot="session-timeline-message-header">
@@ -152,11 +157,7 @@ export function SessionTimeline(props: {
                       <Show
                         when={titled()}
                         fallback={
-                          <Typewriter
-                            as="h1"
-                            text={message.summary?.title}
-                            class="overflow-hidden text-ellipsis min-w-0 text-nowrap"
-                          />
+                          <Typewriter as="h1" text={message.summary?.title} data-slot="session-timeline-typewriter" />
                         }
                       >
                         <h1>{message.summary?.title}</h1>
@@ -281,6 +282,7 @@ export function SessionTimeline(props: {
             )
           }}
         </For>
+        {props.children}
       </div>
     </div>
   )
