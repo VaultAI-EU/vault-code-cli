@@ -8,9 +8,8 @@ import { Locale } from "@/util/locale"
 import { useSync } from "../context/sync"
 import { Toast } from "../ui/toast"
 import { useArgs } from "../context/args"
-import { TextAttributes } from "@opentui/core"
-import { Installation } from "@/installation"
 import { Global } from "@/global"
+import { useDirectory } from "../context/directory"
 
 // TODO: what is the best way to do this?
 let once = false
@@ -51,6 +50,7 @@ export function Home() {
       once = true
     }
   })
+  const directory = useDirectory()
 
   return (
     <>
@@ -62,7 +62,7 @@ export function Home() {
         <Toast />
       </box>
       <box paddingTop={1} paddingBottom={1} paddingLeft={2} paddingRight={2} flexDirection="row" flexShrink={0} gap={2}>
-        <text fg={theme.textMuted}>{process.cwd().replace(Global.Path.home, "~")}</text>
+        <text fg={theme.textMuted}>{directory()}</text>
         <box gap={1} flexDirection="row" flexShrink={0}>
           <Show when={mcp()}>
             <text fg={theme.text}>
@@ -81,16 +81,5 @@ export function Home() {
         </box>
       </box>
     </>
-  )
-}
-
-function HelpRow(props: ParentProps<{ keybind: keyof KeybindsConfig }>) {
-  const keybind = useKeybind()
-  const { theme } = useTheme()
-  return (
-    <box flexDirection="row" justifyContent="space-between" width="100%">
-      <text fg={theme.text}>{props.children}</text>
-      <text fg={theme.primary}>{keybind.print(props.keybind)}</text>
-    </box>
   )
 }

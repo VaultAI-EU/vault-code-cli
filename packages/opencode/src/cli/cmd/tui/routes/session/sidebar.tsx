@@ -8,6 +8,7 @@ import type { AssistantMessage } from "@opencode-ai/sdk"
 import { Global } from "@/global"
 import { Installation } from "@/installation"
 import { useKeybind } from "../../context/keybind"
+import { useDirectory } from "../../context/directory"
 
 export function Sidebar(props: { sessionID: string }) {
   const sync = useSync()
@@ -48,6 +49,7 @@ export function Sidebar(props: { sessionID: string }) {
   })
 
   const keybind = useKeybind()
+  const directory = useDirectory()
 
   const hasProviders = createMemo(() =>
     sync.data.provider.some((x) => x.id !== "opencode" || Object.values(x.models).some((y) => y.cost?.input !== 0)),
@@ -265,7 +267,7 @@ export function Sidebar(props: { sessionID: string }) {
               </box>
             </box>
           </Show>
-          <text fg={theme.textMuted}>{process.cwd().replace(Global.Path.home, "~")}</text>
+          <text fg={theme.textMuted}>{directory()}</text>
           <text fg={theme.textMuted}>
             <span style={{ fg: theme.success }}>•</span> <b>Open</b>
             <span style={{ fg: theme.text }}>

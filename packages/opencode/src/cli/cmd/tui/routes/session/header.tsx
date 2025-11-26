@@ -6,6 +6,7 @@ import { useTheme } from "@tui/context/theme"
 import { SplitBorder, EmptyBorder } from "@tui/component/border"
 import type { AssistantMessage, Session } from "@opencode-ai/sdk"
 import { Global } from "@/global"
+import { useDirectory } from "../../context/directory"
 
 const Title = (props: { session: Accessor<Session> }) => {
   const { theme } = useTheme()
@@ -63,11 +64,12 @@ export function Header() {
   const mcp = createMemo(() => Object.keys(sync.data.mcp))
   const mcpError = createMemo(() => Object.values(sync.data.mcp).some((x) => x.status === "failed"))
   const lsp = createMemo(() => Object.keys(sync.data.lsp))
+  const directory = useDirectory()
 
   return (
     <box flexShrink={0}>
       <box flexDirection="row" justifyContent="space-between" gap={1}>
-        <text fg={theme.textMuted}>{process.cwd().replace(Global.Path.home, "~")}</text>
+        <text fg={theme.textMuted}>{directory()}</text>
         <box gap={2} flexDirection="row" flexShrink={0}>
           <text fg={theme.text}>
             <span style={{ fg: theme.success }}>•</span> {lsp().length} LSP
