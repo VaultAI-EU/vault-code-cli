@@ -102,6 +102,18 @@ export namespace Provider {
         options: {},
       }
     },
+    "github-copilot-enterprise": async () => {
+      return {
+        autoload: false,
+        async getModel(sdk: any, modelID: string, _options?: Record<string, any>) {
+          if (modelID.includes("gpt-5")) {
+            return sdk.responses(modelID)
+          }
+          return sdk.chat(modelID)
+        },
+        options: {},
+      }
+    },
     azure: async () => {
       return {
         autoload: false,
@@ -443,15 +455,6 @@ export namespace Provider {
       }
     }
 
-    // load custom
-    for (const [providerID, fn] of Object.entries(CUSTOM_LOADERS)) {
-      if (disabled.has(providerID)) continue
-      const result = await fn(database[providerID])
-      if (result && (result.autoload || providers[providerID])) {
-        mergeProvider(providerID, result.options ?? {}, "custom", result.getModel)
-      }
-    }
-
     for (const plugin of await Plugin.list()) {
       if (!plugin.auth) continue
       const providerID = plugin.auth.provider
@@ -490,6 +493,14 @@ export namespace Provider {
             mergeProvider(enterpriseProviderID, enterpriseOptions ?? {}, "custom")
           }
         }
+      }
+    }
+
+    for (const [providerID, fn] of Object.entries(CUSTOM_LOADERS)) {
+      if (disabled.has(providerID)) continue
+      const result = await fn(database[providerID])
+      if (result && (result.autoload || providers[providerID])) {
+        mergeProvider(providerID, result.options ?? {}, "custom", result.getModel)
       }
     }
 
