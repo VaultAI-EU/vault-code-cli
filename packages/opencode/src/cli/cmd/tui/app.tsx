@@ -2,7 +2,7 @@ import { render, useKeyboard, useRenderer, useTerminalDimensions } from "@opentu
 import { Clipboard } from "@tui/util/clipboard"
 import { TextAttributes } from "@opentui/core"
 import { RouteProvider, useRoute } from "@tui/context/route"
-import { Switch, Match, createEffect, untrack, ErrorBoundary, createSignal, onMount, batch, Show } from "solid-js"
+import { Switch, Match, createEffect, untrack, ErrorBoundary, createSignal, onMount, batch, Show, on } from "solid-js"
 import { Installation } from "@/installation"
 import { Global } from "@/global"
 import { DialogProvider, useDialog } from "@tui/ui/dialog"
@@ -188,7 +188,6 @@ function App() {
   })
 
   let continued = false
-  let providerPrompted = false
   createEffect(() => {
     if (continued || sync.status !== "complete" || !args.continue) return
     const match = sync.data.session.at(0)?.id
@@ -198,21 +197,17 @@ function App() {
     }
   })
 
-  createEffect(() => {
-    if (sync.status !== "complete") return
-    if (sync.data.provider.length > 0) {
-      providerPrompted = false
-      return
-    }
-    if (providerPrompted) return
-    providerPrompted = true
-    toast.show({
-      variant: "warning",
-      message: "Connect a provider to start using OpenCode",
-      duration: 4000,
-    })
-    dialog.replace(() => <DialogProviderList />)
-  })
+  createEffect(
+    on(
+      () => sync.status === "complete" && sync.data.provider.length === 0,
+      (isEmpty, wasEmpty) => {
+        // only trigger when we transition into an empty-provider state
+        if (!isEmpty || wasEmpty) return
+        dialog.replace(() => <DialogProviderList />)
+      },
+      { defer: true },
+    ),
+  )
 
   command.register(() => [
     {
