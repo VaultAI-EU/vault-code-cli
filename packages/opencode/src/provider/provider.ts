@@ -1,7 +1,7 @@
 import z from "zod"
 import fuzzysort from "fuzzysort"
 import { Config } from "../config/config"
-import { entries, mapValues, mergeDeep, pipe, sortBy } from "remeda"
+import { mapValues, mergeDeep, sortBy } from "remeda"
 import { NoSuchModelError, type LanguageModel, type Provider as SDK } from "ai"
 import { Log } from "../util/log"
 import { BunProc } from "../bun"
@@ -360,20 +360,25 @@ export namespace Provider {
     })
   export type Model = z.infer<typeof Model>
 
-  export const Info = z.object({
-    id: z.string(),
-    name: z.string(),
-    source: z.enum(["env", "config", "custom", "api"]),
-    env: z.string().array(),
-    key: z.string().optional(),
-    options: z.record(z.string(), z.any()),
-    models: z.record(z.string(), Model),
-  })
+  export const Info = z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      source: z.enum(["env", "config", "custom", "api"]),
+      env: z.string().array(),
+      key: z.string().optional(),
+      options: z.record(z.string(), z.any()),
+      models: z.record(z.string(), Model),
+    })
+    .meta({
+      ref: "Provider",
+    })
   export type Info = z.infer<typeof Info>
 
   function fromModelsDevModel(provider: ModelsDev.Provider, model: ModelsDev.Model): Model {
     return {
       id: model.id,
+      providerID: provider.id,
       name: model.name,
       api: {
         id: model.id,
@@ -483,16 +488,16 @@ export namespace Provider {
       providers[providerID] = mergeDeep(match, provider)
     }
 
-    // TODO: load config
+    // extend database from config
     for (const [providerID, provider] of configProviders) {
       const existing = database[providerID]
-      const parsed: ModelsDev.Provider = {
+      const parsed: Info = {
         id: providerID,
-        npm: provider.npm ?? existing?.npm,
         name: provider.name ?? existing?.name ?? providerID,
         env: provider.env ?? existing?.env ?? [],
-        api: provider.api ?? existing?.api,
-        models: existing?.models ?? {},
+        options: mergeDeep(existing?.options ?? {}, provider.options ?? {}),
+        source: "config",
+        models: {},
       }
 
       for (const [modelID, model] of Object.entries(provider.models ?? {})) {
@@ -504,44 +509,51 @@ export namespace Provider {
         })
         const parsedModel: Model = {
           id: modelID,
-          apiID: model.target ?? existing?.target ?? modelID,
-          status: model.status ?? existing?.status ?? "alpha",
+          api: {
+            id: model.id ?? existing?.api.id ?? modelID,
+            npm: model.provider?.npm ?? provider.npm ?? existing?.api.npm ?? providerID,
+            url: provider?.api ?? existing?.api.url,
+          },
+          status: model.status ?? existing?.status ?? "active",
           name,
           providerID,
-          npm: model.provider?.npm ?? existing?.provider?.npm ?? provider.npm ?? providerID,
-          support: {
-            temperature: model.temperature ?? existing?.temperature ?? false,
-            reasoning: model.reasoning ?? existing?.reasoning ?? false,
-            attachment: model.attachment ?? existing?.attachment ?? false,
-            toolcall: model.tool_call ?? existing?.tool_call ?? true,
+          capabilities: {
+            temperature: model.temperature ?? existing?.capabilities.temperature ?? false,
+            reasoning: model.reasoning ?? existing?.capabilities.reasoning ?? false,
+            attachment: model.attachment ?? existing?.capabilities.attachment ?? false,
+            toolcall: model.tool_call ?? existing?.capabilities.toolcall ?? true,
+            input: {
+              text: model.modalities?.input?.includes("text") ?? false,
+              audio: model.modalities?.input?.includes("audio") ?? false,
+              image: model.modalities?.input?.includes("image") ?? false,
+              video: model.modalities?.input?.includes("video") ?? false,
+              pdf: model.modalities?.input?.includes("pdf") ?? false,
+            },
+            output: {
+              text: model.modalities?.output?.includes("text") ?? false,
+              audio: model.modalities?.output?.includes("audio") ?? false,
+              image: model.modalities?.output?.includes("image") ?? false,
+              video: model.modalities?.output?.includes("video") ?? false,
+              pdf: model.modalities?.output?.includes("pdf") ?? false,
+            },
           },
           cost: {
             input: model?.cost?.input ?? existing?.cost?.input ?? 0,
             output: model?.cost?.output ?? existing?.cost?.output ?? 0,
             cache: {
-              read: model?.cost?.cache_read ?? existing?.cost?.cache_read ?? 0,
-              write: model?.cost?.cache_write ?? existing?.cost?.cache_write ?? 0,
+              read: model?.cost?.cache_read ?? existing?.cost?.cache.read ?? 0,
+              write: model?.cost?.cache_write ?? existing?.cost?.cache.write ?? 0,
             },
           },
-          options: {
-            ...existing?.options,
-            ...model.options,
+          options: mergeDeep(existing?.options ?? {}, model.options ?? {}),
+          limit: {
+            context: model.limit?.context ?? existing?.limit?.context ?? 0,
+            output: model.limit?.output ?? existing?.limit?.output ?? 0,
           },
-          limit: model.limit ??
-            existing?.limit ?? {
-              context: 0,
-              output: 0,
-            },
-          modalities: model.modalities ??
-            existing?.modalities ?? {
-              input: ["text"],
-              output: ["text"],
-            },
-          headers: model.headers ?? {},
+          headers: mergeDeep(existing?.headers ?? {}, model.headers ?? {}),
         }
         parsed.models[modelID] = parsedModel
       }
-
       database[providerID] = parsed
     }
 
