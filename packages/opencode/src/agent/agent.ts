@@ -15,7 +15,8 @@ export namespace Agent {
       name: z.string(),
       description: z.string().optional(),
       mode: z.enum(["subagent", "primary", "all"]),
-      internal: z.boolean(),
+      native: z.boolean().optional(),
+      hidden: z.boolean().optional(),
       topP: z.number().optional(),
       temperature: z.number().optional(),
       color: z.string().optional(),
@@ -114,7 +115,8 @@ export namespace Agent {
         options: {},
         permission: agentPermission,
         mode: "subagent",
-        internal: true,
+        native: true,
+        hidden: true,
       },
       explore: {
         name: "explore",
@@ -149,12 +151,13 @@ export namespace Agent {
         options: {},
         permission: agentPermission,
         mode: "subagent",
-        internal: true,
+        native: true,
       },
       compaction: {
         name: "compaction",
         mode: "primary",
-        internal: true,
+        native: true,
+        hidden: true,
         prompt: PROMPT_COMPACTION,
         tools: {
           "*": false,
@@ -168,13 +171,13 @@ export namespace Agent {
         options: {},
         permission: agentPermission,
         mode: "primary",
-        internal: true,
+        native: true,
       },
       summary: {
         name: "summary",
         mode: "subagent",
         options: {},
-        internal: true,
+        native: true,
         permission: agentPermission,
         prompt: `You are a title generator. You output ONLY a thread title. Nothing else.
 
@@ -223,7 +226,7 @@ Your output must be:
           ...defaultTools,
         },
         mode: "primary",
-        internal: true,
+        native: true,
       },
     }
     for (const [key, value] of Object.entries(cfg.agent ?? {})) {
@@ -239,7 +242,7 @@ Your output must be:
           permission: agentPermission,
           options: {},
           tools: {},
-          internal: false,
+          native: false,
         }
       const {
         name,

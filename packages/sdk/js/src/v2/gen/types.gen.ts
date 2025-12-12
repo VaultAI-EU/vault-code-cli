@@ -147,6 +147,7 @@ export type AssistantMessage = {
   modelID: string
   providerID: string
   mode: string
+  agent: string
   path: {
     cwd: string
     root: string
@@ -504,13 +505,6 @@ export type EventSessionIdle = {
   }
 }
 
-export type EventSessionCompacted = {
-  type: "session.compacted"
-  properties: {
-    sessionID: string
-  }
-}
-
 export type EventFileEdited = {
   type: "file.edited"
   properties: {
@@ -542,6 +536,13 @@ export type EventTodoUpdated = {
   properties: {
     sessionID: string
     todos: Array<Todo>
+  }
+}
+
+export type EventSessionCompacted = {
+  type: "session.compacted"
+  properties: {
+    sessionID: string
   }
 }
 
@@ -747,9 +748,9 @@ export type Event =
   | EventPermissionReplied
   | EventSessionStatus
   | EventSessionIdle
-  | EventSessionCompacted
   | EventFileEdited
   | EventTodoUpdated
+  | EventSessionCompacted
   | EventCommandExecuted
   | EventSessionCreated
   | EventSessionUpdated
@@ -1734,7 +1735,8 @@ export type Agent = {
   name: string
   description?: string
   mode: "subagent" | "primary" | "all"
-  builtIn: boolean
+  native?: boolean
+  hidden?: boolean
   topP?: number
   temperature?: number
   color?: string
@@ -2797,10 +2799,10 @@ export type SessionPromptData = {
     }
     agent?: string
     noReply?: boolean
-    system?: string
     tools?: {
       [key: string]: boolean
     }
+    system?: string
     parts: Array<TextPartInput | FilePartInput | AgentPartInput | SubtaskPartInput>
   }
   path: {
@@ -2892,10 +2894,10 @@ export type SessionPromptAsyncData = {
     }
     agent?: string
     noReply?: boolean
-    system?: string
     tools?: {
       [key: string]: boolean
     }
+    system?: string
     parts: Array<TextPartInput | FilePartInput | AgentPartInput | SubtaskPartInput>
   }
   path: {
