@@ -5,6 +5,7 @@ import z from "zod"
 import { Identifier } from "../id/id"
 import { MessageV2 } from "./message-v2"
 import { Log } from "../util/log"
+import { Flag } from "../flag/flag"
 import { SessionRevert } from "./revert"
 import { Session } from "."
 import { Agent } from "../agent/agent"
@@ -21,7 +22,7 @@ import PROMPT_PLAN from "../session/prompt/plan.txt"
 import BUILD_SWITCH from "../session/prompt/build-switch.txt"
 import MAX_STEPS from "../session/prompt/max-steps.txt"
 import { defer } from "../util/defer"
-import { mergeDeep, pipe } from "remeda"
+import { clone, mergeDeep, pipe } from "remeda"
 import { ToolRegistry } from "../tool/registry"
 import { Wildcard } from "../util/wildcard"
 import { MCP } from "../mcp"
@@ -331,6 +332,7 @@ export namespace SessionPrompt {
             },
           },
         })) as MessageV2.ToolPart
+        let executionError: Error | undefined
         const result = await taskTool
           .execute(
             {
@@ -355,7 +357,11 @@ export namespace SessionPrompt {
               },
             },
           )
-          .catch(() => {})
+          .catch((error) => {
+            executionError = error
+            log.error("subtask execution failed", { error, agent: task.agent, description: task.description })
+            return undefined
+          })
         assistantMessage.finish = "tool-calls"
         assistantMessage.time.completed = Date.now()
         await Session.updateMessage(assistantMessage)
@@ -381,7 +387,7 @@ export namespace SessionPrompt {
             ...part,
             state: {
               status: "error",
-              error: "Tool execution failed",
+              error: executionError ? `Tool execution failed: ${executionError.message}` : "Tool execution failed",
               time: {
                 start: part.state.status === "running" ? part.state.time.start : Date.now(),
                 end: Date.now(),
@@ -1088,8 +1094,8 @@ export namespace SessionPrompt {
       },
     }
     await Session.updatePart(part)
-    const shell = process.env["SHELL"] ?? "bash"
-    const shellName = path.basename(shell)
+    const shell = process.env["SHELL"] ?? (process.platform === "win32" ? process.env["COMSPEC"] || "cmd.exe" : "bash")
+    const shellName = path.basename(shell).toLowerCase()
 
     const invocations: Record<string, { args: string[] }> = {
       nu: {
@@ -1119,6 +1125,14 @@ export namespace SessionPrompt {
           `,
         ],
       },
+      // Windows cmd.exe
+      "cmd.exe": {
+        args: ["/c", input.command],
+      },
+      // Windows PowerShell
+      "powershell.exe": {
+        args: ["-NoProfile", "-Command", input.command],
+      },
       // Fallback: any shell that doesn't match those above
       "": {
         args: ["-c", "-l", `${input.command}`],
@@ -1130,7 +1144,7 @@ export namespace SessionPrompt {
 
     const proc = spawn(shell, args, {
       cwd: Instance.directory,
-      detached: true,
+      detached: process.platform !== "win32",
       stdio: ["ignore", "pipe", "pipe"],
       env: {
         ...process.env,
@@ -1308,6 +1322,7 @@ export namespace SessionPrompt {
       input.history.filter((m) => m.info.role === "user" && !m.parts.every((p) => "synthetic" in p && p.synthetic))
         .length === 1
     if (!isFirst) return
+<<<<<<< HEAD
     const agent = await Agent.get("summary")
     if (!agent) return
     const result = await LLM.stream({
@@ -1325,6 +1340,23 @@ export namespace SessionPrompt {
       abort: new AbortController().signal,
       sessionID: input.session.id,
       retries: 2,
+=======
+    const cfg = await Config.get()
+    const small =
+      (await Provider.getSmallModel(input.providerID)) ?? (await Provider.getModel(input.providerID, input.modelID))
+    const language = await Provider.getLanguage(small)
+    const provider = await Provider.getProvider(small.providerID)
+    const options = pipe(
+      {},
+      mergeDeep(ProviderTransform.options(small, input.session.id, provider?.options)),
+      mergeDeep(ProviderTransform.smallOptions(small)),
+      mergeDeep(small.options),
+    )
+    await generateText({
+      // use higher # for reasoning models since reasoning tokens eat up a lot of the budget
+      maxOutputTokens: small.capabilities.reasoning ? 3000 : 20,
+      providerOptions: ProviderTransform.providerOptions(small, options),
+>>>>>>> dev
       messages: [
         {
           role: "user",
