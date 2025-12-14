@@ -73,6 +73,7 @@ export namespace LLM {
           : undefined,
         topP: input.agent.topP ?? ProviderTransform.topP(input.model),
         options: pipe(
+          {},
           mergeDeep(ProviderTransform.options(input.model, input.sessionID)),
           input.small ? mergeDeep(ProviderTransform.smallOptions(input.model)) : mergeDeep({}),
           mergeDeep(input.model.options),
