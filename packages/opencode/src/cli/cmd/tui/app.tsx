@@ -2,7 +2,19 @@ import { render, useKeyboard, useRenderer, useTerminalDimensions } from "@opentu
 import { Clipboard } from "@tui/util/clipboard"
 import { TextAttributes } from "@opentui/core"
 import { RouteProvider, useRoute } from "@tui/context/route"
-import { Switch, Match, createEffect, untrack, ErrorBoundary, createSignal, onMount, batch, Show, on } from "solid-js"
+import {
+  Switch,
+  Match,
+  createEffect,
+  untrack,
+  ErrorBoundary,
+  createSignal,
+  onMount,
+  onCleanup,
+  batch,
+  Show,
+  on,
+} from "solid-js"
 import { Installation } from "@/installation"
 import { Global } from "@/global"
 import { Flag } from "@/flag/flag"
@@ -173,22 +185,66 @@ function App() {
   })
 
   // Update terminal window title based on current route and session
+  // Braille spinner animation frames for when agent is running (two characters, fluid animation)
+  const spinnerFrames = ["⠋⠙", "⠙⠹", "⠹⠸", "⠸⠼", "⠼⠴", "⠴⠦", "⠦⠧", "⠧⠇", "⠇⠏", "⠏⠋"]
+  let spinnerInterval: ReturnType<typeof setInterval> | undefined
+  let spinnerIndex = 0
+  let currentTitle = ""
+
+  // Cleanup interval on component unmount
+  onCleanup(() => {
+    if (spinnerInterval) {
+      clearInterval(spinnerInterval)
+      spinnerInterval = undefined
+    }
+  })
+
   createEffect(() => {
     if (route.data.type === "home") {
+      if (spinnerInterval) {
+        clearInterval(spinnerInterval)
+        spinnerInterval = undefined
+      }
       renderer.setTerminalTitle("OpenCode")
       return
     }
 
     if (route.data.type === "session") {
-      const session = sync.session.get(route.data.sessionID)
+      const sessionID = route.data.sessionID
+      const session = sync.session.get(sessionID)
+      const status = sync.data.session_status[sessionID]
+      const isBusy = status?.type === "busy"
+
       if (!session || SessionApi.isDefaultTitle(session.title)) {
+        if (spinnerInterval) {
+          clearInterval(spinnerInterval)
+          spinnerInterval = undefined
+        }
         renderer.setTerminalTitle("OpenCode")
         return
       }
 
       // Truncate title to 40 chars max
-      const title = session.title.length > 40 ? session.title.slice(0, 37) + "..." : session.title
-      renderer.setTerminalTitle(`OC | ${title}`)
+      currentTitle = session.title.length > 40 ? session.title.slice(0, 37) + "..." : session.title
+
+      if (isBusy) {
+        // Start spinner animation
+        if (!spinnerInterval) {
+          spinnerIndex = 0
+          renderer.setTerminalTitle(`${spinnerFrames[spinnerIndex]} | ${currentTitle}`)
+          spinnerInterval = setInterval(() => {
+            spinnerIndex = (spinnerIndex + 1) % spinnerFrames.length
+            renderer.setTerminalTitle(`${spinnerFrames[spinnerIndex]} | ${currentTitle}`)
+          }, 80)
+        }
+      } else {
+        // Stop spinner and show static "OC"
+        if (spinnerInterval) {
+          clearInterval(spinnerInterval)
+          spinnerInterval = undefined
+        }
+        renderer.setTerminalTitle(`OC | ${currentTitle}`)
+      }
     }
   })
 
