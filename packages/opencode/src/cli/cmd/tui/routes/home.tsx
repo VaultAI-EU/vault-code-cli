@@ -1,9 +1,10 @@
 import { Prompt, type PromptRef } from "@tui/component/prompt"
 import { createMemo, Match, onMount, Show, Switch } from "solid-js"
 import { useTheme } from "@tui/context/theme"
-import { useKeybind } from "@tui/context/keybind"
+import { useKeyboard } from "@opentui/solid"
 import { Logo } from "../component/logo"
 import { Tips } from "../component/tips"
+import { DidYouKnow, ShowTipsHint } from "../component/did-you-know"
 import { Locale } from "@/util/locale"
 import { useSync } from "../context/sync"
 import { Toast } from "../ui/toast"
@@ -42,6 +43,22 @@ export function Home() {
     return !tipsHidden()
   })
 
+  function hideTips() {
+    kv.set("tips_hidden", true)
+  }
+
+  function enableTips() {
+    kv.set("tips_hidden", false)
+  }
+
+  function toggleTips() {
+    if (showTips()) {
+      hideTips()
+      return
+    }
+    enableTips()
+  }
+
   command.register(() => [
     {
       title: tipsHidden() ? "Show tips" : "Hide tips",
@@ -49,11 +66,19 @@ export function Home() {
       keybind: "tips_toggle",
       category: "System",
       onSelect: (dialog) => {
-        kv.set("tips_hidden", !tipsHidden())
+        toggleTips()
         dialog.clear()
       },
     },
   ])
+
+  useKeyboard((evt) => {
+    // Don't handle tips keybind for first-time users
+    if (isFirstTimeUser()) return
+    if (evt.name !== "h" || !evt.ctrl || evt.meta || evt.shift) return
+    toggleTips()
+    evt.preventDefault()
+  })
 
   const Hint = (
     <Show when={connectedMcpCount() > 0}>
@@ -89,8 +114,6 @@ export function Home() {
   })
   const directory = useDirectory()
 
-  const keybind = useKeybind()
-
   return (
     <>
       <box flexGrow={1} justifyContent="center" alignItems="center" paddingLeft={2} paddingRight={2} gap={1}>
@@ -112,6 +135,11 @@ export function Home() {
         </box>
         <Toast />
       </box>
+      <Show when={!isFirstTimeUser()}>
+        <Show when={showTips()} fallback={<ShowTipsHint />}>
+          <DidYouKnow />
+        </Show>
+      </Show>
       <box paddingTop={1} paddingBottom={1} paddingLeft={2} paddingRight={2} flexDirection="row" flexShrink={0} gap={2}>
         <text fg={theme.textMuted}>{directory()}</text>
         <box gap={1} flexDirection="row" flexShrink={0}>
