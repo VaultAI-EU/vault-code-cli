@@ -160,6 +160,8 @@ Read file contents from your codebase.
 
 This tool reads files and returns their contents. It supports reading specific line ranges for large files.
 
+For safety, `read` blocks dotenv files by default (for example `.env`, `.env.local`, `.env.production`). Template files like `.env.example`, `.env.sample`, and `.env.template` are allowed, and `.envrc` is not treated as a dotenv file.
+
 ---
 
 ### grep

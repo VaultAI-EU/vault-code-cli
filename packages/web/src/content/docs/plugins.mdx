@@ -158,15 +158,22 @@ We are using `osascript` to run AppleScript on macOS. Here we are using it to se
 
 ### .env protection
 
-Prevent opencode from reading `.env` files:
+Prevent opencode from reading dotenv files (like `.env` and `.env.local`) without blocking similarly-named files like `.envrc`:
 
 ```javascript title=".opencode/plugin/env-protection.js"
+import path from "node:path"
+
 export const EnvProtection = async ({ project, client, $, directory, worktree }) => {
   return {
     "tool.execute.before": async (input, output) => {
-      if (input.tool === "read" && output.args.filePath.includes(".env")) {
-        throw new Error("Do not read .env files")
-      }
+      if (input.tool !== "read") return
+
+      const basename = path.basename(output.args.filePath)
+      const isDotenv = /^\.env(\.|$)/.test(basename)
+      const allowed =
+        basename.endsWith(".env.sample") || basename.endsWith(".env.example") || basename.endsWith(".env.template")
+
+      if (isDotenv && !allowed) throw new Error("Do not read .env files")
     },
   }
 }
