@@ -1,5 +1,5 @@
 import { createStore, produce } from "solid-js/store"
-import { batch, createEffect, createMemo, onCleanup, onMount } from "solid-js"
+import { batch, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js"
 import { createSimpleContext } from "@opencode-ai/ui/context"
 import { useGlobalSync } from "./global-sync"
 import { useGlobalSDK } from "./global-sdk"
@@ -92,6 +92,8 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         sessionView: {} as Record<string, SessionView>,
       }),
     )
+
+    const [shortcutsOpened, setShortcutsOpened] = createSignal(false)
 
     const MAX_SESSION_KEYS = 50
     const meta = { active: undefined as string | undefined, pruned: false }
@@ -351,6 +353,18 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
             return
           }
           setStore("review", "diffStyle", diffStyle)
+        },
+      },
+      shortcuts: {
+        opened: shortcutsOpened,
+        open() {
+          setShortcutsOpened(true)
+        },
+        close() {
+          setShortcutsOpened(false)
+        },
+        toggle() {
+          setShortcutsOpened((x) => !x)
         },
       },
       session: {

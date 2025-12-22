@@ -44,7 +44,7 @@ import { ImagePreview } from "@opencode-ai/ui/image-preview"
 import { ModelSelectorPopover } from "@/components/dialog-select-model"
 import { DialogSelectModelUnpaid } from "@/components/dialog-select-model-unpaid"
 import { useProviders } from "@/hooks/use-providers"
-import { useCommand } from "@/context/command"
+import { formatKeybind, useCommand } from "@/context/command"
 import { Persist, persisted } from "@/utils/persist"
 import { Identifier } from "@/utils/id"
 import { SessionContextUsage } from "@/components/session-context-usage"
@@ -1400,8 +1400,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                             custom
                           </span>
                         </Show>
-                        <Show when={command.keybind(cmd.id)}>
-                          <span class="text-12-regular text-text-subtle">{command.keybind(cmd.id)}</span>
+                        <Show when={cmd.keybind}>
+                          <span class="text-12-regular text-text-subtle">{formatKeybind(cmd.keybind!)}</span>
                         </Show>
                       </div>
                     </button>

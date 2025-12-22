@@ -59,7 +59,7 @@ import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { useTheme, type ColorScheme } from "@opencode-ai/ui/theme"
 import { DialogSelectProvider } from "@/components/dialog-select-provider"
 import { DialogSelectServer } from "@/components/dialog-select-server"
-import { useCommand, type CommandOption } from "@/context/command"
+import { formatKeybind, useCommand, type CommandOption } from "@/context/command"
 import { ConstrainDragXAxis } from "@/utils/solid-dnd"
 import { navStart } from "@/utils/perf"
 import { DialogSelectDirectory } from "@/components/dialog-select-directory"
@@ -81,7 +81,6 @@ export default function Layout(props: ParentProps) {
       workspaceExpanded: {} as Record<string, boolean>,
     }),
   )
-  const [shortcutsOpen, setShortcutsOpen] = createSignal(false)
 
   const pageReady = createMemo(() => ready())
 
@@ -757,7 +756,7 @@ export default function Layout(props: ParentProps) {
         title: "Toggle shortcuts panel",
         category: "View",
         keybind: "ctrl+/",
-        onSelect: () => setShortcutsOpen(!shortcutsOpen()),
+        onSelect: () => layout.shortcuts.toggle(),
       },
       {
         id: "project.open",
@@ -1897,7 +1896,7 @@ export default function Layout(props: ParentProps) {
     const homedir = createMemo(() => sync.data.path.home)
 
     return (
-      <div class="flex h-full w-full overflow-hidden">
+      <div class="flex h-full w-full overflow-hidden" classList={{ "sidebar-shortcuts-open": layout.shortcuts.opened() }}>
         <div class="w-16 shrink-0 bg-background-base flex flex-col items-center overflow-hidden">
           <div class="flex-1 min-h-0 w-full">
             <DragDropProvider
@@ -1937,7 +1936,7 @@ export default function Layout(props: ParentProps) {
             <Tooltip placement={sidebarProps.mobile ? "bottom" : "right"} value="Settings" class="hidden">
               <IconButton disabled icon="settings-gear" variant="ghost" size="large" />
             </Tooltip>
-            <DropdownMenu>
+            <DropdownMenu placement={layout.shortcuts.opened() ? "top-start" : "bottom-start"}>
               <Tooltip placement={sidebarProps.mobile ? "bottom" : "right"} value="Help">
                 <DropdownMenu.Trigger as={IconButton} icon="question-mark" variant="ghost" size="large" />
               </Tooltip>
@@ -1946,7 +1945,9 @@ export default function Layout(props: ParentProps) {
                   <DropdownMenu.Item onSelect={() => platform.openLink("https://opencode.ai/desktop-feedback")}>
                     Submit feedback
                   </DropdownMenu.Item>
-                  <DropdownMenu.Item onSelect={() => setShortcutsOpen(true)}>Keyboard shortcuts</DropdownMenu.Item>
+                  <DropdownMenu.Item class="flex justify-between gap-6" onSelect={() => layout.shortcuts.open()}>
+                    Keyboard shortcuts <span class="text-text-weaker">{formatKeybind("ctrl+/")}</span>
+                  </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu>
@@ -2160,14 +2161,14 @@ export default function Layout(props: ParentProps) {
           classList={{
             "size-full overflow-x-hidden flex flex-col items-start contain-strict border-t border-border-weak-base": true,
             "xl:border-l xl:rounded-tl-sm": !layout.sidebar.opened(),
-            "shortcuts-open": shortcutsOpen(),
+            "shortcuts-open": layout.shortcuts.opened(),
           }}
         >
           {props.children}
         </main>
       </div>
-      <Show when={shortcutsOpen()}>
-        <ShortcutsPanel onClose={() => setShortcutsOpen(false)} />
+      <Show when={layout.shortcuts.opened()}>
+        <ShortcutsPanel onClose={() => layout.shortcuts.close()} />
       </Show>
       <Toast.Region />
       <ReleaseNotesHandler />
