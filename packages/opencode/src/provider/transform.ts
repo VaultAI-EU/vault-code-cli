@@ -125,7 +125,7 @@ export namespace ProviderTransform {
         cacheControl: { type: "ephemeral" },
       },
       openrouter: {
-        cache_control: { type: "ephemeral" },
+        cacheControl: { type: "ephemeral" },
       },
       bedrock: {
         cachePoint: { type: "ephemeral" },
@@ -244,14 +244,21 @@ export namespace ProviderTransform {
     return undefined
   }
 
-  export function thinking(model: Provider.Model, thinking: MessageV2.Thinking) {
-    if (!model.capabilities.reasoning || thinking.effort === "default") return undefined
+  export function thinking(model: Provider.Model, thinking: MessageV2.Thinking): Record<string, any> {
+    if (!model.capabilities.reasoning || thinking.effort === "default") return {}
 
     switch (model.api.npm) {
       case "@openrouter/ai-sdk-provider":
         return {
           reasoning: { effort: thinking.effort },
         }
+
+      case "@ai-sdk/xai":
+      // https://v5.ai-sdk.dev/providers/ai-sdk-providers/xai
+      case "@ai-sdk/deepinfra":
+      // https://v5.ai-sdk.dev/providers/ai-sdk-providers/deepinfra
+      case "@ai-sdk/azure":
+      // https://v5.ai-sdk.dev/providers/ai-sdk-providers/azure
       case "@ai-sdk/openai-compatible":
         const result: Record<string, any> = {
           reasoningEffort: thinking.effort,
@@ -273,7 +280,48 @@ export namespace ProviderTransform {
       case "@ai-sdk/anthropic":
         // TODO: map to thinking budgets
         return {}
+
+      case "@ai-sdk/amazon-bedrock":
+        // TODO: implement bedrock thinking options
+        return {}
+      case "@ai-sdk/google":
+        // TODO: implement google thinking options
+        return {}
+      case "@ai-sdk/google-vertex":
+        // TODO: implement google-vertex thinking options
+        return {}
+      case "@ai-sdk/gateway":
+        // TODO: implement gateway thinking options
+        return {}
+      case "@ai-sdk/mistral":
+        // TODO: implement mistral thinking options
+        // https://v5.ai-sdk.dev/providers/ai-sdk-providers/mistral
+        return {}
+
+      case "@ai-sdk/cerebras":
+        // TODO: implement cerebras thinking options
+        return {}
+      case "@ai-sdk/cohere":
+        // TODO: implement cohere thinking options
+        // https://v5.ai-sdk.dev/providers/ai-sdk-providers/cohere
+        return {}
+
+      case "@ai-sdk/groq":
+        // https://v5.ai-sdk.dev/providers/ai-sdk-providers/groq
+        return {
+          reasoningFormat: "parsed",
+          reasoningEffort: thinking.effort,
+        }
+
+      case "@ai-sdk/perplexity":
+        // https://v5.ai-sdk.dev/providers/ai-sdk-providers/perplexity
+        return {}
+
+      case "@ai-sdk/togetherai":
+        // https://v5.ai-sdk.dev/providers/ai-sdk-providers/togetherai
+        return {}
     }
+    return {}
   }
 
   export function options(

@@ -75,6 +75,13 @@ export namespace LLM {
 
     const provider = await Provider.getProvider(input.model.providerID)
 
+    const options = pipe(
+      ProviderTransform.options(input.model, input.sessionID, provider.options),
+      mergeDeep(input.small ? ProviderTransform.smallOptions(input.model) : {}),
+      mergeDeep(input.model.options),
+      mergeDeep(input.agent.options),
+      mergeDeep(input.user.thinking ? ProviderTransform.thinking(input.model, input.user.thinking) : {}),
+    )
     const params = await Plugin.trigger(
       "chat.params",
       {
@@ -90,13 +97,7 @@ export namespace LLM {
           : undefined,
         topP: input.agent.topP ?? ProviderTransform.topP(input.model),
         topK: ProviderTransform.topK(input.model),
-        options: pipe(
-          {},
-          mergeDeep(ProviderTransform.options(input.model, input.sessionID, provider.options)),
-          input.small ? mergeDeep(ProviderTransform.smallOptions(input.model)) : mergeDeep({}),
-          mergeDeep(input.model.options),
-          mergeDeep(input.agent.options),
-        ),
+        options,
       },
     )
 
