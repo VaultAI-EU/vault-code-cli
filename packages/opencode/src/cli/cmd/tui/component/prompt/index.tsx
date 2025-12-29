@@ -617,6 +617,7 @@ export function Prompt(props: PromptProps) {
         agent: local.agent.current().name,
         model: `${selectedModel.providerID}/${selectedModel.modelID}`,
         messageID,
+        thinking: local.effort.current() !== "default" ? { effort: local.effort.current() } : undefined,
       })
     } else {
       sdk.client.session.prompt({
@@ -625,6 +626,7 @@ export function Prompt(props: PromptProps) {
         messageID,
         agent: local.agent.current().name,
         model: selectedModel,
+        thinking: local.effort.current() !== "default" ? { effort: local.effort.current() } : undefined,
         parts: [
           {
             id: Identifier.ascending("part"),

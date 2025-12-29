@@ -1269,6 +1269,7 @@ export namespace SessionPrompt {
     model: z.string().optional(),
     arguments: z.string(),
     command: z.string(),
+    thinking: MessageV2.Thinking.optional(),
   })
   export type CommandInput = z.infer<typeof CommandInput>
   const bashRegex = /!`([^`]+)`/g
@@ -1371,6 +1372,7 @@ export namespace SessionPrompt {
       model,
       agent: agentName,
       parts,
+      thinking: input.thinking,
     })) as MessageV2.WithParts
 
     Bus.publish(Command.Event.Executed, {

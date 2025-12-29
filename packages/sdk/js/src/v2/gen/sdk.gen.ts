@@ -1370,6 +1370,9 @@ export class Session extends HeyApiClient {
       model?: string
       arguments?: string
       command?: string
+      thinking?: {
+        effort: "default" | "medium" | "high"
+      }
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -1385,6 +1388,7 @@ export class Session extends HeyApiClient {
             { in: "body", key: "model" },
             { in: "body", key: "arguments" },
             { in: "body", key: "command" },
+            { in: "body", key: "thinking" },
           ],
         },
       ],

@@ -3183,6 +3183,9 @@ export type SessionCommandData = {
     model?: string
     arguments: string
     command: string
+    thinking?: {
+      effort: "default" | "medium" | "high"
+    }
   }
   path: {
     /**
