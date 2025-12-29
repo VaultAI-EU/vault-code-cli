@@ -42,20 +42,19 @@ export namespace Agent {
 
   const state = Instance.state(async () => {
     const cfg = await Config.get()
-    const permission: PermissionNext.Ruleset = PermissionNext.merge(
-      PermissionNext.fromConfig({
-        "*": "allow",
-        doom_loop: "ask",
-        external_directory: "ask",
-      }),
-      PermissionNext.fromConfig(cfg.permission ?? {}),
-    )
+
+    const defaults = PermissionNext.fromConfig({
+      "*": "allow",
+      doom_loop: "ask",
+      external_directory: "ask",
+    })
+    const user = PermissionNext.fromConfig(cfg.permission ?? {})
 
     const result: Record<string, Info> = {
       build: {
         name: "build",
         options: {},
-        permission,
+        permission: PermissionNext.merge(defaults, user),
         mode: "primary",
         native: true,
       },
@@ -63,13 +62,14 @@ export namespace Agent {
         name: "plan",
         options: {},
         permission: PermissionNext.merge(
-          permission,
+          defaults,
           PermissionNext.fromConfig({
             edit: {
               "*": "deny",
               ".opencode/plan/*.md": "allow",
             },
           }),
+          user,
         ),
         mode: "primary",
         native: true,
@@ -78,11 +78,12 @@ export namespace Agent {
         name: "general",
         description: `General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel.`,
         permission: PermissionNext.merge(
-          permission,
+          defaults,
           PermissionNext.fromConfig({
             todoread: "deny",
             todowrite: "deny",
           }),
+          user,
         ),
         options: {},
         mode: "subagent",
@@ -92,7 +93,7 @@ export namespace Agent {
       explore: {
         name: "explore",
         permission: PermissionNext.merge(
-          permission,
+          defaults,
           PermissionNext.fromConfig({
             "*": "deny",
             grep: "allow",
@@ -104,6 +105,7 @@ export namespace Agent {
             codesearch: "allow",
             read: "allow",
           }),
+          user,
         ),
         description: `Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns (eg. "src/components/**/*.tsx"), search code for keywords (eg. "API endpoints"), or answer questions about the codebase (eg. "how do API endpoints work?"). When calling this agent, specify the desired thoroughness level: "quick" for basic searches, "medium" for moderate exploration, or "very thorough" for comprehensive analysis across multiple locations and naming conventions.`,
         prompt: PROMPT_EXPLORE,
@@ -117,9 +119,13 @@ export namespace Agent {
         native: true,
         hidden: true,
         prompt: PROMPT_COMPACTION,
-        permission: PermissionNext.fromConfig({
-          "*": "deny",
-        }),
+        permission: PermissionNext.merge(
+          defaults,
+          PermissionNext.fromConfig({
+            "*": "deny",
+          }),
+          user,
+        ),
         options: {},
       },
       title: {
@@ -128,9 +134,13 @@ export namespace Agent {
         options: {},
         native: true,
         hidden: true,
-        permission: PermissionNext.fromConfig({
-          "*": "deny",
-        }),
+        permission: PermissionNext.merge(
+          defaults,
+          PermissionNext.fromConfig({
+            "*": "deny",
+          }),
+          user,
+        ),
         prompt: PROMPT_TITLE,
       },
       summary: {
@@ -139,9 +149,13 @@ export namespace Agent {
         options: {},
         native: true,
         hidden: true,
-        permission: PermissionNext.fromConfig({
-          "*": "deny",
-        }),
+        permission: PermissionNext.merge(
+          defaults,
+          PermissionNext.fromConfig({
+            "*": "deny",
+          }),
+          user,
+        ),
         prompt: PROMPT_SUMMARY,
       },
     }
@@ -156,7 +170,7 @@ export namespace Agent {
         item = result[key] = {
           name: key,
           mode: "all",
-          permission,
+          permission: PermissionNext.merge(defaults, user),
           options: {},
           native: false,
         }
