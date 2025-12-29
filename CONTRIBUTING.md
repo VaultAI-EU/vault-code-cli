@@ -48,7 +48,7 @@ To run OpenCode in the root of the opencode repo itself:
 bun dev .
 ```
 
-### Building a local executable
+### Building a "localcode"
 
 To compile a standalone executable:
 
