@@ -133,7 +133,7 @@ export default function Home() {
             </div>
             <div data-slot="pricing-copy">
               <p>
-                <strong>Add $20 Pay as you go balance</strong> <span>(+$1.23 card processing fee)</span>
+                <strong>Add $20 Pay as you go balance</strong> <span>(+$1.18 card processing fee)</span>
               </p>
               <p>Use with any agent. Set monthly spend limits. Cancel any time.</p>
             </div>
@@ -305,7 +305,7 @@ export default function Home() {
                   Zen <a href="/docs/zen/#pricing">charges per request</a> with zero markups, so you pay exactly what
                   the model provider charges. Your total cost depends on usage, and you can set monthly spend limits in
                   your <a href="/auth">account</a>. To cover costs, OpenCode adds only a small payment processing fee of
-                  $1.23 per $20 balance top-up.
+                  $1.18 per $20 balance top-up.
                 </Faq>
               </li>
               <li>
