@@ -1596,6 +1596,8 @@ export class Permission extends HeyApiClient {
    * Respond to permission
    *
    * Approve or deny a permission request from the AI assistant.
+   *
+   * @deprecated
    */
   public respond<ThrowOnError extends boolean = false>(
     parameters: {

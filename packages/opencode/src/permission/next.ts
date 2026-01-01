@@ -83,9 +83,9 @@ export namespace PermissionNext {
   })
 
   export const Event = {
-    Asked: BusEvent.define("permission.next.asked", Request),
+    Asked: BusEvent.define("permission.asked", Request),
     Replied: BusEvent.define(
-      "permission.next.replied",
+      "permission.replied",
       z.object({
         sessionID: z.string(),
         requestID: z.string(),

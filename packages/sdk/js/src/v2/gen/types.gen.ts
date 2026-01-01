@@ -466,47 +466,17 @@ export type PermissionRequest = {
   }
 }
 
-export type EventPermissionNextAsked = {
-  type: "permission.next.asked"
+export type EventPermissionAsked = {
+  type: "permission.asked"
   properties: PermissionRequest
-}
-
-export type EventPermissionNextReplied = {
-  type: "permission.next.replied"
-  properties: {
-    sessionID: string
-    requestID: string
-    reply: "once" | "always" | "reject"
-  }
-}
-
-export type Permission = {
-  id: string
-  type: string
-  pattern?: string | Array<string>
-  sessionID: string
-  messageID: string
-  callID?: string
-  message: string
-  metadata: {
-    [key: string]: unknown
-  }
-  time: {
-    created: number
-  }
-}
-
-export type EventPermissionUpdated = {
-  type: "permission.updated"
-  properties: Permission
 }
 
 export type EventPermissionReplied = {
   type: "permission.replied"
   properties: {
     sessionID: string
-    permissionID: string
-    response: string
+    requestID: string
+    reply: "once" | "always" | "reject"
   }
 }
 
@@ -796,9 +766,7 @@ export type Event =
   | EventMessageRemoved
   | EventMessagePartUpdated
   | EventMessagePartRemoved
-  | EventPermissionNextAsked
-  | EventPermissionNextReplied
-  | EventPermissionUpdated
+  | EventPermissionAsked
   | EventPermissionReplied
   | EventSessionStatus
   | EventSessionIdle
@@ -1248,6 +1216,7 @@ export type PermissionConfig =
       webfetch?: PermissionActionConfig
       websearch?: PermissionActionConfig
       codesearch?: PermissionActionConfig
+      lsp?: PermissionRuleConfig
       doom_loop?: PermissionActionConfig
       [key: string]: PermissionRuleConfig | PermissionActionConfig | undefined
     }
@@ -3457,7 +3426,7 @@ export type PermissionListResponses = {
   /**
    * List of pending permissions
    */
-  200: Array<Permission>
+  200: Array<PermissionRequest>
 }
 
 export type PermissionListResponse = PermissionListResponses[keyof PermissionListResponses]
