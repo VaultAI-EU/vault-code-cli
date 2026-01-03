@@ -597,7 +597,7 @@ export namespace MessageV2 {
     switch (true) {
       case e instanceof DOMException && e.name === "AbortError":
         return new MessageV2.AbortedError(
-          { message: e.message },
+          { message: "Operation interrupted" },
           {
             cause: e,
           },
