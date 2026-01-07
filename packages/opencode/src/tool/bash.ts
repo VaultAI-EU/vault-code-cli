@@ -16,7 +16,6 @@ import { Shell } from "@/shell/shell"
 
 import { BashArity } from "@/permission/arity"
 
-const MAX_OUTPUT_LENGTH = Flag.OPENCODE_EXPERIMENTAL_BASH_MAX_OUTPUT_LENGTH || 30_000
 const DEFAULT_TIMEOUT = Flag.OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS || 2 * 60 * 1000
 
 export const log = Log.create({ service: "bash-tool" })
@@ -172,15 +171,13 @@ export const BashTool = Tool.define("bash", async () => {
       })
 
       const append = (chunk: Buffer) => {
-        if (output.length <= MAX_OUTPUT_LENGTH) {
-          output += chunk.toString()
-          ctx.metadata({
-            metadata: {
-              output,
-              description: params.description,
-            },
-          })
-        }
+        output += chunk.toString()
+        ctx.metadata({
+          metadata: {
+            output,
+            description: params.description,
+          },
+        })
       }
 
       proc.stdout?.on("data", append)
@@ -228,12 +225,7 @@ export const BashTool = Tool.define("bash", async () => {
         })
       })
 
-      let resultMetadata: String[] = ["<bash_metadata>"]
-
-      if (output.length > MAX_OUTPUT_LENGTH) {
-        output = output.slice(0, MAX_OUTPUT_LENGTH)
-        resultMetadata.push(`bash tool truncated output as it exceeded ${MAX_OUTPUT_LENGTH} char limit`)
-      }
+      const resultMetadata: string[] = []
 
       if (timedOut) {
         resultMetadata.push(`bash tool terminated command after exceeding timeout ${timeout} ms`)
@@ -243,9 +235,8 @@ export const BashTool = Tool.define("bash", async () => {
         resultMetadata.push("User aborted the command")
       }
 
-      if (resultMetadata.length > 1) {
-        resultMetadata.push("</bash_metadata>")
-        output += "\n\n" + resultMetadata.join("\n")
+      if (resultMetadata.length > 0) {
+        output += "\n\n<bash_metadata>\n" + resultMetadata.join("\n") + "\n</bash_metadata>"
       }
 
       return {
