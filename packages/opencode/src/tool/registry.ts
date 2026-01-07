@@ -69,7 +69,7 @@ export namespace ToolRegistry {
           return {
             title: "",
             output: out.truncated ? out.content : result,
-            metadata: { truncated: out.truncated },
+            metadata: { truncated: out.truncated, outputPath: out.outputPath },
           }
         },
       }),

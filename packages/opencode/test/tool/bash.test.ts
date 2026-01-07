@@ -306,10 +306,9 @@ describe("tool.bash truncation", () => {
         )
         expect((result.metadata as any).truncated).toBe(true)
 
-        const match = result.output.match(/Full output written to: (.+)/)
-        expect(match).toBeTruthy()
+        const filepath = (result.metadata as any).outputPath
+        expect(filepath).toBeTruthy()
 
-        const filepath = match![1].split("\n")[0]
         const saved = await Bun.file(filepath).text()
         const lines = saved.trim().split("\n")
         expect(lines.length).toBe(lineCount)

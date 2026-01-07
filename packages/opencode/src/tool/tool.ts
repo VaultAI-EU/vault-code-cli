@@ -77,6 +77,7 @@ export namespace Tool {
             metadata: {
               ...result.metadata,
               truncated: truncated.truncated,
+              outputPath: truncated.outputPath,
             },
           }
         }
