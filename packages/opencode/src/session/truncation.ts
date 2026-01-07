@@ -1,10 +1,20 @@
+import fs from "fs/promises"
+import path from "path"
+import { Global } from "../global"
+import { Identifier } from "../id/id"
+import { iife } from "../util/iife"
+import { lazy } from "../util/lazy"
+
 export namespace Truncate {
   export const MAX_LINES = 2000
   export const MAX_BYTES = 50 * 1024
+  export const DIR = path.join(Global.Path.data, "tool-output")
+  const RETENTION_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 
   export interface Result {
     content: string
     truncated: boolean
+    outputPath?: string
   }
 
   export interface Options {
@@ -13,7 +23,22 @@ export namespace Truncate {
     direction?: "head" | "tail"
   }
 
-  export function output(text: string, options: Options = {}): Result {
+  const init = lazy(async () => {
+    const cutoff = Date.now() - RETENTION_MS
+    const entries = await fs.readdir(DIR).catch(() => [] as string[])
+    for (const entry of entries) {
+      if (!entry.startsWith("tool_")) continue
+      const timestamp = iife(() => {
+        const hex = entry.slice(5, 17)
+        const now = BigInt("0x" + hex)
+        return Number(now / BigInt(0x1000))
+      })
+      if (timestamp >= cutoff) continue
+      await fs.rm(path.join(DIR, entry), { force: true }).catch(() => {})
+    }
+  })
+
+  export async function output(text: string, options: Options = {}): Promise<Result> {
     const maxLines = options.maxLines ?? MAX_LINES
     const maxBytes = options.maxBytes ?? MAX_BYTES
     const direction = options.direction ?? "head"
@@ -39,22 +64,32 @@ export namespace Truncate {
         out.push(lines[i])
         bytes += size
       }
-      const removed = hitBytes ? totalBytes - bytes : lines.length - out.length
-      const unit = hitBytes ? "chars" : "lines"
-      return { content: `${out.join("\n")}\n\n...${removed} ${unit} truncated...`, truncated: true }
+    } else {
+      for (i = lines.length - 1; i >= 0 && out.length < maxLines; i--) {
+        const size = Buffer.byteLength(lines[i], "utf-8") + (out.length > 0 ? 1 : 0)
+        if (bytes + size > maxBytes) {
+          hitBytes = true
+          break
+        }
+        out.unshift(lines[i])
+        bytes += size
+      }
     }
 
-    for (i = lines.length - 1; i >= 0 && out.length < maxLines; i--) {
-      const size = Buffer.byteLength(lines[i], "utf-8") + (out.length > 0 ? 1 : 0)
-      if (bytes + size > maxBytes) {
-        hitBytes = true
-        break
-      }
-      out.unshift(lines[i])
-      bytes += size
-    }
     const removed = hitBytes ? totalBytes - bytes : lines.length - out.length
     const unit = hitBytes ? "chars" : "lines"
-    return { content: `...${removed} ${unit} truncated...\n\n${out.join("\n")}`, truncated: true }
+    const preview = out.join("\n")
+
+    await init()
+    const id = Identifier.ascending("tool")
+    const filepath = path.join(DIR, id)
+    await Bun.write(Bun.file(filepath), text)
+
+    const message =
+      direction === "head"
+        ? `${preview}\n\n...${removed} ${unit} truncated...\n\nFull output written to: ${filepath}\nUse Read or Grep to view the full content.`
+        : `...${removed} ${unit} truncated...\n\nFull output written to: ${filepath}\nUse Read or Grep to view the full content.\n\n${preview}`
+
+    return { content: message, truncated: true, outputPath: filepath }
   }
 }

@@ -9,6 +9,7 @@ export namespace Identifier {
     user: "usr",
     part: "prt",
     pty: "pty",
+    tool: "tool",
   } as const
 
   export function schema(prefix: keyof typeof prefixes) {

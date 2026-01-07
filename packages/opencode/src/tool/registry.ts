@@ -65,7 +65,7 @@ export namespace ToolRegistry {
         description: def.description,
         execute: async (args, ctx) => {
           const result = await def.execute(args as any, ctx)
-          const out = Truncate.output(result)
+          const out = await Truncate.output(result)
           return {
             title: "",
             output: out.truncated ? out.content : result,

@@ -8,41 +8,40 @@ describe("Truncate", () => {
   describe("output", () => {
     test("truncates large json file by bytes", async () => {
       const content = await Bun.file(path.join(FIXTURES_DIR, "models-api.json")).text()
-      const result = Truncate.output(content)
+      const result = await Truncate.output(content)
 
       expect(result.truncated).toBe(true)
-      expect(Buffer.byteLength(result.content, "utf-8")).toBeLessThanOrEqual(Truncate.MAX_BYTES + 100)
       expect(result.content).toContain("truncated...")
+      expect(result.outputPath).toBeDefined()
     })
 
-    test("returns content unchanged when under limits", () => {
+    test("returns content unchanged when under limits", async () => {
       const content = "line1\nline2\nline3"
-      const result = Truncate.output(content)
+      const result = await Truncate.output(content)
 
       expect(result.truncated).toBe(false)
       expect(result.content).toBe(content)
     })
 
-    test("truncates by line count", () => {
+    test("truncates by line count", async () => {
       const lines = Array.from({ length: 100 }, (_, i) => `line${i}`).join("\n")
-      const result = Truncate.output(lines, { maxLines: 10 })
+      const result = await Truncate.output(lines, { maxLines: 10 })
 
       expect(result.truncated).toBe(true)
-      expect(result.content.split("\n").length).toBeLessThanOrEqual(12)
       expect(result.content).toContain("...90 lines truncated...")
     })
 
-    test("truncates by byte count", () => {
+    test("truncates by byte count", async () => {
       const content = "a".repeat(1000)
-      const result = Truncate.output(content, { maxBytes: 100 })
+      const result = await Truncate.output(content, { maxBytes: 100 })
 
       expect(result.truncated).toBe(true)
       expect(result.content).toContain("truncated...")
     })
 
-    test("truncates from head by default", () => {
+    test("truncates from head by default", async () => {
       const lines = Array.from({ length: 10 }, (_, i) => `line${i}`).join("\n")
-      const result = Truncate.output(lines, { maxLines: 3 })
+      const result = await Truncate.output(lines, { maxLines: 3 })
 
       expect(result.truncated).toBe(true)
       expect(result.content).toContain("line0")
@@ -51,9 +50,9 @@ describe("Truncate", () => {
       expect(result.content).not.toContain("line9")
     })
 
-    test("truncates from tail when direction is tail", () => {
+    test("truncates from tail when direction is tail", async () => {
       const lines = Array.from({ length: 10 }, (_, i) => `line${i}`).join("\n")
-      const result = Truncate.output(lines, { maxLines: 3, direction: "tail" })
+      const result = await Truncate.output(lines, { maxLines: 3, direction: "tail" })
 
       expect(result.truncated).toBe(true)
       expect(result.content).toContain("line7")
@@ -69,11 +68,33 @@ describe("Truncate", () => {
 
     test("large single-line file truncates with byte message", async () => {
       const content = await Bun.file(path.join(FIXTURES_DIR, "models-api.json")).text()
-      const result = Truncate.output(content)
+      const result = await Truncate.output(content)
 
       expect(result.truncated).toBe(true)
       expect(result.content).toContain("chars truncated...")
       expect(Buffer.byteLength(content, "utf-8")).toBeGreaterThan(Truncate.MAX_BYTES)
+    })
+
+    test("writes full output to file when truncated", async () => {
+      const lines = Array.from({ length: 100 }, (_, i) => `line${i}`).join("\n")
+      const result = await Truncate.output(lines, { maxLines: 10 })
+
+      expect(result.truncated).toBe(true)
+      expect(result.outputPath).toBeDefined()
+      expect(result.outputPath).toContain("tool_")
+      expect(result.content).toContain("Full output written to:")
+      expect(result.content).toContain("Use Read or Grep to view the full content")
+
+      const written = await Bun.file(result.outputPath!).text()
+      expect(written).toBe(lines)
+    })
+
+    test("does not write file when not truncated", async () => {
+      const content = "short content"
+      const result = await Truncate.output(content)
+
+      expect(result.truncated).toBe(false)
+      expect(result.outputPath).toBeUndefined()
     })
   })
 })

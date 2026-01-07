@@ -66,7 +66,7 @@ export namespace Tool {
             )
           }
           const result = await execute(args, ctx)
-          const truncated = Truncate.output(result.output)
+          const truncated = await Truncate.output(result.output)
           return {
             ...result,
             output: truncated.content,
