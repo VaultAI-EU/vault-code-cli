@@ -4,6 +4,7 @@ import { Icon } from "@opencode-ai/ui/icon"
 import type { Component, ComponentProps } from "solid-js"
 import { useLayout } from "@/context/layout"
 import { useCommand } from "@/context/command"
+import { usePlatform } from "@/context/platform"
 
 const IS_MAC = typeof navigator === "object" && /(Mac|iPod|iPhone|iPad)/.test(navigator.platform)
 
@@ -12,13 +13,14 @@ export const TOOLBAR_PORTAL_ID = "toolbar-content-portal"
 
 export const Toolbar: Component<ComponentProps<"div">> = ({ class: className, ...props }) => {
   const command = useCommand()
+  const platform = usePlatform()
   const layout = useLayout()
 
   return (
     <div
       classList={{
-        "pl-[80px]": IS_MAC,
-        "pl-2": !IS_MAC,
+        "pl-[80px]": IS_MAC && platform.platform !== "web",
+        "pl-2": !IS_MAC || platform.platform === "web",
         "py-2 mx-px bg-background-base border-b border-border-weak-base flex items-center justify-between w-full border-box relative": true,
         ...(className ? { [className]: true } : {}),
       }}
