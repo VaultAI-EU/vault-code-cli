@@ -1841,8 +1841,9 @@ function Question(props: ToolProps<typeof QuestionTool>) {
   const { theme } = useTheme()
   const count = createMemo(() => props.input.questions?.length ?? 0)
 
-  function format(answer?: string[]) {
+  function format(answer?: string[] | string) {
     if (!answer?.length) return "(no answer)"
+    if (!Array.isArray(answer)) return String(answer)
     return answer.join(", ")
   }
 

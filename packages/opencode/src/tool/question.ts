@@ -15,8 +15,9 @@ export const QuestionTool = Tool.define("question", {
       tool: ctx.callID ? { messageID: ctx.messageID, callID: ctx.callID } : undefined,
     })
 
-    function format(answer: Question.Answer | undefined) {
+    function format(answer: Question.Answer | string | undefined) {
       if (!answer?.length) return "Unanswered"
+      if (!Array.isArray(answer)) return String(answer)
       return answer.join(", ")
     }
 
