@@ -1,7 +1,6 @@
-import { UserMessage } from "@opencode-ai/sdk/v2"
-import { ComponentProps, For, Match, Show, splitProps, Switch } from "solid-js"
-import { DiffChanges } from "./diff-changes"
 import { Tooltip } from "@kobalte/core/tooltip"
+import { type ComponentProps, For, Match, Show, Switch, splitProps } from "solid-js"
+import type { UserMessage } from "@opencode-ai/sdk/v2"
 
 export function MessageNav(
   props: ComponentProps<"ul"> & {
@@ -14,7 +13,7 @@ export function MessageNav(
   const [local, others] = splitProps(props, ["messages", "current", "size", "onMessageSelect"])
 
   const content = () => (
-    <ul role="list" data-component="message-nav" data-size={local.size} {...others}>
+    <ul data-component="message-nav" data-size={local.size} {...others}>
       <For each={local.messages}>
         {(message) => {
           const handleClick = () => local.onMessageSelect(message)
@@ -28,8 +27,7 @@ export function MessageNav(
                   </div>
                 </Match>
                 <Match when={local.size === "normal"}>
-                  <button data-slot="message-nav-message-button" onClick={handleClick}>
-                    <DiffChanges changes={message.summary?.diffs ?? []} variant="bars" />
+                  <button data-slot="message-nav-message-button" onClick={handleClick} type="button">
                     <div
                       data-slot="message-nav-title-preview"
                       data-active={message.id === local.current?.id || undefined}
@@ -38,6 +36,24 @@ export function MessageNav(
                         {message.summary?.title}
                       </Show>
                     </div>
+                    <Show when={(message.summary?.diffs.reduce((acc, diff) => acc + diff.additions, 0) ?? 0) > 0}>
+                      <span data-slot="message-nav-diff-changes message-nav-diff-additions">
+                        {message.summary?.diffs.reduce((acc, diff) => acc + diff.additions, 0)}
+                      </span>
+                    </Show>
+                    <Show when={(message.summary?.diffs.reduce((acc, diff) => acc + diff.deletions, 0) ?? 0) > 0}>
+                      <span data-slot="message-nav-diff-changes message-nav-diff-deletions">
+                        {message.summary?.diffs.reduce((acc, diff) => acc + diff.deletions, 0)}
+                      </span>
+                    </Show>
+                    <Show
+                      when={
+                        (message.summary?.diffs?.reduce((acc, diff) => acc + diff.additions, 0) ?? 0) <= 0 &&
+                        (message.summary?.diffs?.reduce((acc, diff) => acc + diff.deletions, 0) ?? 0) <= 0
+                      }
+                    >
+                      <span data-slot="message-nav-diff-changes message-nav-diff-neutral">0</span>
+                    </Show>
                   </button>
                 </Match>
               </Switch>
