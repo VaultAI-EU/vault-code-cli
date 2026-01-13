@@ -72,17 +72,17 @@ export const SessionReview = (props: SessionReviewProps) => {
         <div data-slot="session-review-actions">
           <Show when={props.onDiffStyleChange}>
             <RadioGroup
-              options={["unified", "split"] as const}
+              options={["unified", "split"]}
               current={diffStyle()}
               value={(style) => style}
               label={(style) => (style === "unified" ? "Unified" : "Split")}
-              onSelect={(style) => style && props.onDiffStyleChange?.(style)}
+              onSelect={(style) => style && props.onDiffStyleChange?.(style as SessionReviewDiffStyle)}
             />
           </Show>
           <Button size="normal" icon="chevron-grabber-vertical" onClick={handleExpandOrCollapseAll}>
             <Switch>
-              <Match when={open().length > 0}>Collapse all</Match>
-              <Match when={true}>Expand all</Match>
+              <Match when={open().length > 0}>Collapse</Match>
+              <Match when={true}>Expand</Match>
             </Switch>
           </Button>
           {props.actions}
