@@ -4,7 +4,7 @@ import { createEffect, createSignal, For, onMount, Show } from "solid-js"
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements, PaymentElement, useStripe, useElements } from "solid-stripe"
 import { config } from "~/config"
-import { PlanIcon, plans } from "./common"
+import { Plan, PlanIcon, plans } from "./common"
 import { getActor } from "~/context/auth"
 import { withActor } from "~/context/auth.withActor"
 import { Actor } from "@opencode-ai/console-core/actor.js"
@@ -41,7 +41,7 @@ const getWorkspaces = query(async () => {
   })
 }, "black.subscribe.workspaces")
 
-function CheckoutForm(props: { plan: string; amount: number }) {
+function CheckoutForm(props: { plan: Plan["id"]; amount: number }) {
   const stripe = useStripe()
   const elements = useElements()
   const [error, setError] = createSignal<string | null>(null)
@@ -93,7 +93,7 @@ export default function BlackSubscribe() {
   const [selectedWorkspace, setSelectedWorkspace] = createSignal<string | null>(null)
 
   const [params] = useSearchParams()
-  const plan = (params.plan as string) || "200"
+  const plan = (params.plan as Plan["id"]) || "200"
   const planData = plansMap[plan] || plansMap["200"]
 
   const [clientSecret, setClientSecret] = createSignal<string | null>(null)

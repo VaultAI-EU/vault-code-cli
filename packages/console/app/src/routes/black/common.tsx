@@ -13,11 +13,13 @@ export function PlanIcon(props: { plan: string }) {
     <Switch>
       <Match when={props.plan === "20"}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <title>Black 20 plan</title>
           <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5" />
         </svg>
       </Match>
       <Match when={props.plan === "100"}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <title>Black 100 plan</title>
           <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
           <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
           <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
@@ -26,6 +28,7 @@ export function PlanIcon(props: { plan: string }) {
       </Match>
       <Match when={props.plan === "200"}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <title>Black 200 plan</title>
           <rect x="2" y="2" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1" />
           <rect x="10" y="2" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1" />
           <rect x="18" y="2" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1" />
