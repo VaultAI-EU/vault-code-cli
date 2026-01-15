@@ -3,7 +3,7 @@ import { Title, Meta, Link } from "@solidjs/meta"
 import { createMemo, createSignal } from "solid-js"
 import { github } from "~/lib/github"
 import { config } from "~/config"
-import LightRays, { defaultConfig, LightRaysControls, type LightRaysConfig } from "~/component/light-rays"
+import LightRays, { defaultConfig, type LightRaysConfig } from "~/component/light-rays"
 import "./black.css"
 
 export default function BlackLayout(props: RouteSectionProps) {
@@ -44,7 +44,6 @@ export default function BlackLayout(props: RouteSectionProps) {
       <Meta name="twitter:image" content="/social-share-black.png" />
 
       <LightRays config={lightRaysConfig} class="header-light-rays" />
-      <LightRaysControls config={lightRaysConfig} setConfig={setLightRaysConfig} />
 
       <header data-component="header">
         <A href="/" data-component="header-logo">
