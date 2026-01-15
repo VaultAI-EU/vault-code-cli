@@ -1,5 +1,4 @@
 import { createSignal, createEffect, onMount, onCleanup, Show, For, Accessor, Setter } from "solid-js"
-import { Renderer, Program, Triangle, Mesh } from "ogl"
 import "./light-rays.css"
 
 export type RaysOrigin =
@@ -34,9 +33,9 @@ export interface LightRaysConfig {
 export const defaultConfig: LightRaysConfig = {
   raysOrigin: "top-center",
   raysColor: "#ffffff",
-  raysSpeed: 0.3,
+  raysSpeed: 1.0,
   lightSpread: 1.15,
-  rayLength: 2.75,
+  rayLength: 4.0,
   sourceWidth: 0.1,
   pulsating: true,
   pulsatingMin: 0.9,
@@ -86,37 +85,237 @@ const getAnchorAndDir = (
   }
 }
 
-type Vec2 = [number, number]
-type Vec3 = [number, number, number]
+interface UniformData {
+  iTime: number
+  iResolution: [number, number]
+  rayPos: [number, number]
+  rayDir: [number, number]
+  raysColor: [number, number, number]
+  raysSpeed: number
+  lightSpread: number
+  rayLength: number
+  sourceWidth: number
+  pulsating: number
+  pulsatingMin: number
+  pulsatingMax: number
+  fadeDistance: number
+  saturation: number
+  mousePos: [number, number]
+  mouseInfluence: number
+  noiseAmount: number
+  distortion: number
+}
 
-interface Uniforms {
-  iTime: { value: number }
-  iResolution: { value: Vec2 }
-  rayPos: { value: Vec2 }
-  rayDir: { value: Vec2 }
-  raysColor: { value: Vec3 }
-  raysSpeed: { value: number }
-  lightSpread: { value: number }
-  rayLength: { value: number }
-  sourceWidth: { value: number }
-  pulsating: { value: number }
-  pulsatingMin: { value: number }
-  pulsatingMax: { value: number }
-  fadeDistance: { value: number }
-  saturation: { value: number }
-  mousePos: { value: Vec2 }
-  mouseInfluence: { value: number }
-  noiseAmount: { value: number }
-  distortion: { value: number }
+const WGSL_SHADER = `
+struct Uniforms {
+  iTime: f32,
+  _pad0: f32,
+  iResolution: vec2<f32>,
+  rayPos: vec2<f32>,
+  rayDir: vec2<f32>,
+  raysColor: vec3<f32>,
+  raysSpeed: f32,
+  lightSpread: f32,
+  rayLength: f32,
+  sourceWidth: f32,
+  pulsating: f32,
+  pulsatingMin: f32,
+  pulsatingMax: f32,
+  fadeDistance: f32,
+  saturation: f32,
+  mousePos: vec2<f32>,
+  mouseInfluence: f32,
+  noiseAmount: f32,
+  distortion: f32,
+  _pad1: f32,
+  _pad2: f32,
+  _pad3: f32,
+};
+
+@group(0) @binding(0) var<uniform> uniforms: Uniforms;
+
+struct VertexOutput {
+  @builtin(position) position: vec4<f32>,
+  @location(0) vUv: vec2<f32>,
+};
+
+@vertex
+fn vertexMain(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
+  // Full-screen triangle
+  var positions = array<vec2<f32>, 3>(
+    vec2<f32>(-1.0, -1.0),
+    vec2<f32>(3.0, -1.0),
+    vec2<f32>(-1.0, 3.0)
+  );
+  
+  var output: VertexOutput;
+  let pos = positions[vertexIndex];
+  output.position = vec4<f32>(pos, 0.0, 1.0);
+  output.vUv = pos * 0.5 + 0.5;
+  return output;
+}
+
+fn noise(st: vec2<f32>) -> f32 {
+  return fract(sin(dot(st, vec2<f32>(12.9898, 78.233))) * 43758.5453123);
+}
+
+fn rayStrength(raySource: vec2<f32>, rayRefDirection: vec2<f32>, coord: vec2<f32>,
+               seedA: f32, seedB: f32, speed: f32) -> f32 {
+  let sourceToCoord = coord - raySource;
+  let dirNorm = normalize(sourceToCoord);
+  let cosAngle = dot(dirNorm, rayRefDirection);
+
+  let distortedAngle = cosAngle + uniforms.distortion * sin(uniforms.iTime * 2.0 + length(sourceToCoord) * 0.01) * 0.2;
+  
+  let spreadFactor = pow(max(distortedAngle, 0.0), 1.0 / max(uniforms.lightSpread, 0.001));
+
+  let distance = length(sourceToCoord);
+  let maxDistance = uniforms.iResolution.x * uniforms.rayLength;
+  let lengthFalloff = clamp((maxDistance - distance) / maxDistance, 0.0, 1.0);
+  
+  let fadeFalloff = clamp((uniforms.iResolution.x * uniforms.fadeDistance - distance) / (uniforms.iResolution.x * uniforms.fadeDistance), 0.5, 1.0);
+  let pulseCenter = (uniforms.pulsatingMin + uniforms.pulsatingMax) * 0.5;
+  let pulseAmplitude = (uniforms.pulsatingMax - uniforms.pulsatingMin) * 0.5;
+  var pulse: f32;
+  if (uniforms.pulsating > 0.5) {
+    pulse = pulseCenter + pulseAmplitude * sin(uniforms.iTime * speed * 3.0);
+  } else {
+    pulse = 1.0;
+  }
+
+  let baseStrength = clamp(
+    (0.45 + 0.15 * sin(distortedAngle * seedA + uniforms.iTime * speed)) +
+    (0.3 + 0.2 * cos(-distortedAngle * seedB + uniforms.iTime * speed)),
+    0.0, 1.0
+  );
+
+  return baseStrength * lengthFalloff * fadeFalloff * spreadFactor * pulse;
+}
+
+@fragment
+fn fragmentMain(@builtin(position) fragCoord: vec4<f32>, @location(0) vUv: vec2<f32>) -> @location(0) vec4<f32> {
+  let coord = vec2<f32>(fragCoord.x, fragCoord.y);
+  
+  let normalizedX = (coord.x / uniforms.iResolution.x) - 0.5;
+  let widthOffset = -normalizedX * uniforms.sourceWidth * uniforms.iResolution.x;
+  
+  let perpDir = vec2<f32>(-uniforms.rayDir.y, uniforms.rayDir.x);
+  let adjustedRayPos = uniforms.rayPos + perpDir * widthOffset;
+  
+  var finalRayDir = uniforms.rayDir;
+  if (uniforms.mouseInfluence > 0.0) {
+    let mouseScreenPos = uniforms.mousePos * uniforms.iResolution;
+    let mouseDirection = normalize(mouseScreenPos - adjustedRayPos);
+    finalRayDir = normalize(mix(uniforms.rayDir, mouseDirection, uniforms.mouseInfluence));
+  }
+
+  let rays1 = vec4<f32>(1.0) *
+               rayStrength(adjustedRayPos, finalRayDir, coord, 36.2214, 21.11349,
+                           1.5 * uniforms.raysSpeed);
+  let rays2 = vec4<f32>(1.0) *
+               rayStrength(adjustedRayPos, finalRayDir, coord, 22.3991, 18.0234,
+                           1.1 * uniforms.raysSpeed);
+
+  var fragColor = rays1 * 0.5 + rays2 * 0.4;
+
+  if (uniforms.noiseAmount > 0.0) {
+    let n = noise(coord * 0.01 + uniforms.iTime * 0.1);
+    fragColor = vec4<f32>(fragColor.rgb * (1.0 - uniforms.noiseAmount + uniforms.noiseAmount * n), fragColor.a);
+  }
+
+  let brightness = 1.0 - (coord.y / uniforms.iResolution.y);
+  fragColor.x = fragColor.x * (0.1 + brightness * 0.8);
+  fragColor.y = fragColor.y * (0.3 + brightness * 0.6);
+  fragColor.z = fragColor.z * (0.5 + brightness * 0.5);
+
+  if (uniforms.saturation != 1.0) {
+    let gray = dot(fragColor.rgb, vec3<f32>(0.299, 0.587, 0.114));
+    fragColor = vec4<f32>(mix(vec3<f32>(gray), fragColor.rgb, uniforms.saturation), fragColor.a);
+  }
+
+  fragColor = vec4<f32>(fragColor.rgb * uniforms.raysColor, fragColor.a);
+  
+  return fragColor;
+}
+`
+
+const UNIFORM_BUFFER_SIZE = 96
+
+function createUniformBuffer(data: UniformData): Float32Array {
+  const buffer = new Float32Array(24)
+  buffer[0] = data.iTime
+  buffer[1] = 0
+  buffer[2] = data.iResolution[0]
+  buffer[3] = data.iResolution[1]
+  buffer[4] = data.rayPos[0]
+  buffer[5] = data.rayPos[1]
+  buffer[6] = data.rayDir[0]
+  buffer[7] = data.rayDir[1]
+  buffer[8] = data.raysColor[0]
+  buffer[9] = data.raysColor[1]
+  buffer[10] = data.raysColor[2]
+  buffer[11] = data.raysSpeed
+  buffer[12] = data.lightSpread
+  buffer[13] = data.rayLength
+  buffer[14] = data.sourceWidth
+  buffer[15] = data.pulsating
+  buffer[16] = data.pulsatingMin
+  buffer[17] = data.pulsatingMax
+  buffer[18] = data.fadeDistance
+  buffer[19] = data.saturation
+  buffer[20] = data.mousePos[0]
+  buffer[21] = data.mousePos[1]
+  buffer[22] = data.mouseInfluence
+  buffer[23] = data.noiseAmount
+  return buffer
+}
+
+const UNIFORM_BUFFER_SIZE_CORRECTED = 112
+
+function createUniformBufferCorrected(data: UniformData): Float32Array {
+  const buffer = new Float32Array(28)
+  buffer[0] = data.iTime
+  buffer[1] = 0
+  buffer[2] = data.iResolution[0]
+  buffer[3] = data.iResolution[1]
+  buffer[4] = data.rayPos[0]
+  buffer[5] = data.rayPos[1]
+  buffer[6] = data.rayDir[0]
+  buffer[7] = data.rayDir[1]
+  buffer[8] = data.raysColor[0]
+  buffer[9] = data.raysColor[1]
+  buffer[10] = data.raysColor[2]
+  buffer[11] = data.raysSpeed
+  buffer[12] = data.lightSpread
+  buffer[13] = data.rayLength
+  buffer[14] = data.sourceWidth
+  buffer[15] = data.pulsating
+  buffer[16] = data.pulsatingMin
+  buffer[17] = data.pulsatingMax
+  buffer[18] = data.fadeDistance
+  buffer[19] = data.saturation
+  buffer[20] = data.mousePos[0]
+  buffer[21] = data.mousePos[1]
+  buffer[22] = data.mouseInfluence
+  buffer[23] = data.noiseAmount
+  buffer[24] = data.distortion
+  buffer[25] = 0
+  buffer[26] = 0
+  buffer[27] = 0
+  return buffer
 }
 
 export default function LightRays(props: LightRaysProps) {
   let containerRef: HTMLDivElement | undefined
-  let uniformsRef: Uniforms | null = null
-  let rendererRef: Renderer | null = null
-  let meshRef: Mesh | null = null
+  let canvasRef: HTMLCanvasElement | null = null
+  let deviceRef: GPUDevice | null = null
+  let contextRef: GPUCanvasContext | null = null
+  let pipelineRef: GPURenderPipeline | null = null
+  let uniformBufferRef: GPUBuffer | null = null
+  let bindGroupRef: GPUBindGroup | null = null
   let animationIdRef: number | null = null
   let cleanupFunctionRef: (() => void) | null = null
+  let uniformDataRef: UniformData | null = null
 
   const mouseRef = { x: 0.5, y: 0.5 }
   const smoothMouseRef = { x: 0.5, y: 0.5 }
@@ -153,7 +352,7 @@ export default function LightRays(props: LightRaysProps) {
       cleanupFunctionRef = null
     }
 
-    const initializeWebGL = async () => {
+    const initializeWebGPU = async () => {
       if (!containerRef) {
         return
       }
@@ -164,199 +363,167 @@ export default function LightRays(props: LightRaysProps) {
         return
       }
 
-      const renderer = new Renderer({
-        dpr: Math.min(window.devicePixelRatio, 2),
-        alpha: true,
-      })
-      rendererRef = renderer
+      if (!navigator.gpu) {
+        console.warn("WebGPU is not supported in this browser")
+        return
+      }
 
-      const gl = renderer.gl
-      gl.canvas.style.width = "100%"
-      gl.canvas.style.height = "100%"
+      const adapter = await navigator.gpu.requestAdapter()
+      if (!adapter) {
+        console.warn("Failed to get WebGPU adapter")
+        return
+      }
+
+      const device = await adapter.requestDevice()
+      deviceRef = device
+
+      const canvas = document.createElement("canvas")
+      canvas.style.width = "100%"
+      canvas.style.height = "100%"
+      canvasRef = canvas
 
       while (containerRef.firstChild) {
         containerRef.removeChild(containerRef.firstChild)
       }
-      containerRef.appendChild(gl.canvas)
+      containerRef.appendChild(canvas)
 
-      const vert = `
-attribute vec2 position;
-varying vec2 vUv;
-void main() {
-  vUv = position * 0.5 + 0.5;
-  gl_Position = vec4(position, 0.0, 1.0);
-}`
-
-      const frag = `precision highp float;
-
-uniform float iTime;
-uniform vec2  iResolution;
-
-uniform vec2  rayPos;
-uniform vec2  rayDir;
-uniform vec3  raysColor;
-uniform float raysSpeed;
-uniform float lightSpread;
-uniform float rayLength;
-uniform float sourceWidth;
-uniform float pulsating;
-uniform float pulsatingMin;
-uniform float pulsatingMax;
-uniform float fadeDistance;
-uniform float saturation;
-uniform vec2  mousePos;
-uniform float mouseInfluence;
-uniform float noiseAmount;
-uniform float distortion;
-
-varying vec2 vUv;
-
-float noise(vec2 st) {
-  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
-}
-
-float rayStrength(vec2 raySource, vec2 rayRefDirection, vec2 coord,
-                  float seedA, float seedB, float speed) {
-  vec2 sourceToCoord = coord - raySource;
-  vec2 dirNorm = normalize(sourceToCoord);
-  float cosAngle = dot(dirNorm, rayRefDirection);
-
-  float distortedAngle = cosAngle + distortion * sin(iTime * 2.0 + length(sourceToCoord) * 0.01) * 0.2;
-  
-  float spreadFactor = pow(max(distortedAngle, 0.0), 1.0 / max(lightSpread, 0.001));
-
-  float distance = length(sourceToCoord);
-  float maxDistance = iResolution.x * rayLength;
-  float lengthFalloff = clamp((maxDistance - distance) / maxDistance, 0.0, 1.0);
-  
-  float fadeFalloff = clamp((iResolution.x * fadeDistance - distance) / (iResolution.x * fadeDistance), 0.5, 1.0);
-  float pulseCenter = (pulsatingMin + pulsatingMax) * 0.5;
-  float pulseAmplitude = (pulsatingMax - pulsatingMin) * 0.5;
-  float pulse = pulsating > 0.5 ? (pulseCenter + pulseAmplitude * sin(iTime * speed * 3.0)) : 1.0;
-
-  float baseStrength = clamp(
-    (0.45 + 0.15 * sin(distortedAngle * seedA + iTime * speed)) +
-    (0.3 + 0.2 * cos(-distortedAngle * seedB + iTime * speed)),
-    0.0, 1.0
-  );
-
-  return baseStrength * lengthFalloff * fadeFalloff * spreadFactor * pulse;
-}
-
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  vec2 coord = vec2(fragCoord.x, iResolution.y - fragCoord.y);
-  
-  // Calculate source position offset based on sourceWidth
-  // Negative offset makes rays spread wider (source moves opposite to pixel position)
-  float normalizedX = (coord.x / iResolution.x) - 0.5; // -0.5 to 0.5
-  float widthOffset = -normalizedX * sourceWidth * iResolution.x;
-  
-  // Perpendicular to ray direction for width offset
-  vec2 perpDir = vec2(-rayDir.y, rayDir.x);
-  vec2 adjustedRayPos = rayPos + perpDir * widthOffset;
-  
-  vec2 finalRayDir = rayDir;
-  if (mouseInfluence > 0.0) {
-    vec2 mouseScreenPos = mousePos * iResolution.xy;
-    vec2 mouseDirection = normalize(mouseScreenPos - adjustedRayPos);
-    finalRayDir = normalize(mix(rayDir, mouseDirection, mouseInfluence));
-  }
-
-  vec4 rays1 = vec4(1.0) *
-               rayStrength(adjustedRayPos, finalRayDir, coord, 36.2214, 21.11349,
-                           1.5 * raysSpeed);
-  vec4 rays2 = vec4(1.0) *
-               rayStrength(adjustedRayPos, finalRayDir, coord, 22.3991, 18.0234,
-                           1.1 * raysSpeed);
-
-  fragColor = rays1 * 0.5 + rays2 * 0.4;
-
-  if (noiseAmount > 0.0) {
-    float n = noise(coord * 0.01 + iTime * 0.1);
-    fragColor.rgb *= (1.0 - noiseAmount + noiseAmount * n);
-  }
-
-  float brightness = 1.0 - (coord.y / iResolution.y);
-  fragColor.x *= 0.1 + brightness * 0.8;
-  fragColor.y *= 0.3 + brightness * 0.6;
-  fragColor.z *= 0.5 + brightness * 0.5;
-
-  if (saturation != 1.0) {
-    float gray = dot(fragColor.rgb, vec3(0.299, 0.587, 0.114));
-    fragColor.rgb = mix(vec3(gray), fragColor.rgb, saturation);
-  }
-
-  fragColor.rgb *= raysColor;
-}
-
-void main() {
-  vec4 color;
-  mainImage(color, gl_FragCoord.xy);
-  gl_FragColor  = color;
-}`
-
-      const uniforms: Uniforms = {
-        iTime: { value: 0 },
-        iResolution: { value: [1, 1] },
-
-        rayPos: { value: [0, 0] },
-        rayDir: { value: [0, 1] },
-
-        raysColor: { value: hexToRgb(config.raysColor) },
-        raysSpeed: { value: config.raysSpeed },
-        lightSpread: { value: config.lightSpread },
-        rayLength: { value: config.rayLength },
-        sourceWidth: { value: config.sourceWidth },
-        pulsating: { value: config.pulsating ? 1.0 : 0.0 },
-        pulsatingMin: { value: config.pulsatingMin },
-        pulsatingMax: { value: config.pulsatingMax },
-        fadeDistance: { value: config.fadeDistance },
-        saturation: { value: config.saturation },
-        mousePos: { value: [0.5, 0.5] },
-        mouseInfluence: { value: config.mouseInfluence },
-        noiseAmount: { value: config.noiseAmount },
-        distortion: { value: config.distortion },
+      const context = canvas.getContext("webgpu")
+      if (!context) {
+        console.warn("Failed to get WebGPU context")
+        return
       }
-      uniformsRef = uniforms
+      contextRef = context
 
-      const geometry = new Triangle(gl)
-      const program = new Program(gl, {
-        vertex: vert,
-        fragment: frag,
-        uniforms,
+      const presentationFormat = navigator.gpu.getPreferredCanvasFormat()
+      context.configure({
+        device,
+        format: presentationFormat,
+        alphaMode: "premultiplied",
       })
-      const mesh = new Mesh(gl, { geometry, program })
-      meshRef = mesh
+
+      const shaderModule = device.createShaderModule({
+        code: WGSL_SHADER,
+      })
+
+      const uniformBuffer = device.createBuffer({
+        size: UNIFORM_BUFFER_SIZE_CORRECTED,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+      })
+      uniformBufferRef = uniformBuffer
+
+      const bindGroupLayout = device.createBindGroupLayout({
+        entries: [
+          {
+            binding: 0,
+            visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+            buffer: { type: "uniform" },
+          },
+        ],
+      })
+
+      const bindGroup = device.createBindGroup({
+        layout: bindGroupLayout,
+        entries: [
+          {
+            binding: 0,
+            resource: { buffer: uniformBuffer },
+          },
+        ],
+      })
+      bindGroupRef = bindGroup
+
+      const pipelineLayout = device.createPipelineLayout({
+        bindGroupLayouts: [bindGroupLayout],
+      })
+
+      const pipeline = device.createRenderPipeline({
+        layout: pipelineLayout,
+        vertex: {
+          module: shaderModule,
+          entryPoint: "vertexMain",
+        },
+        fragment: {
+          module: shaderModule,
+          entryPoint: "fragmentMain",
+          targets: [
+            {
+              format: presentationFormat,
+              blend: {
+                color: {
+                  srcFactor: "src-alpha",
+                  dstFactor: "one-minus-src-alpha",
+                  operation: "add",
+                },
+                alpha: {
+                  srcFactor: "one",
+                  dstFactor: "one-minus-src-alpha",
+                  operation: "add",
+                },
+              },
+            },
+          ],
+        },
+        primitive: {
+          topology: "triangle-list",
+        },
+      })
+      pipelineRef = pipeline
+
+      const { clientWidth: wCSS, clientHeight: hCSS } = containerRef
+      const dpr = Math.min(window.devicePixelRatio, 2)
+      const w = wCSS * dpr
+      const h = hCSS * dpr
+      const { anchor, dir } = getAnchorAndDir(config.raysOrigin, w, h)
+
+      uniformDataRef = {
+        iTime: 0,
+        iResolution: [w, h],
+        rayPos: anchor,
+        rayDir: dir,
+        raysColor: hexToRgb(config.raysColor),
+        raysSpeed: config.raysSpeed,
+        lightSpread: config.lightSpread,
+        rayLength: config.rayLength,
+        sourceWidth: config.sourceWidth,
+        pulsating: config.pulsating ? 1.0 : 0.0,
+        pulsatingMin: config.pulsatingMin,
+        pulsatingMax: config.pulsatingMax,
+        fadeDistance: config.fadeDistance,
+        saturation: config.saturation,
+        mousePos: [0.5, 0.5],
+        mouseInfluence: config.mouseInfluence,
+        noiseAmount: config.noiseAmount,
+        distortion: config.distortion,
+      }
 
       const updatePlacement = () => {
-        if (!containerRef || !renderer) {
+        if (!containerRef || !canvasRef || !uniformDataRef) {
           return
         }
 
-        renderer.dpr = Math.min(window.devicePixelRatio, 2)
-
+        const dpr = Math.min(window.devicePixelRatio, 2)
         const { clientWidth: wCSS, clientHeight: hCSS } = containerRef
-        renderer.setSize(wCSS, hCSS)
+        const w = Math.floor(wCSS * dpr)
+        const h = Math.floor(hCSS * dpr)
 
-        const dpr = renderer.dpr
-        const w = wCSS * dpr
-        const h = hCSS * dpr
+        canvasRef.width = w
+        canvasRef.height = h
 
-        uniforms.iResolution.value = [w, h]
+        uniformDataRef.iResolution = [w, h]
 
         const currentConfig = props.config()
         const { anchor, dir } = getAnchorAndDir(currentConfig.raysOrigin, w, h)
-        uniforms.rayPos.value = anchor
-        uniforms.rayDir.value = dir
+        uniformDataRef.rayPos = anchor
+        uniformDataRef.rayDir = dir
       }
 
       const loop = (t: number) => {
-        if (!rendererRef || !uniformsRef || !meshRef) {
+        if (!deviceRef || !contextRef || !pipelineRef || !uniformBufferRef || !bindGroupRef || !uniformDataRef) {
           return
         }
 
         const currentConfig = props.config()
-        uniforms.iTime.value = t * 0.001
+        uniformDataRef.iTime = t * 0.001
 
         if (currentConfig.followMouse && currentConfig.mouseInfluence > 0.0) {
           const smoothing = 0.92
@@ -364,14 +531,38 @@ void main() {
           smoothMouseRef.x = smoothMouseRef.x * smoothing + mouseRef.x * (1 - smoothing)
           smoothMouseRef.y = smoothMouseRef.y * smoothing + mouseRef.y * (1 - smoothing)
 
-          uniforms.mousePos.value = [smoothMouseRef.x, smoothMouseRef.y]
+          uniformDataRef.mousePos = [smoothMouseRef.x, smoothMouseRef.y]
         }
 
         try {
-          renderer.render({ scene: mesh })
+          const uniformData = createUniformBufferCorrected(uniformDataRef)
+          deviceRef.queue.writeBuffer(uniformBufferRef, 0, uniformData)
+
+          const commandEncoder = deviceRef.createCommandEncoder()
+
+          const textureView = contextRef.getCurrentTexture().createView()
+
+          const renderPass = commandEncoder.beginRenderPass({
+            colorAttachments: [
+              {
+                view: textureView,
+                clearValue: { r: 0, g: 0, b: 0, a: 0 },
+                loadOp: "clear",
+                storeOp: "store",
+              },
+            ],
+          })
+
+          renderPass.setPipeline(pipelineRef)
+          renderPass.setBindGroup(0, bindGroupRef)
+          renderPass.draw(3)
+          renderPass.end()
+
+          deviceRef.queue.submit([commandEncoder.finish()])
+
           animationIdRef = requestAnimationFrame(loop)
         } catch (error) {
-          console.warn("WebGL rendering error:", error)
+          console.warn("WebGPU rendering error:", error)
           return
         }
       }
@@ -388,29 +579,29 @@ void main() {
 
         window.removeEventListener("resize", updatePlacement)
 
-        if (renderer) {
-          try {
-            const canvas = renderer.gl.canvas
-            const loseContextExt = renderer.gl.getExtension("WEBGL_lose_context")
-            if (loseContextExt) {
-              loseContextExt.loseContext()
-            }
-
-            if (canvas && canvas.parentNode) {
-              canvas.parentNode.removeChild(canvas)
-            }
-          } catch (error) {
-            console.warn("Error during WebGL cleanup:", error)
-          }
+        if (uniformBufferRef) {
+          uniformBufferRef.destroy()
+          uniformBufferRef = null
         }
 
-        rendererRef = null
-        uniformsRef = null
-        meshRef = null
+        if (deviceRef) {
+          deviceRef.destroy()
+          deviceRef = null
+        }
+
+        if (canvasRef && canvasRef.parentNode) {
+          canvasRef.parentNode.removeChild(canvasRef)
+        }
+
+        canvasRef = null
+        contextRef = null
+        pipelineRef = null
+        bindGroupRef = null
+        uniformDataRef = null
       }
     }
 
-    initializeWebGL()
+    initializeWebGPU()
 
     onCleanup(() => {
       if (cleanupFunctionRef) {
@@ -421,33 +612,31 @@ void main() {
   })
 
   createEffect(() => {
-    if (!uniformsRef || !containerRef || !rendererRef) {
+    if (!uniformDataRef || !containerRef) {
       return
     }
 
     const config = props.config()
-    const u = uniformsRef
-    const renderer = rendererRef
 
-    u.raysColor.value = hexToRgb(config.raysColor)
-    u.raysSpeed.value = config.raysSpeed
-    u.lightSpread.value = config.lightSpread
-    u.rayLength.value = config.rayLength
-    u.sourceWidth.value = config.sourceWidth
-    u.pulsating.value = config.pulsating ? 1.0 : 0.0
-    u.pulsatingMin.value = config.pulsatingMin
-    u.pulsatingMax.value = config.pulsatingMax
-    u.fadeDistance.value = config.fadeDistance
-    u.saturation.value = config.saturation
-    u.mouseInfluence.value = config.mouseInfluence
-    u.noiseAmount.value = config.noiseAmount
-    u.distortion.value = config.distortion
+    uniformDataRef.raysColor = hexToRgb(config.raysColor)
+    uniformDataRef.raysSpeed = config.raysSpeed
+    uniformDataRef.lightSpread = config.lightSpread
+    uniformDataRef.rayLength = config.rayLength
+    uniformDataRef.sourceWidth = config.sourceWidth
+    uniformDataRef.pulsating = config.pulsating ? 1.0 : 0.0
+    uniformDataRef.pulsatingMin = config.pulsatingMin
+    uniformDataRef.pulsatingMax = config.pulsatingMax
+    uniformDataRef.fadeDistance = config.fadeDistance
+    uniformDataRef.saturation = config.saturation
+    uniformDataRef.mouseInfluence = config.mouseInfluence
+    uniformDataRef.noiseAmount = config.noiseAmount
+    uniformDataRef.distortion = config.distortion
 
+    const dpr = Math.min(window.devicePixelRatio, 2)
     const { clientWidth: wCSS, clientHeight: hCSS } = containerRef
-    const dpr = renderer.dpr
     const { anchor, dir } = getAnchorAndDir(config.raysOrigin, wCSS * dpr, hCSS * dpr)
-    u.rayPos.value = anchor
-    u.rayDir.value = dir
+    uniformDataRef.rayPos = anchor
+    uniformDataRef.rayDir = dir
   })
 
   createEffect(() => {
@@ -457,7 +646,7 @@ void main() {
     }
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef || !rendererRef) {
+      if (!containerRef) {
         return
       }
       const rect = containerRef.getBoundingClientRect()
