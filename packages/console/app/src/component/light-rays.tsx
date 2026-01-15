@@ -44,7 +44,7 @@ export const defaultConfig: LightRaysConfig = {
   saturation: 0.325,
   followMouse: false,
   mouseInfluence: 0.05,
-  noiseAmount: 0.25,
+  noiseAmount: 0.5,
   distortion: 0.0,
   opacity: 0.35,
 }
@@ -107,136 +107,136 @@ interface UniformData {
 }
 
 const WGSL_SHADER = `
-struct Uniforms {
-  iTime: f32,
-  _pad0: f32,
-  iResolution: vec2<f32>,
-  rayPos: vec2<f32>,
-  rayDir: vec2<f32>,
-  raysColor: vec3<f32>,
-  raysSpeed: f32,
-  lightSpread: f32,
-  rayLength: f32,
-  sourceWidth: f32,
-  pulsating: f32,
-  pulsatingMin: f32,
-  pulsatingMax: f32,
-  fadeDistance: f32,
-  saturation: f32,
-  mousePos: vec2<f32>,
-  mouseInfluence: f32,
-  noiseAmount: f32,
-  distortion: f32,
-  _pad1: f32,
-  _pad2: f32,
-  _pad3: f32,
-};
+  struct Uniforms {
+    iTime: f32,
+    _pad0: f32,
+    iResolution: vec2<f32>,
+    rayPos: vec2<f32>,
+    rayDir: vec2<f32>,
+    raysColor: vec3<f32>,
+    raysSpeed: f32,
+    lightSpread: f32,
+    rayLength: f32,
+    sourceWidth: f32,
+    pulsating: f32,
+    pulsatingMin: f32,
+    pulsatingMax: f32,
+    fadeDistance: f32,
+    saturation: f32,
+    mousePos: vec2<f32>,
+    mouseInfluence: f32,
+    noiseAmount: f32,
+    distortion: f32,
+    _pad1: f32,
+    _pad2: f32,
+    _pad3: f32,
+  };
 
-@group(0) @binding(0) var<uniform> uniforms: Uniforms;
+  @group(0) @binding(0) var<uniform> uniforms: Uniforms;
 
-struct VertexOutput {
-  @builtin(position) position: vec4<f32>,
-  @location(0) vUv: vec2<f32>,
-};
+  struct VertexOutput {
+    @builtin(position) position: vec4<f32>,
+    @location(0) vUv: vec2<f32>,
+  };
 
-@vertex
-fn vertexMain(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
-  // Full-screen triangle
-  var positions = array<vec2<f32>, 3>(
-    vec2<f32>(-1.0, -1.0),
-    vec2<f32>(3.0, -1.0),
-    vec2<f32>(-1.0, 3.0)
-  );
-  
-  var output: VertexOutput;
-  let pos = positions[vertexIndex];
-  output.position = vec4<f32>(pos, 0.0, 1.0);
-  output.vUv = pos * 0.5 + 0.5;
-  return output;
-}
-
-fn noise(st: vec2<f32>) -> f32 {
-  return fract(sin(dot(st, vec2<f32>(12.9898, 78.233))) * 43758.5453123);
-}
-
-fn rayStrength(raySource: vec2<f32>, rayRefDirection: vec2<f32>, coord: vec2<f32>,
-               seedA: f32, seedB: f32, speed: f32) -> f32 {
-  let sourceToCoord = coord - raySource;
-  let dirNorm = normalize(sourceToCoord);
-  let cosAngle = dot(dirNorm, rayRefDirection);
-
-  let distortedAngle = cosAngle + uniforms.distortion * sin(uniforms.iTime * 2.0 + length(sourceToCoord) * 0.01) * 0.2;
-  
-  let spreadFactor = pow(max(distortedAngle, 0.0), 1.0 / max(uniforms.lightSpread, 0.001));
-
-  let distance = length(sourceToCoord);
-  let maxDistance = uniforms.iResolution.x * uniforms.rayLength;
-  let lengthFalloff = clamp((maxDistance - distance) / maxDistance, 0.0, 1.0);
-  
-  let fadeFalloff = clamp((uniforms.iResolution.x * uniforms.fadeDistance - distance) / (uniforms.iResolution.x * uniforms.fadeDistance), 0.5, 1.0);
-  let pulseCenter = (uniforms.pulsatingMin + uniforms.pulsatingMax) * 0.5;
-  let pulseAmplitude = (uniforms.pulsatingMax - uniforms.pulsatingMin) * 0.5;
-  var pulse: f32;
-  if (uniforms.pulsating > 0.5) {
-    pulse = pulseCenter + pulseAmplitude * sin(uniforms.iTime * speed * 3.0);
-  } else {
-    pulse = 1.0;
+  @vertex
+  fn vertexMain(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
+    // Full-screen triangle
+    var positions = array<vec2<f32>, 3>(
+      vec2<f32>(-1.0, -1.0),
+      vec2<f32>(3.0, -1.0),
+      vec2<f32>(-1.0, 3.0)
+    );
+    
+    var output: VertexOutput;
+    let pos = positions[vertexIndex];
+    output.position = vec4<f32>(pos, 0.0, 1.0);
+    output.vUv = pos * 0.5 + 0.5;
+    return output;
   }
 
-  let baseStrength = clamp(
-    (0.45 + 0.15 * sin(distortedAngle * seedA + uniforms.iTime * speed)) +
-    (0.3 + 0.2 * cos(-distortedAngle * seedB + uniforms.iTime * speed)),
-    0.0, 1.0
-  );
-
-  return baseStrength * lengthFalloff * fadeFalloff * spreadFactor * pulse;
-}
-
-@fragment
-fn fragmentMain(@builtin(position) fragCoord: vec4<f32>, @location(0) vUv: vec2<f32>) -> @location(0) vec4<f32> {
-  let coord = vec2<f32>(fragCoord.x, fragCoord.y);
-  
-  let normalizedX = (coord.x / uniforms.iResolution.x) - 0.5;
-  let widthOffset = -normalizedX * uniforms.sourceWidth * uniforms.iResolution.x;
-  
-  let perpDir = vec2<f32>(-uniforms.rayDir.y, uniforms.rayDir.x);
-  let adjustedRayPos = uniforms.rayPos + perpDir * widthOffset;
-  
-  var finalRayDir = uniforms.rayDir;
-  if (uniforms.mouseInfluence > 0.0) {
-    let mouseScreenPos = uniforms.mousePos * uniforms.iResolution;
-    let mouseDirection = normalize(mouseScreenPos - adjustedRayPos);
-    finalRayDir = normalize(mix(uniforms.rayDir, mouseDirection, uniforms.mouseInfluence));
+  fn noise(st: vec2<f32>) -> f32 {
+    return fract(sin(dot(st, vec2<f32>(12.9898, 78.233))) * 43758.5453123);
   }
 
-  let rays1 = vec4<f32>(1.0) *
-               rayStrength(adjustedRayPos, finalRayDir, coord, 36.2214, 21.11349,
-                           1.5 * uniforms.raysSpeed);
-  let rays2 = vec4<f32>(1.0) *
-               rayStrength(adjustedRayPos, finalRayDir, coord, 22.3991, 18.0234,
-                           1.1 * uniforms.raysSpeed);
+  fn rayStrength(raySource: vec2<f32>, rayRefDirection: vec2<f32>, coord: vec2<f32>,
+                seedA: f32, seedB: f32, speed: f32) -> f32 {
+    let sourceToCoord = coord - raySource;
+    let dirNorm = normalize(sourceToCoord);
+    let cosAngle = dot(dirNorm, rayRefDirection);
 
-  var fragColor = rays1 * 0.5 + rays2 * 0.4;
+    let distortedAngle = cosAngle + uniforms.distortion * sin(uniforms.iTime * 2.0 + length(sourceToCoord) * 0.01) * 0.2;
+    
+    let spreadFactor = pow(max(distortedAngle, 0.0), 1.0 / max(uniforms.lightSpread, 0.001));
 
-  if (uniforms.noiseAmount > 0.0) {
-    let n = noise(coord * 0.01 + uniforms.iTime * 0.1);
-    fragColor = vec4<f32>(fragColor.rgb * (1.0 - uniforms.noiseAmount + uniforms.noiseAmount * n), fragColor.a);
+    let distance = length(sourceToCoord);
+    let maxDistance = uniforms.iResolution.x * uniforms.rayLength;
+    let lengthFalloff = clamp((maxDistance - distance) / maxDistance, 0.0, 1.0);
+    
+    let fadeFalloff = clamp((uniforms.iResolution.x * uniforms.fadeDistance - distance) / (uniforms.iResolution.x * uniforms.fadeDistance), 0.5, 1.0);
+    let pulseCenter = (uniforms.pulsatingMin + uniforms.pulsatingMax) * 0.5;
+    let pulseAmplitude = (uniforms.pulsatingMax - uniforms.pulsatingMin) * 0.5;
+    var pulse: f32;
+    if (uniforms.pulsating > 0.5) {
+      pulse = pulseCenter + pulseAmplitude * sin(uniforms.iTime * speed * 3.0);
+    } else {
+      pulse = 1.0;
+    }
+
+    let baseStrength = clamp(
+      (0.45 + 0.15 * sin(distortedAngle * seedA + uniforms.iTime * speed)) +
+      (0.3 + 0.2 * cos(-distortedAngle * seedB + uniforms.iTime * speed)),
+      0.0, 1.0
+    );
+
+    return baseStrength * lengthFalloff * fadeFalloff * spreadFactor * pulse;
   }
 
-  let brightness = 1.0 - (coord.y / uniforms.iResolution.y);
-  fragColor.x = fragColor.x * (0.1 + brightness * 0.8);
-  fragColor.y = fragColor.y * (0.3 + brightness * 0.6);
-  fragColor.z = fragColor.z * (0.5 + brightness * 0.5);
+  @fragment
+  fn fragmentMain(@builtin(position) fragCoord: vec4<f32>, @location(0) vUv: vec2<f32>) -> @location(0) vec4<f32> {
+    let coord = vec2<f32>(fragCoord.x, fragCoord.y);
+    
+    let normalizedX = (coord.x / uniforms.iResolution.x) - 0.5;
+    let widthOffset = -normalizedX * uniforms.sourceWidth * uniforms.iResolution.x;
+    
+    let perpDir = vec2<f32>(-uniforms.rayDir.y, uniforms.rayDir.x);
+    let adjustedRayPos = uniforms.rayPos + perpDir * widthOffset;
+    
+    var finalRayDir = uniforms.rayDir;
+    if (uniforms.mouseInfluence > 0.0) {
+      let mouseScreenPos = uniforms.mousePos * uniforms.iResolution;
+      let mouseDirection = normalize(mouseScreenPos - adjustedRayPos);
+      finalRayDir = normalize(mix(uniforms.rayDir, mouseDirection, uniforms.mouseInfluence));
+    }
 
-  if (uniforms.saturation != 1.0) {
-    let gray = dot(fragColor.rgb, vec3<f32>(0.299, 0.587, 0.114));
-    fragColor = vec4<f32>(mix(vec3<f32>(gray), fragColor.rgb, uniforms.saturation), fragColor.a);
+    let rays1 = vec4<f32>(1.0) *
+                rayStrength(adjustedRayPos, finalRayDir, coord, 36.2214, 21.11349,
+                            1.5 * uniforms.raysSpeed);
+    let rays2 = vec4<f32>(1.0) *
+                rayStrength(adjustedRayPos, finalRayDir, coord, 22.3991, 18.0234,
+                            1.1 * uniforms.raysSpeed);
+
+    var fragColor = rays1 * 0.5 + rays2 * 0.4;
+
+    if (uniforms.noiseAmount > 0.0) {
+      let n = noise(coord * 0.01 + uniforms.iTime * 0.1);
+      fragColor = vec4<f32>(fragColor.rgb * (1.0 - uniforms.noiseAmount + uniforms.noiseAmount * n), fragColor.a);
+    }
+
+    let brightness = 1.0 - (coord.y / uniforms.iResolution.y);
+    fragColor.x = fragColor.x * (0.1 + brightness * 0.8);
+    fragColor.y = fragColor.y * (0.3 + brightness * 0.6);
+    fragColor.z = fragColor.z * (0.5 + brightness * 0.5);
+
+    if (uniforms.saturation != 1.0) {
+      let gray = dot(fragColor.rgb, vec3<f32>(0.299, 0.587, 0.114));
+      fragColor = vec4<f32>(mix(vec3<f32>(gray), fragColor.rgb, uniforms.saturation), fragColor.a);
+    }
+
+    fragColor = vec4<f32>(fragColor.rgb * uniforms.raysColor, fragColor.a);
+    
+    return fragColor;
   }
-
-  fragColor = vec4<f32>(fragColor.rgb * uniforms.raysColor, fragColor.a);
-  
-  return fragColor;
-}
 `
 
 const UNIFORM_BUFFER_SIZE = 96
