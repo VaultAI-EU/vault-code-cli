@@ -297,7 +297,23 @@ describe("session.message-v2.toModelMessage", () => {
             type: "tool-result",
             toolCallId: "call-1",
             toolName: "bash",
-            output: { type: "text", value: "ok" },
+            output: {
+              type: "json",
+              value: {
+                attachments: [
+                  {
+                    id: "file-1",
+                    sessionID: "session",
+                    messageID: "m-assistant",
+                    type: "file",
+                    mime: "image/png",
+                    filename: "attachment.png",
+                    url: "https://example.com/attachment.png",
+                  },
+                ],
+                output: "ok",
+              },
+            },
             providerOptions: { openai: { tool: "meta" } },
           },
         ],
