@@ -3,7 +3,7 @@ import { Title, Meta, Link } from "@solidjs/meta"
 import { createMemo, createSignal } from "solid-js"
 import { github } from "~/lib/github"
 import { config } from "~/config"
-import LightRays, { defaultConfig, type LightRaysConfig, type LightRaysAnimationState } from "~/component/light-rays"
+import Spotlight, { defaultConfig, type SpotlightAnimationState } from "~/component/spotlight"
 import "./black.css"
 
 export default function BlackLayout(props: RouteSectionProps) {
@@ -17,15 +17,14 @@ export default function BlackLayout(props: RouteSectionProps) {
       : config.github.starsFormatted.compact,
   )
 
-  const [lightRaysConfig, setLightRaysConfig] = createSignal<LightRaysConfig>(defaultConfig)
-  const [rayAnimationState, setRayAnimationState] = createSignal<LightRaysAnimationState>({
+  const [spotlightAnimationState, setSpotlightAnimationState] = createSignal<SpotlightAnimationState>({
     time: 0,
     intensity: 0.5,
     pulseValue: 1,
   })
 
   const svgLightingValues = createMemo(() => {
-    const state = rayAnimationState()
+    const state = spotlightAnimationState()
     const t = state.time
 
     const wave1 = Math.sin(t * 1.5) * 0.5 + 0.5
@@ -56,9 +55,13 @@ export default function BlackLayout(props: RouteSectionProps) {
     } as Record<string, string>
   })
 
-  const handleAnimationFrame = (state: LightRaysAnimationState) => {
-    setRayAnimationState(state)
+  const handleAnimationFrame = (state: SpotlightAnimationState) => {
+    setSpotlightAnimationState(state)
   }
+
+  const spotlightConfig = createMemo(() => ({
+    ...defaultConfig,
+  }))
 
   return (
     <div data-page="black">
@@ -84,7 +87,11 @@ export default function BlackLayout(props: RouteSectionProps) {
       />
       <Meta name="twitter:image" content="/social-share-black.png" />
 
-      <LightRays config={lightRaysConfig} class="header-light-rays" onAnimationFrame={handleAnimationFrame} />
+      <Spotlight
+        config={spotlightConfig}
+        class="header-spotlight"
+        onAnimationFrame={handleAnimationFrame}
+      />
 
       <header data-component="header">
         <A href="/" data-component="header-logo">
