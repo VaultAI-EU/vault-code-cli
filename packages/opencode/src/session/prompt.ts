@@ -716,7 +716,9 @@ export namespace SessionPrompt {
           )
           return result
         },
-        toModelOutput(result: { output: string; attachments?: MessageV2.FilePart[] }) {
+        toModelOutput(result: string | { output: string; attachments?: MessageV2.FilePart[] }) {
+          // Handle compacted results (plain string)
+          if (typeof result === "string") return { type: "text", value: result }
           if (!result.attachments?.length) return { type: "text", value: result.output }
           return {
             type: "content",
@@ -814,7 +816,9 @@ export namespace SessionPrompt {
           content: result.content, // directly return content to preserve ordering when outputting to model
         }
       }
-      item.toModelOutput = (result: { output: string; attachments?: MessageV2.FilePart[] }) => {
+      item.toModelOutput = (result: string | { output: string; attachments?: MessageV2.FilePart[] }) => {
+        // Handle compacted results (plain string)
+        if (typeof result === "string") return { type: "text", value: result }
         if (!result.attachments?.length) return { type: "text", value: result.output }
         return {
           type: "content",

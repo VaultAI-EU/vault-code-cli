@@ -515,8 +515,10 @@ export namespace MessageV2 {
                 state: "output-available",
                 toolCallId: part.callID,
                 input: part.state.input,
+                // For compacted results, use plain string so SDK serializes as text type
+                // For normal results, pass object so toModelOutput can convert attachments to media parts
                 output: part.state.time.compacted
-                  ? { output: "[Old tool result content cleared]", attachments: undefined }
+                  ? "[Old tool result content cleared]"
                   : { output: part.state.output, attachments: part.state.attachments },
                 callProviderMetadata: part.metadata,
               })
