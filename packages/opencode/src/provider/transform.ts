@@ -38,21 +38,6 @@ export namespace ProviderTransform {
     return undefined
   }
 
-  // Remaps providerOptions keys from stored providerID to expected SDK key
-  function remapProviderOptions(
-    opts: Record<string, any> | undefined,
-    providerID: string,
-    expected: string,
-  ): Record<string, any> | undefined {
-    if (!opts) return opts
-    if (providerID === expected) return opts
-    if (!(providerID in opts)) return opts
-    const result = { ...opts }
-    result[expected] = { ...result[expected], ...result[providerID] }
-    delete result[providerID]
-    return result
-  }
-
   function normalizeMessages(
     msgs: ModelMessage[],
     model: Provider.Model,
@@ -272,17 +257,22 @@ export namespace ProviderTransform {
     }
 
     // Remap providerOptions keys from stored providerID to expected SDK key
-    const expected = sdkKey(model.api.npm)
-    if (expected && expected !== model.providerID) {
+    const key = sdkKey(model.api.npm)
+    if (key && key !== model.providerID) {
+      const remap = (opts: Record<string, any> | undefined) => {
+        if (!opts) return opts
+        const result = { ...opts }
+        result[key] = result[model.providerID]
+        delete result[model.providerID]
+        return result
+      }
+
       msgs = msgs.map((msg) => {
-        msg = { ...msg, providerOptions: remapProviderOptions(msg.providerOptions, model.providerID, expected) }
-        if (!Array.isArray(msg.content)) return msg
+        if (!Array.isArray(msg.content)) return { ...msg, providerOptions: remap(msg.providerOptions) }
         return {
           ...msg,
-          content: msg.content.map((part) => ({
-            ...part,
-            providerOptions: remapProviderOptions(part.providerOptions, model.providerID, expected),
-          })),
+          providerOptions: remap(msg.providerOptions),
+          content: msg.content.map((part) => ({ ...part, providerOptions: remap(part.providerOptions) })),
         } as typeof msg
       })
     }
