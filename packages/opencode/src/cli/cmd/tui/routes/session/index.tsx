@@ -1877,7 +1877,7 @@ function ApplyPatch(props: ToolProps<typeof ApplyPatchTool>) {
     if (file.type === "delete") return "# Deleted " + file.relativePath
     if (file.type === "add") return "# Created " + file.relativePath
     if (file.type === "move") return "# Moved " + normalizePath(file.filePath) + " → " + file.relativePath
-    return "← Edit " + file.relativePath
+    return "← Patched " + file.relativePath
   }
 
   return (

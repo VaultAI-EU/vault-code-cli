@@ -1090,7 +1090,7 @@ ToolRegistry.register({
                       </Match>
                       <Match when={file.type === "update"}>
                         <span data-slot="apply-patch-file-action" data-type="update">
-                          Edit
+                          Patched
                         </span>
                       </Match>
                     </Switch>
