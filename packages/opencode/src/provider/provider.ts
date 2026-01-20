@@ -509,7 +509,7 @@ export namespace Provider {
       providerID: z.string(),
       api: z.object({
         id: z.string(),
-        url: z.string().optional(),
+        url: z.string(),
         npm: z.string(),
       }),
       name: z.string(),
@@ -597,7 +597,7 @@ export namespace Provider {
       family: model.family,
       api: {
         id: model.id,
-        url: model.provider?.api ?? provider.api,
+        url: model.provider?.api ?? provider.api!,
         npm: model.provider?.npm ?? provider.npm ?? "@ai-sdk/openai-compatible",
       },
       status: model.status ?? "active",
