@@ -2,7 +2,8 @@ import type { Argv } from "yargs"
 import { Session } from "../../session"
 import { cmd } from "./cmd"
 import { bootstrap } from "../bootstrap"
-import { Storage } from "../../storage/storage"
+import { db } from "../../storage/db"
+import { SessionTable, MessageTable, PartTable } from "../../session/session.sql"
 import { Instance } from "../../project/instance"
 import { EOL } from "os"
 
@@ -81,13 +82,31 @@ export const ImportCommand = cmd({
         return
       }
 
-      await Storage.write(["session", Instance.project.id, exportData.info.id], exportData.info)
+      db().insert(SessionTable).values(Session.toRow(exportData.info)).onConflictDoNothing().run()
 
       for (const msg of exportData.messages) {
-        await Storage.write(["message", exportData.info.id, msg.info.id], msg.info)
+        db()
+          .insert(MessageTable)
+          .values({
+            id: msg.info.id,
+            sessionID: exportData.info.id,
+            createdAt: msg.info.time?.created ?? Date.now(),
+            data: msg.info,
+          })
+          .onConflictDoNothing()
+          .run()
 
         for (const part of msg.parts) {
-          await Storage.write(["part", msg.info.id, part.id], part)
+          db()
+            .insert(PartTable)
+            .values({
+              id: part.id,
+              messageID: msg.info.id,
+              sessionID: exportData.info.id,
+              data: part,
+            })
+            .onConflictDoNothing()
+            .run()
         }
       }
 

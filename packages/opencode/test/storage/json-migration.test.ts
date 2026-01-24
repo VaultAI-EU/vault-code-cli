@@ -1,0 +1,279 @@
+import { describe, test, expect, beforeEach, afterEach } from "bun:test"
+import { Database } from "bun:sqlite"
+import { drizzle } from "drizzle-orm/bun-sqlite"
+import { eq } from "drizzle-orm"
+import path from "path"
+import fs from "fs/promises"
+import os from "os"
+import { migrateFromJson } from "../../src/storage/json-migration"
+import { ProjectTable } from "../../src/project/project.sql"
+import { Project } from "../../src/project/project"
+import {
+  SessionTable,
+  MessageTable,
+  PartTable,
+  SessionDiffTable,
+  TodoTable,
+  PermissionTable,
+} from "../../src/session/session.sql"
+import { SessionShareTable, ShareTable } from "../../src/share/share.sql"
+import { migrations } from "../../src/storage/migrations.generated"
+
+// Test fixtures
+const fixtures = {
+  project: {
+    id: "proj_test123abc",
+    name: "Test Project",
+    worktree: "/test/path",
+    vcs: "git" as const,
+    sandboxes: [],
+  },
+  session: {
+    id: "ses_test456def",
+    projectID: "proj_test123abc",
+    slug: "test-session",
+    directory: "/test/path",
+    title: "Test Session",
+    version: "1.0.0",
+    time: { created: 1700000000000, updated: 1700000001000 },
+  },
+  message: {
+    id: "msg_test789ghi",
+    sessionID: "ses_test456def",
+    role: "user" as const,
+    agent: "default",
+    model: { providerID: "openai", modelID: "gpt-4" },
+    time: { created: 1700000000000 },
+  },
+  part: {
+    id: "prt_testabc123",
+    messageID: "msg_test789ghi",
+    sessionID: "ses_test456def",
+    type: "text" as const,
+    text: "Hello, world!",
+  },
+}
+
+// Helper to create test storage directory structure
+async function setupStorageDir(baseDir: string) {
+  const storageDir = path.join(baseDir, "storage")
+  await fs.mkdir(path.join(storageDir, "project"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "session", "proj_test123abc"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "message", "ses_test456def"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "part", "msg_test789ghi"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "session_diff"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "todo"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "permission"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "session_share"), { recursive: true })
+  await fs.mkdir(path.join(storageDir, "share"), { recursive: true })
+  // Create legacy marker to indicate JSON storage exists
+  await Bun.write(path.join(storageDir, "migration"), "1")
+  return storageDir
+}
+
+// Helper to create in-memory test database with schema
+function createTestDb() {
+  const sqlite = new Database(":memory:")
+  sqlite.exec("PRAGMA foreign_keys = ON")
+
+  // Apply schema migrations
+  for (const migration of migrations) {
+    const statements = migration.sql.split("--> statement-breakpoint")
+    for (const stmt of statements) {
+      const trimmed = stmt.trim()
+      if (trimmed) sqlite.exec(trimmed)
+    }
+  }
+
+  return sqlite
+}
+
+describe("JSON to SQLite migration", () => {
+  let tmpDir: string
+  let storageDir: string
+  let sqlite: Database
+
+  beforeEach(async () => {
+    tmpDir = path.join(os.tmpdir(), "opencode-migration-test-" + Math.random().toString(36).slice(2))
+    await fs.mkdir(tmpDir, { recursive: true })
+    storageDir = await setupStorageDir(tmpDir)
+    sqlite = createTestDb()
+  })
+
+  afterEach(async () => {
+    sqlite.close()
+    await fs.rm(tmpDir, { recursive: true, force: true })
+  })
+
+  test("migrates project", async () => {
+    await Bun.write(
+      path.join(storageDir, "project", "proj_test123abc.json"),
+      JSON.stringify({
+        id: "proj_test123abc",
+        worktree: "/test/path",
+        vcs: "git",
+        name: "Test Project",
+        time: { created: 1700000000000, updated: 1700000001000 },
+        sandboxes: ["/test/sandbox"],
+      }),
+    )
+
+    const stats = await migrateFromJson(sqlite, storageDir)
+
+    expect(stats?.projects).toBe(1)
+
+    const db = drizzle(sqlite)
+    const projects = db.select().from(ProjectTable).all()
+    expect(projects.length).toBe(1)
+    expect(projects[0].id).toBe("proj_test123abc")
+    expect(projects[0].worktree).toBe("/test/path")
+    expect(projects[0].name).toBe("Test Project")
+    expect(projects[0].sandboxes).toEqual(["/test/sandbox"])
+  })
+
+  test("migrates session with individual columns", async () => {
+    // First create the project
+    await Bun.write(
+      path.join(storageDir, "project", "proj_test123abc.json"),
+      JSON.stringify({
+        id: "proj_test123abc",
+        worktree: "/test/path",
+        time: { created: Date.now(), updated: Date.now() },
+        sandboxes: [],
+      }),
+    )
+
+    await Bun.write(
+      path.join(storageDir, "session", "proj_test123abc", "ses_test456def.json"),
+      JSON.stringify({
+        id: "ses_test456def",
+        projectID: "proj_test123abc",
+        slug: "test-session",
+        directory: "/test/dir",
+        title: "Test Session Title",
+        version: "1.0.0",
+        time: { created: 1700000000000, updated: 1700000001000 },
+        summary: { additions: 10, deletions: 5, files: 3 },
+        share: { url: "https://example.com/share" },
+      }),
+    )
+
+    await migrateFromJson(sqlite, storageDir)
+
+    const db = drizzle(sqlite)
+    const sessions = db.select().from(SessionTable).all()
+    expect(sessions.length).toBe(1)
+    expect(sessions[0].id).toBe("ses_test456def")
+    expect(sessions[0].projectID).toBe("proj_test123abc")
+    expect(sessions[0].slug).toBe("test-session")
+    expect(sessions[0].title).toBe("Test Session Title")
+    expect(sessions[0].summary_additions).toBe(10)
+    expect(sessions[0].summary_deletions).toBe(5)
+    expect(sessions[0].share_url).toBe("https://example.com/share")
+  })
+
+  test("migrates messages and parts", async () => {
+    await Bun.write(
+      path.join(storageDir, "project", "proj_test123abc.json"),
+      JSON.stringify({
+        id: "proj_test123abc",
+        worktree: "/",
+        time: { created: Date.now(), updated: Date.now() },
+        sandboxes: [],
+      }),
+    )
+    await Bun.write(
+      path.join(storageDir, "session", "proj_test123abc", "ses_test456def.json"),
+      JSON.stringify({ ...fixtures.session }),
+    )
+    await Bun.write(
+      path.join(storageDir, "message", "ses_test456def", "msg_test789ghi.json"),
+      JSON.stringify({ ...fixtures.message }),
+    )
+    await Bun.write(
+      path.join(storageDir, "part", "msg_test789ghi", "prt_testabc123.json"),
+      JSON.stringify({ ...fixtures.part }),
+    )
+
+    const stats = await migrateFromJson(sqlite, storageDir)
+
+    expect(stats?.messages).toBe(1)
+    expect(stats?.parts).toBe(1)
+
+    const db = drizzle(sqlite)
+    const messages = db.select().from(MessageTable).all()
+    expect(messages.length).toBe(1)
+    expect(messages[0].data.id).toBe("msg_test789ghi")
+
+    const parts = db.select().from(PartTable).all()
+    expect(parts.length).toBe(1)
+    expect(parts[0].data.id).toBe("prt_testabc123")
+  })
+
+  test("skips orphaned sessions (no parent project)", async () => {
+    await Bun.write(
+      path.join(storageDir, "session", "proj_test123abc", "ses_orphan.json"),
+      JSON.stringify({
+        id: "ses_orphan",
+        projectID: "proj_nonexistent",
+        slug: "orphan",
+        directory: "/",
+        title: "Orphan",
+        version: "1.0.0",
+        time: { created: Date.now(), updated: Date.now() },
+      }),
+    )
+
+    const stats = await migrateFromJson(sqlite, storageDir)
+
+    expect(stats?.sessions).toBe(0)
+  })
+
+  test("creates sqlite-migrated marker file", async () => {
+    await migrateFromJson(sqlite, storageDir)
+
+    const marker = path.join(storageDir, "sqlite-migrated")
+    expect(await Bun.file(marker).exists()).toBe(true)
+  })
+
+  test("skips if already migrated", async () => {
+    await Bun.write(path.join(storageDir, "sqlite-migrated"), Date.now().toString())
+    await Bun.write(
+      path.join(storageDir, "project", "proj_test123abc.json"),
+      JSON.stringify({
+        id: "proj_test123abc",
+        worktree: "/",
+        time: { created: Date.now(), updated: Date.now() },
+        sandboxes: [],
+      }),
+    )
+
+    const stats = await migrateFromJson(sqlite, storageDir)
+
+    // Should return undefined (skipped) since already migrated
+    expect(stats).toBeUndefined()
+  })
+
+  test("is idempotent (running twice doesn't duplicate)", async () => {
+    await Bun.write(
+      path.join(storageDir, "project", "proj_test123abc.json"),
+      JSON.stringify({
+        id: "proj_test123abc",
+        worktree: "/",
+        time: { created: Date.now(), updated: Date.now() },
+        sandboxes: [],
+      }),
+    )
+
+    await migrateFromJson(sqlite, storageDir)
+
+    // Remove marker to run again
+    await fs.rm(path.join(storageDir, "sqlite-migrated"))
+
+    await migrateFromJson(sqlite, storageDir)
+
+    const db = drizzle(sqlite)
+    const projects = db.select().from(ProjectTable).all()
+    expect(projects.length).toBe(1) // Still only 1 due to onConflictDoNothing
+  })
+})

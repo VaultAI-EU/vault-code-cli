@@ -7,7 +7,9 @@ import { Global } from "../global"
 import { Instance } from "../project/instance"
 import { InstanceBootstrap } from "../project/bootstrap"
 import { Project } from "../project/project"
-import { Storage } from "../storage/storage"
+import { db } from "../storage/db"
+import { ProjectTable } from "../project/project.sql"
+import { eq } from "drizzle-orm"
 import { fn } from "../util/fn"
 import { Log } from "../util/log"
 import { BusEvent } from "@/bus/bus-event"
@@ -318,7 +320,8 @@ export namespace Worktree {
           },
         })
 
-        const project = await Storage.read<Project.Info>(["project", projectID]).catch(() => undefined)
+        const row = db().select().from(ProjectTable).where(eq(ProjectTable.id, projectID)).get()
+        const project = row ? Project.fromRow(row) : undefined
         const startup = project?.commands?.start?.trim() ?? ""
 
         const run = async (cmd: string, kind: "project" | "worktree") => {

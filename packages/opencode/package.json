@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.28.4",
+    "drizzle-kit": "0.31.0",
     "@octokit/webhooks-types": "7.6.1",
     "@opencode-ai/script": "workspace:*",
     "@parcel/watcher-darwin-arm64": "2.5.1",
@@ -96,6 +97,7 @@
     "chokidar": "4.0.3",
     "clipboardy": "4.0.0",
     "decimal.js": "10.5.0",
+    "drizzle-orm": "0.44.2",
     "diff": "catalog:",
     "fuzzysort": "3.1.0",
     "gray-matter": "4.0.3",
