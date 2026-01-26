@@ -66,20 +66,9 @@ export function Code<T>(props: CodeProps<T>) {
     "selectedLines",
     "commentedLines",
     "onRendered",
-    "onLineSelectionEnd",
   ])
 
   const [rendered, setRendered] = createSignal(0)
-
-  const handleLineClick: FileOptions<T>["onLineClick"] = (info) => {
-    props.onLineClick?.(info)
-
-    if (props.enableLineSelection !== true) return
-    if (info.numberColumn) return
-    if (!local.selectedLines) return
-
-    file().setSelectedLines(null)
-  }
 
   const file = createMemo(
     () =>
@@ -87,7 +76,6 @@ export function Code<T>(props: CodeProps<T>) {
         {
           ...createDefaultOptions<T>("unified"),
           ...others,
-          onLineClick: props.enableLineSelection === true || props.onLineClick ? handleLineClick : undefined,
         },
         getWorkerPool("unified"),
       ),
@@ -101,6 +89,19 @@ export function Code<T>(props: CodeProps<T>) {
     if (!root) return
 
     return root
+  }
+
+  const applyScheme = () => {
+    const host = container.querySelector("diffs-container")
+    if (!(host instanceof HTMLElement)) return
+
+    const scheme = document.documentElement.dataset.colorScheme
+    if (scheme === "dark" || scheme === "light") {
+      host.dataset.colorScheme = scheme
+      return
+    }
+
+    host.removeAttribute("data-color-scheme")
   }
 
   const applyCommentedLines = (ranges: SelectedLineRange[]) => {
@@ -332,11 +333,20 @@ export function Code<T>(props: CodeProps<T>) {
     if (props.enableLineSelection !== true) return
     if (dragStart === undefined) return
 
-    if (dragMoved) {
-      pendingSelectionEnd = true
-      scheduleDragUpdate()
-      scheduleSelectionUpdate()
+    if (!dragMoved) {
+      pendingSelectionEnd = false
+      const line = dragStart
+      setSelectedLines({ start: line, end: line })
+      props.onLineSelectionEnd?.(lastSelection)
+      dragStart = undefined
+      dragEnd = undefined
+      dragMoved = false
+      return
     }
+
+    pendingSelectionEnd = true
+    scheduleDragUpdate()
+    scheduleSelectionUpdate()
 
     dragStart = undefined
     dragEnd = undefined
@@ -372,8 +382,22 @@ export function Code<T>(props: CodeProps<T>) {
       containerWrapper: container,
     })
 
+    applyScheme()
+
     setRendered((value) => value + 1)
     notifyRendered()
+  })
+
+  createEffect(() => {
+    if (typeof document === "undefined") return
+    if (typeof MutationObserver === "undefined") return
+
+    const root = document.documentElement
+    const monitor = new MutationObserver(() => applyScheme())
+    monitor.observe(root, { attributes: true, attributeFilter: ["data-color-scheme"] })
+    applyScheme()
+
+    onCleanup(() => monitor.disconnect())
   })
 
   createEffect(() => {

@@ -245,6 +245,47 @@ export namespace Worktree {
     return $`bash -lc ${cmd}`.nothrow().cwd(directory)
   }
 
+  type StartKind = "project" | "worktree"
+
+  async function runStartScript(directory: string, cmd: string, kind: StartKind) {
+    const text = cmd.trim()
+    if (!text) return true
+
+    const ran = await runStartCommand(directory, text)
+    if (ran.exitCode === 0) return true
+
+    log.error("worktree start command failed", {
+      kind,
+      directory,
+      message: errorText(ran),
+    })
+    return false
+  }
+
+  async function runStartScripts(directory: string, input: { projectID: string; extra?: string }) {
+    const row = Database.use((db) => db.select().from(ProjectTable).where(eq(ProjectTable.id, input.projectID)).get())
+    const project = row ? Project.fromRow(row) : undefined
+    const startup = project?.commands?.start?.trim() ?? ""
+    const ok = await runStartScript(directory, startup, "project")
+    if (!ok) return false
+
+    const extra = input.extra ?? ""
+    await runStartScript(directory, extra, "worktree")
+    return true
+  }
+
+  function queueStartScripts(directory: string, input: { projectID: string; extra?: string }) {
+    setTimeout(() => {
+      const start = async () => {
+        await runStartScripts(directory, input)
+      }
+
+      void start().catch((error) => {
+        log.error("worktree start task failed", { directory, error })
+      })
+    }, 0)
+  }
+
   export const create = fn(CreateInput.optional(), async (input) => {
     if (Instance.project.vcs !== "git") {
       throw new NotGitError({ message: "Worktrees are only supported for git projects" })
@@ -319,28 +360,7 @@ export namespace Worktree {
           },
         })
 
-        const row = Database.use((db) => db.select().from(ProjectTable).where(eq(ProjectTable.id, projectID)).get())
-        const project = row ? Project.fromRow(row) : undefined
-        const startup = project?.commands?.start?.trim() ?? ""
-
-        const run = async (cmd: string, kind: "project" | "worktree") => {
-          const ran = await runStartCommand(info.directory, cmd)
-          if (ran.exitCode === 0) return true
-          log.error("worktree start command failed", {
-            kind,
-            directory: info.directory,
-            message: errorText(ran),
-          })
-          return false
-        }
-
-        if (startup) {
-          const ok = await run(startup, "project")
-          if (!ok) return
-        }
-        if (extra) {
-          await run(extra, "worktree")
-        }
+        await runStartScripts(info.directory, { projectID, extra })
       }
 
       void start().catch((error) => {
@@ -519,8 +539,13 @@ export namespace Worktree {
     }
 
     const dirty = outputText(status.stdout)
-    if (!dirty) return true
+    if (dirty) {
+      throw new ResetFailedError({ message: `Worktree reset left local changes:\n${dirty}` })
+    }
 
-    throw new ResetFailedError({ message: `Worktree reset left local changes:\n${dirty}` })
+    const projectID = Instance.project.id
+    queueStartScripts(worktreePath, { projectID })
+
+    return true
   })
 }
