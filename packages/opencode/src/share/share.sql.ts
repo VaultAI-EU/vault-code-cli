@@ -3,10 +3,10 @@ import { SessionTable } from "../session/session.sql"
 import type { Session } from "../session"
 
 export const SessionShareTable = sqliteTable("session_share", {
-  sessionID: text("session_id")
+  session_id: text()
     .primaryKey()
     .references(() => SessionTable.id, { onDelete: "cascade" }),
-  data: text("data", { mode: "json" }).notNull().$type<{
+  data: text({ mode: "json" }).notNull().$type<{
     id: string
     secret: string
     url: string
@@ -14,6 +14,6 @@ export const SessionShareTable = sqliteTable("session_share", {
 })
 
 export const ShareTable = sqliteTable("share", {
-  sessionID: text("session_id").primaryKey(),
-  data: text("data", { mode: "json" }).notNull().$type<Session.ShareInfo>(),
+  session_id: text().primaryKey(),
+  data: text({ mode: "json" }).notNull().$type<Session.ShareInfo>(),
 })

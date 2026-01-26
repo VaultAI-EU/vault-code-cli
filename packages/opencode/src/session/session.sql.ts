@@ -8,76 +8,76 @@ import type { PermissionNext } from "@/permission/next"
 export const SessionTable = sqliteTable(
   "session",
   {
-    id: text("id").primaryKey(),
-    projectID: text("project_id")
+    id: text().primaryKey(),
+    project_id: text()
       .notNull()
       .references(() => ProjectTable.id, { onDelete: "cascade" }),
-    parentID: text("parent_id"),
-    slug: text("slug").notNull(),
-    directory: text("directory").notNull(),
-    title: text("title").notNull(),
-    version: text("version").notNull(),
-    share_url: text("share_url"),
-    summary_additions: integer("summary_additions"),
-    summary_deletions: integer("summary_deletions"),
-    summary_files: integer("summary_files"),
-    summary_diffs: text("summary_diffs", { mode: "json" }).$type<Snapshot.FileDiff[]>(),
-    revert_messageID: text("revert_message_id"),
-    revert_partID: text("revert_part_id"),
-    revert_snapshot: text("revert_snapshot"),
-    revert_diff: text("revert_diff"),
-    permission: text("permission", { mode: "json" }).$type<PermissionNext.Ruleset>(),
-    time_created: integer("time_created").notNull(),
-    time_updated: integer("time_updated").notNull(),
-    time_compacting: integer("time_compacting"),
-    time_archived: integer("time_archived"),
+    parent_id: text(),
+    slug: text().notNull(),
+    directory: text().notNull(),
+    title: text().notNull(),
+    version: text().notNull(),
+    share_url: text(),
+    summary_additions: integer(),
+    summary_deletions: integer(),
+    summary_files: integer(),
+    summary_diffs: text({ mode: "json" }).$type<Snapshot.FileDiff[]>(),
+    revert_message_id: text(),
+    revert_part_id: text(),
+    revert_snapshot: text(),
+    revert_diff: text(),
+    permission: text({ mode: "json" }).$type<PermissionNext.Ruleset>(),
+    time_created: integer().notNull(),
+    time_updated: integer().notNull(),
+    time_compacting: integer(),
+    time_archived: integer(),
   },
-  (table) => [index("session_project_idx").on(table.projectID), index("session_parent_idx").on(table.parentID)],
+  (table) => [index("session_project_idx").on(table.project_id), index("session_parent_idx").on(table.parent_id)],
 )
 
 export const MessageTable = sqliteTable(
   "message",
   {
-    id: text("id").primaryKey(),
-    sessionID: text("session_id")
+    id: text().primaryKey(),
+    session_id: text()
       .notNull()
       .references(() => SessionTable.id, { onDelete: "cascade" }),
-    createdAt: integer("created_at").notNull(),
-    data: text("data", { mode: "json" }).notNull().$type<MessageV2.Info>(),
+    created_at: integer().notNull(),
+    data: text({ mode: "json" }).notNull().$type<MessageV2.Info>(),
   },
-  (table) => [index("message_session_idx").on(table.sessionID)],
+  (table) => [index("message_session_idx").on(table.session_id)],
 )
 
 export const PartTable = sqliteTable(
   "part",
   {
-    id: text("id").primaryKey(),
-    messageID: text("message_id")
+    id: text().primaryKey(),
+    message_id: text()
       .notNull()
       .references(() => MessageTable.id, { onDelete: "cascade" }),
-    sessionID: text("session_id").notNull(),
-    data: text("data", { mode: "json" }).notNull().$type<MessageV2.Part>(),
+    session_id: text().notNull(),
+    data: text({ mode: "json" }).notNull().$type<MessageV2.Part>(),
   },
-  (table) => [index("part_message_idx").on(table.messageID), index("part_session_idx").on(table.sessionID)],
+  (table) => [index("part_message_idx").on(table.message_id), index("part_session_idx").on(table.session_id)],
 )
 
 export const SessionDiffTable = sqliteTable("session_diff", {
-  sessionID: text("session_id")
+  session_id: text()
     .primaryKey()
     .references(() => SessionTable.id, { onDelete: "cascade" }),
-  data: text("data", { mode: "json" }).notNull().$type<Snapshot.FileDiff[]>(),
+  data: text({ mode: "json" }).notNull().$type<Snapshot.FileDiff[]>(),
 })
 
 export const TodoTable = sqliteTable("todo", {
-  sessionID: text("session_id")
+  session_id: text()
     .primaryKey()
     .references(() => SessionTable.id, { onDelete: "cascade" }),
-  data: text("data", { mode: "json" }).notNull().$type<Todo.Info[]>(),
+  data: text({ mode: "json" }).notNull().$type<Todo.Info[]>(),
 })
 
 export const PermissionTable = sqliteTable("permission", {
-  projectID: text("project_id")
+  project_id: text()
     .primaryKey()
     .references(() => ProjectTable.id, { onDelete: "cascade" }),
-  data: text("data", { mode: "json" }).notNull().$type<PermissionNext.Ruleset>(),
+  data: text({ mode: "json" }).notNull().$type<PermissionNext.Ruleset>(),
 })

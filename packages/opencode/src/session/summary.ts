@@ -48,18 +48,19 @@ export namespace SessionSummary {
         return files.has(x.file)
       }),
     )
-    await Session.update(input.sessionID, (draft) => {
-      draft.summary = {
+    await Session.setSummary({
+      sessionID: input.sessionID,
+      summary: {
         additions: diffs.reduce((sum, x) => sum + x.additions, 0),
         deletions: diffs.reduce((sum, x) => sum + x.deletions, 0),
         files: diffs.length,
-      }
+      },
     })
     Database.use((db) =>
       db
         .insert(SessionDiffTable)
-        .values({ sessionID: input.sessionID, data: diffs })
-        .onConflictDoUpdate({ target: SessionDiffTable.sessionID, set: { data: diffs } })
+        .values({ session_id: input.sessionID, data: diffs })
+        .onConflictDoUpdate({ target: SessionDiffTable.session_id, set: { data: diffs } })
         .run(),
     )
     Bus.publish(Session.Event.Diff, {
@@ -124,7 +125,7 @@ export namespace SessionSummary {
     }),
     async (input) => {
       const row = Database.use((db) =>
-        db.select().from(SessionDiffTable).where(eq(SessionDiffTable.sessionID, input.sessionID)).get(),
+        db.select().from(SessionDiffTable).where(eq(SessionDiffTable.session_id, input.sessionID)).get(),
       )
       return row?.data ?? []
     },

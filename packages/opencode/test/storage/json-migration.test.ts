@@ -167,7 +167,7 @@ describe("JSON to SQLite migration", () => {
     const sessions = db.select().from(SessionTable).all()
     expect(sessions.length).toBe(1)
     expect(sessions[0].id).toBe("ses_test456def")
-    expect(sessions[0].projectID).toBe("proj_test123abc")
+    expect(sessions[0].project_id).toBe("proj_test123abc")
     expect(sessions[0].slug).toBe("test-session")
     expect(sessions[0].title).toBe("Test Session Title")
     expect(sessions[0].summary_additions).toBe(10)

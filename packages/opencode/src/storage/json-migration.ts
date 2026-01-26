@@ -84,8 +84,8 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
       db.insert(SessionTable)
         .values({
           id: data.id,
-          projectID: data.projectID,
-          parentID: data.parentID ?? null,
+          project_id: data.projectID,
+          parent_id: data.parentID ?? null,
           slug: data.slug ?? "",
           directory: data.directory ?? "",
           title: data.title ?? "",
@@ -95,8 +95,8 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
           summary_deletions: data.summary?.deletions ?? null,
           summary_files: data.summary?.files ?? null,
           summary_diffs: data.summary?.diffs ?? null,
-          revert_messageID: data.revert?.messageID ?? null,
-          revert_partID: data.revert?.partID ?? null,
+          revert_message_id: data.revert?.messageID ?? null,
+          revert_part_id: data.revert?.partID ?? null,
           revert_snapshot: data.revert?.snapshot ?? null,
           revert_diff: data.revert?.diff ?? null,
           permission: data.permission ?? null,
@@ -132,8 +132,8 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
       db.insert(MessageTable)
         .values({
           id: data.id,
-          sessionID: data.sessionID,
-          createdAt: data.time?.created ?? Date.now(),
+          session_id: data.sessionID,
+          created_at: data.time?.created ?? Date.now(),
           data,
         })
         .onConflictDoNothing()
@@ -163,8 +163,8 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
       db.insert(PartTable)
         .values({
           id: data.id,
-          messageID: data.messageID,
-          sessionID: data.sessionID,
+          message_id: data.messageID,
+          session_id: data.sessionID,
           data,
         })
         .onConflictDoNothing()
@@ -188,7 +188,7 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
         log.warn("skipping orphaned session_diff", { sessionID })
         continue
       }
-      db.insert(SessionDiffTable).values({ sessionID, data }).onConflictDoNothing().run()
+      db.insert(SessionDiffTable).values({ session_id: sessionID, data }).onConflictDoNothing().run()
       stats.diffs++
     } catch (e) {
       stats.errors.push(`failed to migrate session_diff ${file}: ${e}`)
@@ -207,7 +207,7 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
         log.warn("skipping orphaned todo", { sessionID })
         continue
       }
-      db.insert(TodoTable).values({ sessionID, data }).onConflictDoNothing().run()
+      db.insert(TodoTable).values({ session_id: sessionID, data }).onConflictDoNothing().run()
       stats.todos++
     } catch (e) {
       stats.errors.push(`failed to migrate todo ${file}: ${e}`)
@@ -226,7 +226,7 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
         log.warn("skipping orphaned permission", { projectID })
         continue
       }
-      db.insert(PermissionTable).values({ projectID, data }).onConflictDoNothing().run()
+      db.insert(PermissionTable).values({ project_id: projectID, data }).onConflictDoNothing().run()
       stats.permissions++
     } catch (e) {
       stats.errors.push(`failed to migrate permission ${file}: ${e}`)
@@ -245,7 +245,7 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
         log.warn("skipping orphaned session_share", { sessionID })
         continue
       }
-      db.insert(SessionShareTable).values({ sessionID, data }).onConflictDoNothing().run()
+      db.insert(SessionShareTable).values({ session_id: sessionID, data }).onConflictDoNothing().run()
       stats.shares++
     } catch (e) {
       stats.errors.push(`failed to migrate session_share ${file}: ${e}`)
@@ -259,7 +259,7 @@ export async function migrateFromJson(sqlite: Database, customStorageDir?: strin
     try {
       const data = await Bun.file(file).json()
       const sessionID = path.basename(file, ".json")
-      db.insert(ShareTable).values({ sessionID, data }).onConflictDoNothing().run()
+      db.insert(ShareTable).values({ session_id: sessionID, data }).onConflictDoNothing().run()
     } catch (e) {
       stats.errors.push(`failed to migrate share ${file}: ${e}`)
     }

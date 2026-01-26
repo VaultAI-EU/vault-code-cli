@@ -612,8 +612,8 @@ export namespace MessageV2 {
       db
         .select()
         .from(MessageTable)
-        .where(eq(MessageTable.sessionID, sessionID))
-        .orderBy(desc(MessageTable.createdAt))
+        .where(eq(MessageTable.session_id, sessionID))
+        .orderBy(desc(MessageTable.created_at))
         .all(),
     )
     for (const row of rows) {
@@ -624,8 +624,8 @@ export namespace MessageV2 {
     }
   })
 
-  export const parts = fn(Identifier.schema("message"), async (messageID) => {
-    const rows = Database.use((db) => db.select().from(PartTable).where(eq(PartTable.messageID, messageID)).all())
+  export const parts = fn(Identifier.schema("message"), async (message_id) => {
+    const rows = Database.use((db) => db.select().from(PartTable).where(eq(PartTable.message_id, message_id)).all())
     const result = rows.map((row) => row.data)
     result.sort((a, b) => (a.id > b.id ? 1 : -1))
     return result

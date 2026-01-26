@@ -81,8 +81,8 @@ export namespace ShareNext {
     Database.use((db) =>
       db
         .insert(SessionShareTable)
-        .values({ sessionID, data: result })
-        .onConflictDoUpdate({ target: SessionShareTable.sessionID, set: { data: result } })
+        .values({ session_id: sessionID, data: result })
+        .onConflictDoUpdate({ target: SessionShareTable.session_id, set: { data: result } })
         .run(),
     )
     fullSync(sessionID)
@@ -91,7 +91,7 @@ export namespace ShareNext {
 
   function get(sessionID: string) {
     const row = Database.use((db) =>
-      db.select().from(SessionShareTable).where(eq(SessionShareTable.sessionID, sessionID)).get(),
+      db.select().from(SessionShareTable).where(eq(SessionShareTable.session_id, sessionID)).get(),
     )
     return row?.data
   }
@@ -169,7 +169,7 @@ export namespace ShareNext {
         secret: share.secret,
       }),
     })
-    Database.use((db) => db.delete(SessionShareTable).where(eq(SessionShareTable.sessionID, sessionID)).run())
+    Database.use((db) => db.delete(SessionShareTable).where(eq(SessionShareTable.session_id, sessionID)).run())
   }
 
   async function fullSync(sessionID: string) {

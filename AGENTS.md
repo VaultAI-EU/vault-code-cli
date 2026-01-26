@@ -19,16 +19,16 @@
 
 ### Naming
 
-Prefer single word variable names. Only use multiple words if necessary.
+Prefer single word names for variables and functions. Only use multiple words if necessary.
 
 ```ts
 // Good
 const foo = 1
-const bar = 2
+function journal(dir: string) {}
 
 // Bad
 const fooBar = 1
-const barBaz = 2
+function prepareJournal(dir: string) {}
 ```
 
 Reduce total variable count by inlining when a value is only used once.
@@ -85,6 +85,26 @@ function foo() {
   if (condition) return 1
   else return 2
 }
+```
+
+### Schema Definitions (Drizzle)
+
+Use snake_case for field names so column names don't need to be redefined as strings.
+
+```ts
+// Good
+const table = sqliteTable("session", {
+  id: text().primaryKey(),
+  project_id: text().notNull(),
+  created_at: integer().notNull(),
+})
+
+// Bad
+const table = sqliteTable("session", {
+  id: text("id").primaryKey(),
+  projectID: text("project_id").notNull(),
+  createdAt: integer("created_at").notNull(),
+})
 ```
 
 ## Testing

@@ -1,6 +1,6 @@
 import { Database as BunDatabase } from "bun:sqlite"
 import { drizzle, type SQLiteBunDatabase } from "drizzle-orm/bun-sqlite"
-import { migrate as drizzleMigrate } from "drizzle-orm/bun-sqlite/migrator"
+import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import type { SQLiteTransaction } from "drizzle-orm/sqlite-core"
 export * from "drizzle-orm"
 import { Context } from "../util/context"
@@ -29,6 +29,22 @@ export namespace Database {
 
   type Client = SQLiteBunDatabase
 
+  type Journal = { sql: string; timestamp: number }[]
+
+  function journal(dir: string): Journal {
+    const file = path.join(dir, "meta/_journal.json")
+    if (!Bun.file(file).size) return []
+
+    const data = JSON.parse(readFileSync(file, "utf-8")) as {
+      entries: { tag: string; when: number }[]
+    }
+
+    return data.entries.map((entry) => ({
+      sql: readFileSync(path.join(dir, `${entry.tag}.sql`), "utf-8"),
+      timestamp: entry.when,
+    }))
+  }
+
   const client = lazy(() => {
     log.info("opening database", { path: path.join(Global.Path.data, "opencode.db") })
 
@@ -41,11 +57,22 @@ export namespace Database {
     sqlite.run("PRAGMA foreign_keys = ON")
 
     const db = drizzle({ client: sqlite })
-    migrate(db)
+
+    // Apply schema migrations
+    const entries =
+      typeof OPENCODE_MIGRATIONS !== "undefined"
+        ? OPENCODE_MIGRATIONS
+        : journal(path.join(import.meta.dirname, "../../migration"))
+    if (entries.length > 0) {
+      log.info("applying migrations", {
+        count: entries.length,
+        mode: typeof OPENCODE_MIGRATIONS !== "undefined" ? "bundled" : "dev",
+      })
+      migrate(db, entries)
+    }
 
     // Run json migration if not already done
-    const marker = sqlite.prepare("SELECT 1 FROM __drizzle_migrations WHERE hash = 'json-migration'").get()
-    if (!marker) {
+    if (!sqlite.prepare("SELECT 1 FROM __drizzle_migrations WHERE hash = 'json-migration'").get()) {
       Bun.file(path.join(Global.Path.data, "storage/project"))
         .exists()
         .then((exists) => {
@@ -62,19 +89,18 @@ export namespace Database {
 
   export type TxOrDb = Transaction | Client
 
-  const TransactionContext = Context.create<{
+  const ctx = Context.create<{
     tx: TxOrDb
     effects: (() => void | Promise<void>)[]
   }>("database")
 
   export function use<T>(callback: (trx: TxOrDb) => T): T {
     try {
-      const { tx } = TransactionContext.use()
-      return callback(tx)
+      return callback(ctx.use().tx)
     } catch (err) {
       if (err instanceof Context.NotFound) {
         const effects: (() => void | Promise<void>)[] = []
-        const result = TransactionContext.provide({ effects, tx: client() }, () => callback(client()))
+        const result = ctx.provide({ effects, tx: client() }, () => callback(client()))
         for (const effect of effects) effect()
         return result
       }
@@ -82,24 +108,22 @@ export namespace Database {
     }
   }
 
-  export function effect(effect: () => void | Promise<void>) {
+  export function effect(fn: () => void | Promise<void>) {
     try {
-      const { effects } = TransactionContext.use()
-      effects.push(effect)
+      ctx.use().effects.push(fn)
     } catch {
-      effect()
+      fn()
     }
   }
 
   export function transaction<T>(callback: (tx: TxOrDb) => T): T {
     try {
-      const { tx } = TransactionContext.use()
-      return callback(tx)
+      return callback(ctx.use().tx)
     } catch (err) {
       if (err instanceof Context.NotFound) {
         const effects: (() => void | Promise<void>)[] = []
         const result = client().transaction((tx) => {
-          return TransactionContext.provide({ tx, effects }, () => callback(tx))
+          return ctx.provide({ tx, effects }, () => callback(tx))
         })
         for (const effect of effects) effect()
         return result
@@ -107,37 +131,4 @@ export namespace Database {
       throw err
     }
   }
-}
-
-type MigrationsJournal = { sql: string; timestamp: number }[]
-
-function prepareJournal(dir: string): MigrationsJournal {
-  const file = path.join(dir, "meta/_journal.json")
-  if (!Bun.file(file).size) return []
-
-  const journal = JSON.parse(readFileSync(file, "utf-8")) as {
-    entries: { tag: string; when: number }[]
-  }
-
-  return journal.entries.map((entry) => ({
-    sql: readFileSync(path.join(dir, `${entry.tag}.sql`), "utf-8"),
-    timestamp: entry.when,
-  }))
-}
-
-function migrate(db: SQLiteBunDatabase) {
-  const journal =
-    typeof OPENCODE_MIGRATIONS !== "undefined"
-      ? OPENCODE_MIGRATIONS
-      : prepareJournal(path.join(import.meta.dirname, "../../migration"))
-
-  if (journal.length === 0) {
-    log.info("no migrations found")
-    return
-  }
-  log.info("applying migrations", {
-    count: journal.length,
-    mode: typeof OPENCODE_MIGRATIONS !== "undefined" ? "bundled" : "dev",
-  })
-  drizzleMigrate(db, journal)
 }

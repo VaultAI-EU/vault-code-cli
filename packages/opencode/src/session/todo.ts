@@ -29,15 +29,15 @@ export namespace Todo {
     Database.use((db) =>
       db
         .insert(TodoTable)
-        .values({ sessionID: input.sessionID, data: input.todos })
-        .onConflictDoUpdate({ target: TodoTable.sessionID, set: { data: input.todos } })
+        .values({ session_id: input.sessionID, data: input.todos })
+        .onConflictDoUpdate({ target: TodoTable.session_id, set: { data: input.todos } })
         .run(),
     )
     Bus.publish(Event.Updated, input)
   }
 
   export function get(sessionID: string) {
-    const row = Database.use((db) => db.select().from(TodoTable).where(eq(TodoTable.sessionID, sessionID)).get())
+    const row = Database.use((db) => db.select().from(TodoTable).where(eq(TodoTable.session_id, sessionID)).get())
     return row?.data ?? []
   }
 }

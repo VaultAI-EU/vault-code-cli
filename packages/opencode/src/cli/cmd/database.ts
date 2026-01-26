@@ -65,7 +65,7 @@ const ExportCommand = cmd({
       // Export sessions (organized by projectID)
       const sessionDir = path.join(outDir, "session")
       for (const row of Database.use((db) => db.select().from(SessionTable).all())) {
-        const dir = path.join(sessionDir, row.projectID)
+        const dir = path.join(sessionDir, row.project_id)
         await fs.mkdir(dir, { recursive: true })
         await Bun.write(path.join(dir, `${row.id}.json`), JSON.stringify(Session.fromRow(row), null, 2))
         stats.sessions++
@@ -74,7 +74,7 @@ const ExportCommand = cmd({
       // Export messages (organized by sessionID)
       const messageDir = path.join(outDir, "message")
       for (const row of Database.use((db) => db.select().from(MessageTable).all())) {
-        const dir = path.join(messageDir, row.sessionID)
+        const dir = path.join(messageDir, row.session_id)
         await fs.mkdir(dir, { recursive: true })
         await Bun.write(path.join(dir, `${row.id}.json`), JSON.stringify(row.data, null, 2))
         stats.messages++
@@ -83,7 +83,7 @@ const ExportCommand = cmd({
       // Export parts (organized by messageID)
       const partDir = path.join(outDir, "part")
       for (const row of Database.use((db) => db.select().from(PartTable).all())) {
-        const dir = path.join(partDir, row.messageID)
+        const dir = path.join(partDir, row.message_id)
         await fs.mkdir(dir, { recursive: true })
         await Bun.write(path.join(dir, `${row.id}.json`), JSON.stringify(row.data, null, 2))
         stats.parts++
@@ -93,7 +93,7 @@ const ExportCommand = cmd({
       const diffDir = path.join(outDir, "session_diff")
       await fs.mkdir(diffDir, { recursive: true })
       for (const row of Database.use((db) => db.select().from(SessionDiffTable).all())) {
-        await Bun.write(path.join(diffDir, `${row.sessionID}.json`), JSON.stringify(row.data, null, 2))
+        await Bun.write(path.join(diffDir, `${row.session_id}.json`), JSON.stringify(row.data, null, 2))
         stats.diffs++
       }
 
@@ -101,7 +101,7 @@ const ExportCommand = cmd({
       const todoDir = path.join(outDir, "todo")
       await fs.mkdir(todoDir, { recursive: true })
       for (const row of Database.use((db) => db.select().from(TodoTable).all())) {
-        await Bun.write(path.join(todoDir, `${row.sessionID}.json`), JSON.stringify(row.data, null, 2))
+        await Bun.write(path.join(todoDir, `${row.session_id}.json`), JSON.stringify(row.data, null, 2))
         stats.todos++
       }
 
@@ -109,7 +109,7 @@ const ExportCommand = cmd({
       const permDir = path.join(outDir, "permission")
       await fs.mkdir(permDir, { recursive: true })
       for (const row of Database.use((db) => db.select().from(PermissionTable).all())) {
-        await Bun.write(path.join(permDir, `${row.projectID}.json`), JSON.stringify(row.data, null, 2))
+        await Bun.write(path.join(permDir, `${row.project_id}.json`), JSON.stringify(row.data, null, 2))
         stats.permissions++
       }
 
@@ -117,7 +117,7 @@ const ExportCommand = cmd({
       const sessionShareDir = path.join(outDir, "session_share")
       await fs.mkdir(sessionShareDir, { recursive: true })
       for (const row of Database.use((db) => db.select().from(SessionShareTable).all())) {
-        await Bun.write(path.join(sessionShareDir, `${row.sessionID}.json`), JSON.stringify(row.data, null, 2))
+        await Bun.write(path.join(sessionShareDir, `${row.session_id}.json`), JSON.stringify(row.data, null, 2))
         stats.sessionShares++
       }
 
@@ -125,7 +125,7 @@ const ExportCommand = cmd({
       const shareDir = path.join(outDir, "share")
       await fs.mkdir(shareDir, { recursive: true })
       for (const row of Database.use((db) => db.select().from(ShareTable).all())) {
-        await Bun.write(path.join(shareDir, `${row.sessionID}.json`), JSON.stringify(row.data, null, 2))
+        await Bun.write(path.join(shareDir, `${row.session_id}.json`), JSON.stringify(row.data, null, 2))
         stats.shares++
       }
 

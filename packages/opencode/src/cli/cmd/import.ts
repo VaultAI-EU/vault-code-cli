@@ -90,8 +90,8 @@ export const ImportCommand = cmd({
             .insert(MessageTable)
             .values({
               id: msg.info.id,
-              sessionID: exportData.info.id,
-              createdAt: msg.info.time?.created ?? Date.now(),
+              session_id: exportData.info.id,
+              created_at: msg.info.time?.created ?? Date.now(),
               data: msg.info,
             })
             .onConflictDoNothing()
@@ -104,8 +104,8 @@ export const ImportCommand = cmd({
               .insert(PartTable)
               .values({
                 id: part.id,
-                messageID: msg.info.id,
-                sessionID: exportData.info.id,
+                message_id: msg.info.id,
+                session_id: exportData.info.id,
                 data: part,
               })
               .onConflictDoNothing()

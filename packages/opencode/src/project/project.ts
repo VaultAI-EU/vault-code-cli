@@ -299,7 +299,7 @@ export namespace Project {
     if (!globalRow) return
 
     const globalSessions = Database.use((db) =>
-      db.select().from(SessionTable).where(eq(SessionTable.projectID, "global")).all(),
+      db.select().from(SessionTable).where(eq(SessionTable.project_id, "global")).all(),
     )
     if (globalSessions.length === 0) return
 
@@ -311,7 +311,7 @@ export namespace Project {
 
       log.info("migrating session", { sessionID: row.id, from: "global", to: newProjectID })
       Database.use((db) =>
-        db.update(SessionTable).set({ projectID: newProjectID }).where(eq(SessionTable.id, row.id)).run(),
+        db.update(SessionTable).set({ project_id: newProjectID }).where(eq(SessionTable.id, row.id)).run(),
       )
     }).catch((error) => {
       log.error("failed to migrate sessions from global to project", { error, projectId: newProjectID })

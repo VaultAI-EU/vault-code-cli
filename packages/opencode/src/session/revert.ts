@@ -64,21 +64,22 @@ export namespace SessionRevert {
       Database.use((db) =>
         db
           .insert(SessionDiffTable)
-          .values({ sessionID: input.sessionID, data: diffs })
-          .onConflictDoUpdate({ target: SessionDiffTable.sessionID, set: { data: diffs } })
+          .values({ session_id: input.sessionID, data: diffs })
+          .onConflictDoUpdate({ target: SessionDiffTable.session_id, set: { data: diffs } })
           .run(),
       )
       Bus.publish(Session.Event.Diff, {
         sessionID: input.sessionID,
         diff: diffs,
       })
-      return Session.update(input.sessionID, (draft) => {
-        draft.revert = revert
-        draft.summary = {
+      return Session.setRevert({
+        sessionID: input.sessionID,
+        revert,
+        summary: {
           additions: diffs.reduce((sum, x) => sum + x.additions, 0),
           deletions: diffs.reduce((sum, x) => sum + x.deletions, 0),
           files: diffs.length,
-        }
+        },
       })
     }
     return session
@@ -90,10 +91,7 @@ export namespace SessionRevert {
     const session = await Session.get(input.sessionID)
     if (!session.revert) return session
     if (session.revert.snapshot) await Snapshot.restore(session.revert.snapshot)
-    const next = await Session.update(input.sessionID, (draft) => {
-      draft.revert = undefined
-    })
-    return next
+    return Session.clearRevert(input.sessionID)
   }
 
   export async function cleanup(session: Session.Info) {
@@ -121,8 +119,6 @@ export namespace SessionRevert {
         })
       }
     }
-    await Session.update(sessionID, (draft) => {
-      draft.revert = undefined
-    })
+    await Session.clearRevert(sessionID)
   }
 }

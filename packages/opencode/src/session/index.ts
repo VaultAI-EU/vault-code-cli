@@ -55,10 +55,10 @@ export namespace Session {
         : undefined
     const share = row.share_url ? { url: row.share_url } : undefined
     const revert =
-      row.revert_messageID !== null
+      row.revert_message_id !== null
         ? {
-            messageID: row.revert_messageID,
-            partID: row.revert_partID ?? undefined,
+            messageID: row.revert_message_id,
+            partID: row.revert_part_id ?? undefined,
             snapshot: row.revert_snapshot ?? undefined,
             diff: row.revert_diff ?? undefined,
           }
@@ -66,9 +66,9 @@ export namespace Session {
     return {
       id: row.id,
       slug: row.slug,
-      projectID: row.projectID,
+      projectID: row.project_id,
       directory: row.directory,
-      parentID: row.parentID ?? undefined,
+      parentID: row.parent_id ?? undefined,
       title: row.title,
       version: row.version,
       summary,
@@ -87,8 +87,8 @@ export namespace Session {
   export function toRow(info: Info) {
     return {
       id: info.id,
-      projectID: info.projectID,
-      parentID: info.parentID,
+      project_id: info.projectID,
+      parent_id: info.parentID,
       slug: info.slug,
       directory: info.directory,
       title: info.title,
@@ -98,8 +98,8 @@ export namespace Session {
       summary_deletions: info.summary?.deletions,
       summary_files: info.summary?.files,
       summary_diffs: info.summary?.diffs,
-      revert_messageID: info.revert?.messageID ?? null,
-      revert_partID: info.revert?.partID ?? null,
+      revert_message_id: info.revert?.messageID ?? null,
+      revert_part_id: info.revert?.partID ?? null,
       revert_snapshot: info.revert?.snapshot ?? null,
       revert_diff: info.revert?.diff ?? null,
       permission: info.permission,
@@ -255,9 +255,10 @@ export namespace Session {
   )
 
   export const touch = fn(Identifier.schema("session"), async (sessionID) => {
-    await update(sessionID, (draft) => {
-      draft.time.updated = Date.now()
-    })
+    const now = Date.now()
+    Database.use((db) => db.update(SessionTable).set({ time_updated: now }).where(eq(SessionTable.id, sessionID)).run())
+    const info = await get(sessionID)
+    Bus.publish(Event.Updated, { info })
   })
 
   export async function createNext(input: {
@@ -288,15 +289,9 @@ export namespace Session {
     })
     const cfg = await Config.get()
     if (!result.parentID && (Flag.OPENCODE_AUTO_SHARE || cfg.share === "auto"))
-      share(result.id)
-        .then((share) => {
-          update(result.id, (draft) => {
-            draft.share = share
-          })
-        })
-        .catch(() => {
-          // Silently ignore sharing errors during session creation
-        })
+      share(result.id).catch(() => {
+        // Silently ignore sharing errors during session creation
+      })
     Bus.publish(Event.Updated, {
       info: result,
     })
@@ -317,7 +312,7 @@ export namespace Session {
   })
 
   export const getShare = fn(Identifier.schema("session"), async (id) => {
-    const row = Database.use((db) => db.select().from(ShareTable).where(eq(ShareTable.sessionID, id)).get())
+    const row = Database.use((db) => db.select().from(ShareTable).where(eq(ShareTable.session_id, id)).get())
     return row?.data
   })
 
@@ -328,15 +323,9 @@ export namespace Session {
     }
     const { ShareNext } = await import("@/share/share-next")
     const share = await ShareNext.create(id)
-    await update(
-      id,
-      (draft) => {
-        draft.share = {
-          url: share.url,
-        }
-      },
-      { touch: false },
-    )
+    Database.use((db) => db.update(SessionTable).set({ share_url: share.url }).where(eq(SessionTable.id, id)).run())
+    const info = await get(id)
+    Bus.publish(Event.Updated, { info })
     return share
   })
 
@@ -344,33 +333,135 @@ export namespace Session {
     // Use ShareNext to remove the share (same as share function uses ShareNext to create)
     const { ShareNext } = await import("@/share/share-next")
     await ShareNext.remove(id)
-    await update(
-      id,
-      (draft) => {
-        draft.share = undefined
-      },
-      { touch: false },
-    )
+    Database.use((db) => db.update(SessionTable).set({ share_url: null }).where(eq(SessionTable.id, id)).run())
+    const info = await get(id)
+    Bus.publish(Event.Updated, { info })
   })
 
-  export function update(id: string, editor: (session: Info) => void, options?: { touch?: boolean }) {
-    const row = Database.use((db) => db.select().from(SessionTable).where(eq(SessionTable.id, id)).get())
-    if (!row) throw new Error(`Session not found: ${id}`)
-    const data = fromRow(row)
-    editor(data)
-    if (options?.touch !== false) {
-      data.time.updated = Date.now()
-    }
-    Database.use((db) => db.update(SessionTable).set(toRow(data)).where(eq(SessionTable.id, id)).run())
-    Bus.publish(Event.Updated, {
-      info: data,
-    })
-    return data
-  }
+  export const setTitle = fn(
+    z.object({
+      sessionID: Identifier.schema("session"),
+      title: z.string(),
+    }),
+    async (input) => {
+      Database.use((db) =>
+        db.update(SessionTable).set({ title: input.title }).where(eq(SessionTable.id, input.sessionID)).run(),
+      )
+      const info = await get(input.sessionID)
+      Bus.publish(Event.Updated, { info })
+      return info
+    },
+  )
+
+  export const setArchived = fn(
+    z.object({
+      sessionID: Identifier.schema("session"),
+      time: z.number().optional(),
+    }),
+    async (input) => {
+      Database.use((db) =>
+        db.update(SessionTable).set({ time_archived: input.time }).where(eq(SessionTable.id, input.sessionID)).run(),
+      )
+      const info = await get(input.sessionID)
+      Bus.publish(Event.Updated, { info })
+      return info
+    },
+  )
+
+  export const setPermission = fn(
+    z.object({
+      sessionID: Identifier.schema("session"),
+      permission: PermissionNext.Ruleset,
+    }),
+    async (input) => {
+      Database.use((db) =>
+        db
+          .update(SessionTable)
+          .set({ permission: input.permission, time_updated: Date.now() })
+          .where(eq(SessionTable.id, input.sessionID))
+          .run(),
+      )
+      const info = await get(input.sessionID)
+      Bus.publish(Event.Updated, { info })
+      return info
+    },
+  )
+
+  export const setRevert = fn(
+    z.object({
+      sessionID: Identifier.schema("session"),
+      revert: Info.shape.revert,
+      summary: Info.shape.summary,
+    }),
+    async (input) => {
+      Database.use((db) =>
+        db
+          .update(SessionTable)
+          .set({
+            revert_message_id: input.revert?.messageID ?? null,
+            revert_part_id: input.revert?.partID ?? null,
+            revert_snapshot: input.revert?.snapshot ?? null,
+            revert_diff: input.revert?.diff ?? null,
+            summary_additions: input.summary?.additions,
+            summary_deletions: input.summary?.deletions,
+            summary_files: input.summary?.files,
+            time_updated: Date.now(),
+          })
+          .where(eq(SessionTable.id, input.sessionID))
+          .run(),
+      )
+      const info = await get(input.sessionID)
+      Bus.publish(Event.Updated, { info })
+      return info
+    },
+  )
+
+  export const clearRevert = fn(Identifier.schema("session"), async (sessionID) => {
+    Database.use((db) =>
+      db
+        .update(SessionTable)
+        .set({
+          revert_message_id: null,
+          revert_part_id: null,
+          revert_snapshot: null,
+          revert_diff: null,
+          time_updated: Date.now(),
+        })
+        .where(eq(SessionTable.id, sessionID))
+        .run(),
+    )
+    const info = await get(sessionID)
+    Bus.publish(Event.Updated, { info })
+    return info
+  })
+
+  export const setSummary = fn(
+    z.object({
+      sessionID: Identifier.schema("session"),
+      summary: Info.shape.summary,
+    }),
+    async (input) => {
+      Database.use((db) =>
+        db
+          .update(SessionTable)
+          .set({
+            summary_additions: input.summary?.additions,
+            summary_deletions: input.summary?.deletions,
+            summary_files: input.summary?.files,
+            time_updated: Date.now(),
+          })
+          .where(eq(SessionTable.id, input.sessionID))
+          .run(),
+      )
+      const info = await get(input.sessionID)
+      Bus.publish(Event.Updated, { info })
+      return info
+    },
+  )
 
   export const diff = fn(Identifier.schema("session"), async (sessionID) => {
     const row = Database.use((db) =>
-      db.select().from(SessionDiffTable).where(eq(SessionDiffTable.sessionID, sessionID)).get(),
+      db.select().from(SessionDiffTable).where(eq(SessionDiffTable.session_id, sessionID)).get(),
     )
     return row?.data ?? []
   })
@@ -394,7 +485,7 @@ export namespace Session {
   export function* list() {
     const project = Instance.project
     const rows = Database.use((db) =>
-      db.select().from(SessionTable).where(eq(SessionTable.projectID, project.id)).all(),
+      db.select().from(SessionTable).where(eq(SessionTable.project_id, project.id)).all(),
     )
     for (const row of rows) {
       yield fromRow(row)
@@ -402,7 +493,7 @@ export namespace Session {
   }
 
   export const children = fn(Identifier.schema("session"), async (parentID) => {
-    const rows = Database.use((db) => db.select().from(SessionTable).where(eq(SessionTable.parentID, parentID)).all())
+    const rows = Database.use((db) => db.select().from(SessionTable).where(eq(SessionTable.parent_id, parentID)).all())
     return rows.map((row) => fromRow(row))
   })
 
@@ -425,14 +516,14 @@ export namespace Session {
   })
 
   export const updateMessage = fn(MessageV2.Info, async (msg) => {
-    const createdAt = msg.role === "user" ? msg.time.created : msg.time.created
+    const created_at = msg.role === "user" ? msg.time.created : msg.time.created
     Database.use((db) =>
       db
         .insert(MessageTable)
         .values({
           id: msg.id,
-          sessionID: msg.sessionID,
-          createdAt,
+          session_id: msg.sessionID,
+          created_at,
           data: msg,
         })
         .onConflictDoUpdate({ target: MessageTable.id, set: { data: msg } })
@@ -497,8 +588,8 @@ export namespace Session {
         .insert(PartTable)
         .values({
           id: part.id,
-          messageID: part.messageID,
-          sessionID: part.sessionID,
+          message_id: part.messageID,
+          session_id: part.sessionID,
           data: part,
         })
         .onConflictDoUpdate({ target: PartTable.id, set: { data: part } })
