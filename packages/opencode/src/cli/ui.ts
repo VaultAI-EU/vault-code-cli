@@ -5,12 +5,13 @@ import { NamedError } from "@opencode-ai/util/error"
 export namespace UI {
   // VaultAI Logo - Powered by OpenCode
   const LOGO = [
-    [``, `              `],
-    [`█ █ █▀▀█ █ █ █   ▀█▀ `, `█▀▀█ ▀█▀`],
-    [`▀▄▀ █▄▄█ █ █ █    █  `, `█▄▄█  █ `],
-    [` █  █  █ ▀▄█ █▄▄  █  `, `█  █ ▀▀▀`],
+    [``, `               `],
+    [`█   █ █▀▀█ █ █ █   ▀█▀ `, `█▀▀█ ▀█▀`],
+    [`█   █ █▄▄█ █ █ █    █  `, `█▄▄█  █ `],
+    [` █ █  █  █ █ █ █    █  `, `█  █  █ `],
+    [`  █   █  █ ▀▄█ █▄▄  █  `, `█  █ ▀▀▀`],
   ]
-  const POWERED_BY = `    Powered by OpenCode`
+  const POWERED_BY = `     Powered by OpenCode`
 
   export const CancelledError = NamedError.create("UICancelledError", z.void())
 
