@@ -8,9 +8,12 @@ import { useTheme, tint } from "@tui/context/theme"
 // ~ = shadow top only (▀ with fg=shadow)
 const SHADOW_MARKER = /[_^~]/
 
-const LOGO_LEFT = [`                   `, `█▀▀█ █▀▀█ █▀▀█ █▀▀▄`, `█__█ █__█ █^^^ █__█`, `▀▀▀▀ █▀▀▀ ▀▀▀▀ ▀~~▀`]
+// VaultAI Logo - Powered by OpenCode
+const LOGO_LEFT = [`                        `, `█ █ █▀▀█ █ █ █   ▀█▀ `, `█▄█ █__█ █ █ █    █  `, ` █  █^^█ ▀▄█ ▀▀▀  █  `]
 
-const LOGO_RIGHT = [`             ▄     `, `█▀▀▀ █▀▀█ █▀▀█ █▀▀█`, `█___ █__█ █__█ █^^^`, `▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀`]
+const LOGO_RIGHT = [`      ▄     `, `█▀▀█ ▀█▀   `, `█__█  █_   `, `█^^█ ▀▀▀   `]
+
+const POWERED_BY = `Powered by OpenCode`
 
 export function Logo() {
   const { theme } = useTheme()
@@ -74,7 +77,7 @@ export function Logo() {
   }
 
   return (
-    <box>
+    <box flexDirection="column">
       <For each={LOGO_LEFT}>
         {(line, index) => (
           <box flexDirection="row" gap={1}>
@@ -83,6 +86,11 @@ export function Logo() {
           </box>
         )}
       </For>
+      <box flexDirection="row" justifyContent="center">
+        <text fg={theme.textMuted} selectable={false}>
+          {POWERED_BY}
+        </text>
+      </box>
     </box>
   )
 }

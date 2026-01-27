@@ -3,12 +3,14 @@ import { EOL } from "os"
 import { NamedError } from "@opencode-ai/util/error"
 
 export namespace UI {
+  // VaultAI Logo - Powered by OpenCode
   const LOGO = [
-    [`                    `, `             ▄     `],
-    [`█▀▀█ █▀▀█ █▀▀█ █▀▀▄ `, `█▀▀▀ █▀▀█ █▀▀█ █▀▀█`],
-    [`█░░█ █░░█ █▀▀▀ █░░█ `, `█░░░ █░░█ █░░█ █▀▀▀`],
-    [`▀▀▀▀ █▀▀▀ ▀▀▀▀ ▀  ▀ `, `▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀`],
+    [`                         `, `      ▄     `],
+    [`█ █ █▀▀█ █ █ █   ▀█▀  `, `█▀▀█ ▀█▀   `],
+    [`█▄█ █░░█ █ █ █    █   `, `█░░█  █    `],
+    [` █  █░░█ ▀▄█ ▀▀▀  █   `, `█░░█ ▀▀▀   `],
   ]
+  const POWERED_BY = `        Powered by OpenCode`
 
   export const CancelledError = NamedError.create("UICancelledError", z.void())
 
@@ -56,6 +58,11 @@ export namespace UI {
       result.push(row[1])
       result.push(EOL)
     }
+    // Add "Powered by OpenCode" line
+    if (pad) result.push(pad)
+    result.push(Bun.color("gray", "ansi"))
+    result.push(POWERED_BY)
+    result.push("\x1b[0m")
     return result.join("").trimEnd()
   }
 
