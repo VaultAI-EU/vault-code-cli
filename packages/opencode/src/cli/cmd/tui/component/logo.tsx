@@ -9,11 +9,11 @@ import { useTheme, tint } from "@tui/context/theme"
 const SHADOW_MARKER = /[_^~]/
 
 // VaultAI Logo - Powered by OpenCode
-const LOGO_LEFT = [`               `, `█   █ █▀▀█ █ █ █   ▀█▀ `, `█   █ █__█ █ █ █    █  `, ` █ █  █^^█ █ █ █    █  `, `  █   █^^█ ▀▄█ █▄▄  █  `]
+const LOGO_LEFT = [`█   █ █▀▀█ █  █ █    ▀█▀  `, `█   █ █__█ █  █ █     █   `, ` █ █  █^^█ █  █ █     █   `, `  █   █^^█ ▀▄▄▀ ▀▀▀   █   `]
 
-const LOGO_RIGHT = [`       `, `█▀▀█ ▀█▀`, `█__█  █_`, `█^^█  █_`, `█^^█ ▀▀▀`]
+const LOGO_RIGHT = [`█▀▀█ ▀█▀`, `█__█  █_`, `█^^█  █_`, `█^^█ ▀▀▀`]
 
-const POWERED_BY = `   Powered by OpenCode`
+const POWERED_BY = `    Powered by OpenCode`
 
 export function Logo() {
   const { theme } = useTheme()
