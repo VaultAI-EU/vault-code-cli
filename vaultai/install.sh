@@ -1,97 +1,199 @@
 #!/bin/bash
-# VaultAI Code CLI - Script d'installation
-# Usage: curl -fsSL https://vaultai.eu/install-cli | bash
+# VaultAI Code CLI - Installation Script
+# Usage: curl -fsSL https://raw.githubusercontent.com/VaultAI-EU/vault-code-cli/main/vaultai/install.sh | bash
+#    or: curl -fsSL https://get.vaultai.eu | bash
 
 set -e
 
 REPO="VaultAI-EU/vault-code-cli"
 BINARY_NAME="vault-code"
-INSTALL_DIR="${VAULTAI_INSTALL_DIR:-${XDG_BIN_DIR:-$HOME/.local/bin}}"
+INSTALL_DIR="${VAULTAI_INSTALL_DIR:-${HOME}/.vaultai/bin}"
 
-# Couleurs
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+BOLD='\033[1m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}"
-echo "╔═══════════════════════════════════════╗"
-echo "║     VaultAI Code CLI Installer        ║"
-echo "║   On-premise AI Code Assistant        ║"
-echo "╚═══════════════════════════════════════╝"
-echo -e "${NC}"
+print_banner() {
+    echo -e "${BLUE}${BOLD}"
+    cat << 'EOF'
+ █   █ █▀▀█ █  █ █    ▀█▀   █▀▀█ ▀█▀
+ █   █ █▄▄█ █  █ █     █    █▄▄█  █
+  █▄█  █  █ █▄▄█ █▄▄▄ ▄█▄   █  █ ▄█▄
+                CODE CLI
+EOF
+    echo -e "${NC}"
+    echo -e "${BLUE}On-premise AI Code Assistant${NC}"
+    echo -e "${BLUE}Powered by OpenCode${NC}"
+    echo ""
+}
 
-# Détection de l'OS et de l'architecture
-OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH=$(uname -m)
-
-case "$ARCH" in
-    x86_64) ARCH="x64" ;;
-    aarch64|arm64) ARCH="arm64" ;;
-    *) echo -e "${RED}Architecture non supportée: $ARCH${NC}"; exit 1 ;;
-esac
-
-case "$OS" in
-    darwin) PLATFORM="darwin-$ARCH" ;;
-    linux) PLATFORM="linux-$ARCH" ;;
-    *) echo -e "${RED}OS non supporté: $OS${NC}"; exit 1 ;;
-esac
-
-echo "Plateforme détectée: $PLATFORM"
-
-# Créer le dossier d'installation
-mkdir -p "$INSTALL_DIR"
-
-# Télécharger la dernière release
-echo "Téléchargement de la dernière version..."
-LATEST_RELEASE=$(curl -sL "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-
-if [ -z "$LATEST_RELEASE" ]; then
-    echo -e "${RED}Impossible de trouver la dernière release${NC}"
-    echo "Utilisation de la méthode alternative (npm)..."
+detect_platform() {
+    local os arch libc=""
     
-    # Fallback: installer via npm/bun
-    if command -v bun &> /dev/null; then
-        bun install -g @vaultai/code-cli
-    elif command -v npm &> /dev/null; then
-        npm install -g @vaultai/code-cli
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    arch=$(uname -m)
+    
+    case "$arch" in
+        x86_64|amd64) arch="x64" ;;
+        aarch64|arm64) arch="arm64" ;;
+        *) echo -e "${RED}Unsupported architecture: $arch${NC}"; exit 1 ;;
+    esac
+    
+    case "$os" in
+        darwin) 
+            PLATFORM="opencode-darwin-$arch"
+            ;;
+        linux)
+            # Detect musl vs glibc
+            if ldd --version 2>&1 | grep -q musl; then
+                libc="-musl"
+            fi
+            PLATFORM="opencode-linux-$arch$libc"
+            ;;
+        mingw*|msys*|cygwin*)
+            PLATFORM="opencode-windows-x64"
+            BINARY_NAME="vault-code.exe"
+            ;;
+        *) 
+            echo -e "${RED}Unsupported OS: $os${NC}"
+            exit 1 
+            ;;
+    esac
+    
+    echo -e "Platform detected: ${GREEN}$PLATFORM${NC}"
+}
+
+get_latest_release() {
+    echo "Fetching latest release..."
+    LATEST_RELEASE=$(curl -sL "https://api.github.com/repos/$REPO/releases/latest" 2>/dev/null | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    
+    if [ -z "$LATEST_RELEASE" ]; then
+        # Fallback to dev branch if no releases yet
+        echo -e "${YELLOW}No release found, using dev branch...${NC}"
+        LATEST_RELEASE="dev"
+    fi
+    
+    echo -e "Version: ${GREEN}$LATEST_RELEASE${NC}"
+}
+
+download_binary() {
+    mkdir -p "$INSTALL_DIR"
+    
+    local download_url
+    if [ "$LATEST_RELEASE" = "dev" ]; then
+        # For dev, we'd need to build from source or use a nightly URL
+        echo -e "${YELLOW}Dev builds not available for direct download.${NC}"
+        echo -e "Please build from source or wait for a release."
+        echo ""
+        echo "To build from source:"
+        echo "  git clone https://github.com/$REPO.git"
+        echo "  cd vault-code-cli/packages/opencode"
+        echo "  bun install && bun run build --single"
+        exit 1
     else
-        echo -e "${RED}Ni bun ni npm n'est installé. Veuillez installer l'un des deux.${NC}"
+        download_url="https://github.com/$REPO/releases/download/$LATEST_RELEASE/$PLATFORM.tar.gz"
+    fi
+    
+    echo "Downloading from: $download_url"
+    
+    # Download and extract
+    local tmp_dir=$(mktemp -d)
+    curl -sL "$download_url" -o "$tmp_dir/vault-code.tar.gz"
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Download failed${NC}"
+        rm -rf "$tmp_dir"
         exit 1
     fi
-else
-    DOWNLOAD_URL="https://github.com/$REPO/releases/download/$LATEST_RELEASE/vault-code-$PLATFORM"
     
-    echo "Téléchargement depuis: $DOWNLOAD_URL"
-    curl -sL "$DOWNLOAD_URL" -o "$INSTALL_DIR/$BINARY_NAME"
+    tar -xzf "$tmp_dir/vault-code.tar.gz" -C "$tmp_dir"
+    mv "$tmp_dir/$PLATFORM/bin/opencode" "$INSTALL_DIR/$BINARY_NAME"
     chmod +x "$INSTALL_DIR/$BINARY_NAME"
-fi
-
-# Vérifier l'installation
-if command -v "$INSTALL_DIR/$BINARY_NAME" &> /dev/null || [ -f "$INSTALL_DIR/$BINARY_NAME" ]; then
-    echo -e "${GREEN}✓ Installation réussie!${NC}"
-    echo ""
-    echo "VaultAI Code CLI a été installé dans: $INSTALL_DIR/$BINARY_NAME"
-    echo ""
     
-    # Vérifier si le PATH inclut le dossier d'installation
-    if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-        echo -e "${BLUE}Pour utiliser vault-code, ajoutez ceci à votre ~/.bashrc ou ~/.zshrc:${NC}"
-        echo ""
-        echo "  export PATH=\"\$PATH:$INSTALL_DIR\""
-        echo ""
+    rm -rf "$tmp_dir"
+}
+
+setup_path() {
+    local shell_rc=""
+    local shell_name=$(basename "$SHELL")
+    
+    case "$shell_name" in
+        bash) shell_rc="$HOME/.bashrc" ;;
+        zsh) shell_rc="$HOME/.zshrc" ;;
+        fish) shell_rc="$HOME/.config/fish/config.fish" ;;
+        *) shell_rc="$HOME/.profile" ;;
+    esac
+    
+    # Check if already in PATH
+    if [[ ":$PATH:" == *":$INSTALL_DIR:"* ]]; then
+        return
     fi
     
-    echo "Pour commencer:"
     echo ""
-    echo "  1. Configurez votre clé API VaultAI:"
-    echo "     export VAULTAI_API_KEY=\"votre-cle-api\""
+    echo -e "${YELLOW}To add vault-code to your PATH, run:${NC}"
     echo ""
-    echo "  2. Lancez VaultAI Code CLI:"
-    echo "     vault-code"
+    
+    if [ "$shell_name" = "fish" ]; then
+        echo "  fish_add_path $INSTALL_DIR"
+    else
+        echo "  echo 'export PATH=\"\$PATH:$INSTALL_DIR\"' >> $shell_rc"
+        echo "  source $shell_rc"
+    fi
+    
+    # Offer to do it automatically
     echo ""
-    echo "Documentation: https://docs.vaultai.eu/code-cli"
-else
-    echo -e "${RED}✗ L'installation a échoué${NC}"
-    exit 1
-fi
+    read -p "Add to PATH automatically? [Y/n] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
+        if [ "$shell_name" = "fish" ]; then
+            fish -c "fish_add_path $INSTALL_DIR" 2>/dev/null || true
+        else
+            echo "export PATH=\"\$PATH:$INSTALL_DIR\"" >> "$shell_rc"
+        fi
+        echo -e "${GREEN}✓ PATH updated. Please restart your terminal or run: source $shell_rc${NC}"
+    fi
+}
+
+verify_installation() {
+    if [ -f "$INSTALL_DIR/$BINARY_NAME" ]; then
+        echo ""
+        echo -e "${GREEN}${BOLD}✓ Installation successful!${NC}"
+        echo ""
+        echo -e "VaultAI Code CLI installed to: ${BLUE}$INSTALL_DIR/$BINARY_NAME${NC}"
+        
+        # Try to get version
+        local version=$("$INSTALL_DIR/$BINARY_NAME" --version 2>/dev/null || echo "unknown")
+        echo -e "Version: ${GREEN}$version${NC}"
+        
+        setup_path
+        
+        echo ""
+        echo -e "${BOLD}Quick Start:${NC}"
+        echo ""
+        echo "  1. Launch VaultAI Code CLI:"
+        echo "     ${GREEN}vault-code${NC}"
+        echo ""
+        echo "  2. Connect to your VaultAI instance:"
+        echo "     ${GREEN}/vaultai${NC} (in the TUI)"
+        echo ""
+        echo "  Documentation: https://docs.vaultai.eu/code-cli"
+        echo ""
+    else
+        echo -e "${RED}✗ Installation failed${NC}"
+        exit 1
+    fi
+}
+
+main() {
+    print_banner
+    detect_platform
+    get_latest_release
+    download_binary
+    verify_installation
+}
+
+main "$@"

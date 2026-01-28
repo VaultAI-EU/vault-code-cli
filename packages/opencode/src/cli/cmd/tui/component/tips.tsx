@@ -4,6 +4,16 @@ import { DEFAULT_THEMES, useTheme } from "@tui/context/theme"
 const themeCount = Object.keys(DEFAULT_THEMES).length
 const themeTip = `Use {highlight}/theme{/highlight} or {highlight}Ctrl+X T{/highlight} to switch between ${themeCount} built-in themes`
 
+// VaultAI specific tips - shown with higher priority
+const VAULTAI_TIPS = [
+  "Run {highlight}/guide{/highlight} to learn how to set up and use VaultAI Code CLI",
+  "Run {highlight}/vaultai{/highlight} to connect to your VaultAI instance and access your tasks, projects, and files",
+  "Run {highlight}/connect{/highlight} to configure AI providers (Claude, GPT, Gemini, etc.)",
+  "Use the {highlight}vaultai{/highlight} tool to query your tasks: \"What are my tasks?\"",
+  "Already connected to VaultAI? Ask \"Quelles sont mes tâches ?\" to see your tasks",
+  "Run {highlight}/models{/highlight} to see and switch between available AI models",
+]
+
 type TipPart = { text: string; highlight: boolean }
 
 function parse(tip: string): TipPart[] {
@@ -32,7 +42,10 @@ function parse(tip: string): TipPart[] {
 
 export function Tips() {
   const theme = useTheme().theme
-  const parts = parse(TIPS[Math.floor(Math.random() * TIPS.length)])
+  // 50% chance to show VaultAI tips, 50% chance to show general tips
+  const showVaultAITip = Math.random() < 0.5
+  const tipSource = showVaultAITip ? VAULTAI_TIPS : TIPS
+  const parts = parse(tipSource[Math.floor(Math.random() * tipSource.length)])
 
   return (
     <box flexDirection="row" maxWidth="100%">

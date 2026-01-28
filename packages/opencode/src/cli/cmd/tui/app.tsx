@@ -16,6 +16,7 @@ import { DialogVaultAI } from "@tui/component/dialog-vaultai"
 import { DialogStatus } from "@tui/component/dialog-status"
 import { DialogThemeList } from "@tui/component/dialog-theme-list"
 import { DialogHelp } from "./ui/dialog-help"
+import { DialogGuide } from "@tui/component/dialog-guide"
 import { CommandProvider, useCommandDialog } from "@tui/component/dialog-command"
 import { DialogAgent } from "@tui/component/dialog-agent"
 import { DialogSessionList } from "@tui/component/dialog-session-list"
@@ -491,6 +492,20 @@ function App() {
         dialog.replace(() => <DialogHelp />)
       },
       category: "System",
+    },
+    {
+      title: "Getting Started Guide",
+      description: "Learn how to set up and use VaultAI Code",
+      value: "guide.show",
+      suggested: true,
+      slash: {
+        name: "guide",
+        aliases: ["start", "tutorial"],
+      },
+      onSelect: () => {
+        dialog.replace(() => <DialogGuide />)
+      },
+      category: "Help",
     },
     {
       title: "Open docs",
