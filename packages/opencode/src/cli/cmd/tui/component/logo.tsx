@@ -8,12 +8,22 @@ import { useTheme, tint } from "@tui/context/theme"
 // ~ = shadow top only (▀ with fg=shadow)
 const SHADOW_MARKER = /[_^~]/
 
-// VaultAI Logo - Powered by OpenCode
-const LOGO_LEFT = [`█   █ █▀▀█ █  █ █    ▀█▀  `, `█   █ █__█ █  █ █     █   `, ` █ █  █^^█ █  █ █     █   `, `  █   █^^█ ▀▄▄▀ ▀▀▀   █   `]
+// VaultAI Code Logo
+const LOGO_LEFT = [
+  `█   █ █▀▀█ █  █ █    ▀█▀  █▀▀█ ▀█▀ `,
+  `█   █ █▀▀█ █  █ █     █   █▀▀█  █  `,
+  ` █ █  █  █ █  █ █     █   █  █  █  `,
+  `  █   █  █ ▀▄▄▀ ▀▀▀   █   █  █ ▀▀▀ `,
+]
 
-const LOGO_RIGHT = [`█▀▀█ ▀█▀`, `█__█  █_`, `█^^█  █_`, `█^^█ ▀▀▀`]
+const LOGO_RIGHT = [
+  `█▀▀▀ █▀▀█ █▀▀▄ █▀▀▀`,
+  `█    █  █ █  █ █▀▀ `,
+  `█    █  █ █  █ █   `,
+  `▀▀▀▀ ▀▀▀▀ ▀▀▀  ▀▀▀▀`,
+]
 
-const POWERED_BY = `    Powered by OpenCode`
+const POWERED_BY = ``
 
 export function Logo() {
   const { theme } = useTheme()
@@ -86,11 +96,13 @@ export function Logo() {
           </box>
         )}
       </For>
-      <box flexDirection="row" justifyContent="center">
-        <text fg={theme.textMuted} selectable={false}>
-          {POWERED_BY}
-        </text>
-      </box>
+      {POWERED_BY && (
+        <box flexDirection="row" justifyContent="center">
+          <text fg={theme.textMuted} selectable={false}>
+            {POWERED_BY}
+          </text>
+        </box>
+      )}
     </box>
   )
 }

@@ -9,6 +9,7 @@ import PROMPT_GEMINI from "./prompt/gemini.txt"
 
 import PROMPT_CODEX from "./prompt/codex_header.txt"
 import type { Provider } from "@/provider/provider"
+import { VaultAIContextEnrichment } from "../vaultai/context"
 
 export namespace SystemPrompt {
   export function instructions() {
@@ -26,6 +27,10 @@ export namespace SystemPrompt {
 
   export async function environment(model: Provider.Model) {
     const project = Instance.project
+    
+    // Get VaultAI context enrichment (if connected)
+    const vaultaiContext = await VaultAIContextEnrichment.getPromptEnrichment()
+    
     return [
       [
         `You are powered by the model named ${model.api.id}. The exact model ID is ${model.providerID}/${model.api.id}`,
@@ -46,7 +51,8 @@ export namespace SystemPrompt {
             : ""
         }`,
         `</files>`,
-      ].join("\n"),
+        vaultaiContext,
+      ].filter(Boolean).join("\n"),
     ]
   }
 }

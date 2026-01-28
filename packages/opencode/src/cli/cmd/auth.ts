@@ -11,6 +11,8 @@ import { Global } from "../../global"
 import { Plugin } from "../../plugin"
 import { Instance } from "../../project/instance"
 import type { Hooks } from "@opencode-ai/plugin"
+import { validateVaultAIInstance, createVaultAIClient } from "../../vaultai"
+import type { OAuthProvider } from "../../vaultai"
 
 type PluginAuth = NonNullable<Hooks["auth"]>
 
@@ -163,9 +165,287 @@ export const AuthCommand = cmd({
   command: "auth",
   describe: "manage credentials",
   builder: (yargs) =>
-    yargs.command(AuthLoginCommand).command(AuthLogoutCommand).command(AuthListCommand).demandCommand(),
+    yargs
+      .command(AuthLoginCommand)
+      .command(AuthLogoutCommand)
+      .command(AuthListCommand)
+      .command(AuthVaultAICommand)
+      .demandCommand(),
   async handler() {},
 })
+
+// VaultAI-specific commands
+export const AuthVaultAICommand = cmd({
+  command: "vaultai <action>",
+  describe: "manage VaultAI instance connections",
+  builder: (yargs) =>
+    yargs
+      .positional("action", {
+        describe: "action to perform",
+        choices: ["login", "logout", "status", "list"] as const,
+        type: "string",
+      })
+      .option("instance", {
+        alias: "i",
+        describe: "VaultAI instance URL (e.g., https://app.vaultai.eu)",
+        type: "string",
+      })
+      .option("token", {
+        alias: "t",
+        describe: "Session token (skip browser login)",
+        type: "string",
+      })
+      .option("provider", {
+        alias: "p",
+        describe: "OAuth provider",
+        choices: ["google", "microsoft"] as const,
+        default: "google" as const,
+      }),
+  async handler(args) {
+    UI.empty()
+
+    switch (args.action) {
+      case "login":
+        await handleVaultAILogin(args.instance, args.token, args.provider as OAuthProvider)
+        break
+      case "logout":
+        await handleVaultAILogout(args.instance)
+        break
+      case "status":
+        await handleVaultAIStatus()
+        break
+      case "list":
+        await handleVaultAIList()
+        break
+    }
+  },
+})
+
+async function handleVaultAILogin(
+  instanceUrl?: string,
+  token?: string,
+  provider: OAuthProvider = "google"
+) {
+  prompts.intro("VaultAI Login")
+
+  // Get instance URL if not provided
+  if (!instanceUrl) {
+    const url = await prompts.text({
+      message: "Enter VaultAI instance URL",
+      placeholder: "https://app.vaultai.eu",
+      validate: (x) => (x && x.length > 0 ? undefined : "Required"),
+    })
+    if (prompts.isCancel(url)) throw new UI.CancelledError()
+    instanceUrl = url
+  }
+
+  // Validate instance
+  const spinner = prompts.spinner()
+  spinner.start("Validating instance...")
+
+  const validation = await validateVaultAIInstance(instanceUrl)
+
+  if (!validation.valid) {
+    spinner.stop(`Invalid instance: ${validation.error}`, 1)
+    return
+  }
+
+  spinner.stop(`Connected to ${validation.info!.name}`)
+
+  // If token provided, use it directly
+  if (token) {
+    const client = createVaultAIClient(validation.info!.url, token)
+    const session = await client.getSession()
+
+    if (!session.user) {
+      prompts.log.error("Invalid token")
+      return
+    }
+
+    await Auth.VaultAIHelper.save(
+      validation.info!.url,
+      token,
+      {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name ?? undefined,
+        organization_id: session.user.organizationId ?? undefined,
+      }
+    )
+
+    prompts.log.success(`Logged in as ${session.user.email}`)
+    prompts.outro("Done")
+    return
+  }
+
+  // OAuth login
+  const availableProviders = Object.entries(validation.info!.auth)
+    .filter(([_, available]) => available)
+    .map(([name]) => name) as OAuthProvider[]
+
+  if (availableProviders.length === 0) {
+    prompts.log.error("No OAuth providers available on this instance")
+    return
+  }
+
+  // Let user choose provider if multiple available
+  let selectedProvider = provider
+  if (!availableProviders.includes(provider)) {
+    if (availableProviders.length === 1) {
+      selectedProvider = availableProviders[0]
+    } else {
+      const choice = await prompts.select({
+        message: "Select login method",
+        options: availableProviders.map((p) => ({
+          label: p === "google" ? "Google" : "Microsoft",
+          value: p,
+        })),
+      })
+      if (prompts.isCancel(choice)) throw new UI.CancelledError()
+      selectedProvider = choice as OAuthProvider
+    }
+  }
+
+  const client = createVaultAIClient(validation.info!.url)
+  const loginUrl = client.getOAuthLoginURL(selectedProvider)
+
+  prompts.log.info(`Opening browser for ${selectedProvider} login...`)
+  prompts.log.info(`URL: ${loginUrl}`)
+
+  // Try to open browser
+  const opener = await import("open").catch(() => null)
+  if (opener) {
+    await opener.default(loginUrl)
+  }
+
+  prompts.log.info("")
+  prompts.log.info("After logging in, copy the token from the success page and paste it here:")
+
+  const pastedToken = await prompts.text({
+    message: "Paste your session token",
+    validate: (x) => (x && x.length > 10 ? undefined : "Invalid token"),
+  })
+  if (prompts.isCancel(pastedToken)) throw new UI.CancelledError()
+
+  // Verify token
+  const verifyClient = createVaultAIClient(validation.info!.url, pastedToken)
+  const session = await verifyClient.getSession()
+
+  if (!session.user) {
+    prompts.log.error("Invalid or expired token")
+    return
+  }
+
+  await Auth.VaultAIHelper.save(
+    validation.info!.url,
+    pastedToken,
+    {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name ?? undefined,
+      organization_id: session.user.organizationId ?? undefined,
+    }
+  )
+
+  prompts.log.success(`Logged in as ${session.user.email}`)
+  prompts.outro("Done")
+}
+
+async function handleVaultAILogout(instanceUrl?: string) {
+  prompts.intro("VaultAI Logout")
+
+  const instances = await Auth.VaultAIHelper.getAllInstances()
+
+  if (instances.length === 0) {
+    prompts.log.warn("No VaultAI instances connected")
+    prompts.outro("Done")
+    return
+  }
+
+  let urlToLogout = instanceUrl
+
+  if (!urlToLogout) {
+    if (instances.length === 1) {
+      urlToLogout = instances[0].auth.instanceUrl
+    } else {
+      const choice = await prompts.select({
+        message: "Select instance to logout from",
+        options: instances.map((i) => ({
+          label: `${i.auth.user.email} (${new URL(i.auth.instanceUrl).host})`,
+          value: i.auth.instanceUrl,
+        })),
+      })
+      if (prompts.isCancel(choice)) throw new UI.CancelledError()
+      urlToLogout = choice
+    }
+  }
+
+  await Auth.VaultAIHelper.removeInstance(urlToLogout)
+  prompts.log.success(`Logged out from ${new URL(urlToLogout).host}`)
+  prompts.outro("Done")
+}
+
+async function handleVaultAIStatus() {
+  prompts.intro("VaultAI Status")
+
+  const current = await Auth.VaultAIHelper.getCurrent()
+
+  if (!current) {
+    prompts.log.warn("Not connected to any VaultAI instance")
+    prompts.log.info("Run: vault-code auth vaultai login")
+    prompts.outro("Done")
+    return
+  }
+
+  const client = createVaultAIClient(current.instanceUrl, current.sessionToken)
+  const spinner = prompts.spinner()
+  spinner.start("Checking session...")
+
+  const isValid = await Auth.VaultAIHelper.verifySession(current)
+
+  if (isValid) {
+    spinner.stop("Session valid")
+    prompts.log.info(`Instance: ${new URL(current.instanceUrl).host}`)
+    prompts.log.info(`User: ${current.user.email}`)
+    if (current.user.name) {
+      prompts.log.info(`Name: ${current.user.name}`)
+    }
+
+    // Get context for more info
+    const context = await client.getContext()
+    if (context) {
+      prompts.log.info(`Projects: ${context.projects.length}`)
+      prompts.log.info(`Recent chats: ${context.recentChats.length}`)
+    }
+  } else {
+    spinner.stop("Session expired or invalid", 1)
+    prompts.log.warn("Please login again: vault-code auth vaultai login")
+  }
+
+  prompts.outro("Done")
+}
+
+async function handleVaultAIList() {
+  prompts.intro("VaultAI Instances")
+
+  const instances = await Auth.VaultAIHelper.getAllInstances()
+
+  if (instances.length === 0) {
+    prompts.log.warn("No VaultAI instances connected")
+    prompts.log.info("Run: vault-code auth vaultai login <url>")
+    prompts.outro("Done")
+    return
+  }
+
+  for (const instance of instances) {
+    const host = new URL(instance.auth.instanceUrl).host
+    const isValid = Auth.VaultAIHelper.isSessionValid(instance.auth)
+    const status = isValid ? UI.Style.TEXT_SUCCESS + "●" : UI.Style.TEXT_DANGER + "○"
+    prompts.log.info(`${status} ${UI.Style.TEXT_NORMAL}${instance.auth.user.email} ${UI.Style.TEXT_DIM}(${host})`)
+  }
+
+  prompts.outro(`${instances.length} instance(s)`)
+}
 
 export const AuthListCommand = cmd({
   command: "list",
