@@ -44,12 +44,14 @@ const tasks = Object.entries(binaries).map(async ([name]) => {
   }
   await $`bun pm pack`.cwd(`./dist/${name}`)
   for (const tag of tags) {
-    await $`npm publish *.tgz --access public --tag ${tag}`.cwd(`./dist/${name}`)
+    // Use .nothrow() to continue even if npm publish fails (e.g., no NPM_TOKEN)
+    await $`npm publish *.tgz --access public --tag ${tag}`.cwd(`./dist/${name}`).nothrow()
   }
 })
 await Promise.all(tasks)
 for (const tag of tags) {
-  await $`cd ./dist/${pkg.name} && bun pm pack && npm publish *.tgz --access public --tag ${tag}`
+  // Use .nothrow() to continue even if npm publish fails
+  await $`cd ./dist/${pkg.name} && bun pm pack && npm publish *.tgz --access public --tag ${tag}`.nothrow()
 }
 
 if (!Script.preview) {
