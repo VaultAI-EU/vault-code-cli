@@ -1,9 +1,10 @@
 name: publish
-run-name: "${{ format('release {0}', inputs.bump) }}"
+run-name: "${{ format('release {0}', inputs.bump || 'auto') }}"
 
 on:
   push:
     branches:
+      - main
       - dev
       - snapshot-*
   workflow_dispatch:
@@ -21,7 +22,7 @@ on:
         required: false
         type: string
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.version || inputs.bump }}
+concurrency: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.version || inputs.bump || 'auto' }}
 
 permissions:
   id-token: write
@@ -31,7 +32,7 @@ permissions:
 jobs:
   publish:
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    if: github.repository == 'anomalyco/opencode'
+    # VaultAI fork - removed anomalyco/opencode restriction
     steps:
       - uses: actions/checkout@v3
         with:
