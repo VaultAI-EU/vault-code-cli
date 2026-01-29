@@ -85,7 +85,7 @@ function DialogGuideVaultAI() {
       <text fg={theme.textMuted}>  Choose Google, Microsoft, or Email/Password.</text>
       <text />
       <text fg={theme.success}>Once connected, you can:</text>
-      <text fg={theme.text}>  • Ask "What are my tasks?" or "Quelles sont mes tâches ?"</text>
+      <text fg={theme.text}>  • Ask "What are my tasks?" to see your task list</text>
       <text fg={theme.text}>  • Query projects: "Show my projects"</text>
       <text fg={theme.text}>  • Search meetings: "Find meetings about X"</text>
       <text fg={theme.text}>  • Browse files: "List my files"</text>

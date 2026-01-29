@@ -71,6 +71,19 @@ export namespace VaultAIContextEnrichment {
       }
     }
 
+    // Tasks
+    if (context.tasks && context.tasks.length > 0) {
+      sections.push(``)
+      sections.push(`  Tasks in progress (${context.tasks.length}):`)
+      for (const task of context.tasks.slice(0, 5)) {
+        const dueInfo = task.dueDate ? ` (due: ${new Date(task.dueDate).toLocaleDateString()})` : ""
+        sections.push(`    - ${task.title}${dueInfo}`)
+      }
+      if (context.tasks.length > 5) {
+        sections.push(`    ... and ${context.tasks.length - 5} more`)
+      }
+    }
+
     // Recent chats
     if (context.recentChats.length > 0) {
       sections.push(``)

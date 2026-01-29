@@ -28,6 +28,17 @@ export namespace State {
     }
   }
 
+  /**
+   * Invalidate a specific state entry without disposing it
+   * This allows the state to be re-initialized on next access
+   */
+  export function invalidate(key: string, init: any) {
+    const entries = recordsByKey.get(key)
+    if (!entries) return
+    entries.delete(init)
+    log.info("state invalidated", { key })
+  }
+
   export async function dispose(key: string) {
     const entries = recordsByKey.get(key)
     if (!entries) return

@@ -1,4 +1,4 @@
-import { createMemo, createSignal, onMount, Show } from "solid-js"
+import { createMemo, createSignal, onMount, Show, createResource } from "solid-js"
 import { useSync } from "@tui/context/sync"
 import { map, pipe, sortBy } from "remeda"
 import { DialogSelect } from "@tui/ui/dialog-select"
@@ -13,13 +13,22 @@ import { DialogModel } from "./dialog-model"
 import { useKeyboard } from "@opentui/solid"
 import { Clipboard } from "@tui/util/clipboard"
 import { useToast } from "../ui/toast"
+import { Auth } from "@/auth"
+import { DialogVaultAI } from "./dialog-vaultai"
 
 const PROVIDER_PRIORITY: Record<string, number> = {
-  opencode: 0,
-  anthropic: 1,
-  "github-copilot": 2,
-  openai: 3,
-  google: 4,
+  vaultai: 0,
+  opencode: 1,
+  anthropic: 2,
+  "github-copilot": 3,
+  openai: 4,
+  google: 5,
+}
+
+// Check if VaultAI is connected
+async function isVaultAIConnected() {
+  const auth = await Auth.VaultAIHelper.getCurrent()
+  return !!auth?.sessionToken
 }
 
 export function createDialogProviderOptions() {
@@ -27,8 +36,12 @@ export function createDialogProviderOptions() {
   const dialog = useDialog()
   const sdk = useSDK()
   const connected = createMemo(() => new Set(sync.data.provider_next.connected))
+  
+  // Check VaultAI connection status
+  const [vaultaiConnected] = createResource(isVaultAIConnected)
+  
   const options = createMemo(() => {
-    return pipe(
+    const baseOptions = pipe(
       sync.data.provider_next.all,
       sortBy((x) => PROVIDER_PRIORITY[x.id] ?? 99),
       map((provider) => {
@@ -103,6 +116,20 @@ export function createDialogProviderOptions() {
         }
       }),
     )
+
+    // Add VaultAI option at the top
+    const vaultaiOption = {
+      title: "VaultAI",
+      value: "vaultai",
+      description: "(Your AI models)",
+      category: "Popular",
+      footer: vaultaiConnected() ? "Connected" : undefined,
+      async onSelect() {
+        dialog.replace(() => <DialogVaultAI />)
+      },
+    }
+
+    return [vaultaiOption, ...baseOptions]
   })
   return options
 }

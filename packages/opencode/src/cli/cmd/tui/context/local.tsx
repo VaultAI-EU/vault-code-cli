@@ -21,6 +21,8 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
     const toast = useToast()
 
     function isModelValid(model: { providerID: string; modelID: string }) {
+      // VaultAI models are always valid if the provider is "vaultai"
+      if (model.providerID === "vaultai") return true
       const provider = sync.data.provider.find((x) => x.id === model.providerID)
       return !!provider?.models[model.modelID]
     }
@@ -214,6 +216,14 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
             return {
               provider: "Connect a provider",
               model: "No provider selected",
+              reasoning: false,
+            }
+          }
+          // Handle VaultAI models specially
+          if (value.providerID === "vaultai") {
+            return {
+              provider: "VaultAI",
+              model: value.modelID,
               reasoning: false,
             }
           }

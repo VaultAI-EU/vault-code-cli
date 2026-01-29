@@ -8,6 +8,7 @@ import { useToast } from "@tui/ui/toast"
 import { Auth } from "@/auth"
 import { validateVaultAIInstance, createVaultAIClient } from "@/vaultai"
 import type { VaultAIInstanceInfo, VaultAIContext } from "@/vaultai"
+import { Provider } from "@/provider/provider"
 import { TextAttributes } from "@opentui/core"
 import open from "open"
 
@@ -243,9 +244,26 @@ function DialogVaultAIPassword(props: { instanceInfo: VaultAIInstanceInfo; email
         organization_id: result.user.organizationId ?? undefined,
       })
 
+      // Try to refresh VaultAI provider (may fail if instance context not ready)
+      let refreshed = false
+      try {
+        await Provider.refreshVaultAI()
+        refreshed = true
+      } catch {
+        // Context not ready, models will load on next restart
+      }
+
+      // Fetch and show available models
+      const clientWithToken = createVaultAIClient(props.instanceInfo.url, result.token)
+      const modelsResponse = await clientWithToken.getV1Models()
+      const modelCount = modelsResponse?.data?.length ?? 0
+      const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+
+      const restartHint = refreshed ? "" : " Use /models after selecting a project."
       toast.show({
         variant: "success",
-        message: `Connected as ${result.user.email}`,
+        message: `Connected as ${result.user.email}. ${modelCount} VaultAI models available!${defaultModel ? ` (default: ${defaultModel.vaultai?.name || defaultModel.id})` : ""}${restartHint}`,
+        duration: 5000,
       })
 
       dialog.clear()
@@ -293,9 +311,25 @@ function DialogVaultAIToken(props: { instanceInfo: VaultAIInstanceInfo }) {
       organization_id: session.user.organizationId ?? undefined,
     })
 
+    // Try to refresh VaultAI provider (may fail if instance context not ready)
+    let refreshed = false
+    try {
+      await Provider.refreshVaultAI()
+      refreshed = true
+    } catch {
+      // Context not ready, models will load on next restart
+    }
+
+    // Fetch and show available models
+    const modelsResponse = await client.getV1Models()
+    const modelCount = modelsResponse?.data?.length ?? 0
+    const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+
+    const restartHint = refreshed ? "" : " Use /models after selecting a project."
     toast.show({
       variant: "success",
-      message: `Connected as ${session.user.email}`,
+      message: `Connected as ${session.user.email}. ${modelCount} VaultAI models available!${defaultModel ? ` (default: ${defaultModel.vaultai?.name || defaultModel.id})` : ""}${restartHint}`,
+      duration: 5000,
     })
 
     dialog.clear()
@@ -311,10 +345,38 @@ function DialogVaultAIToken(props: { instanceInfo: VaultAIInstanceInfo }) {
 }
 
 /**
- * Status view
+ * Status view with usage statistics
  */
 function DialogVaultAIStatus(props: { instance: z.infer<typeof Auth.VaultAI> }) {
   const { theme } = useTheme()
+  const [usage, setUsage] = createSignal<{
+    total_tokens: number
+    prompt_tokens: number
+    completion_tokens: number
+    message_count: number
+  } | null>(null)
+  const [loading, setLoading] = createSignal(true)
+
+  onMount(async () => {
+    try {
+      const client = createVaultAIClient(props.instance.instanceUrl, props.instance.sessionToken)
+      const usageData = await client.getV1Usage()
+      if (usageData) {
+        setUsage({
+          total_tokens: usageData.total_tokens,
+          prompt_tokens: usageData.prompt_tokens,
+          completion_tokens: usageData.completion_tokens,
+          message_count: usageData.message_count,
+        })
+      }
+    } catch {
+      // Ignore errors - usage is optional
+    } finally {
+      setLoading(false)
+    }
+  })
+
+  const formatNumber = (n: number) => n.toLocaleString()
 
   return (
     <box flexDirection="column" padding={2} gap={1}>
@@ -322,6 +384,27 @@ function DialogVaultAIStatus(props: { instance: z.infer<typeof Auth.VaultAI> }) 
       <text fg={theme.textMuted}>Instance: {new URL(props.instance.instanceUrl).host}</text>
       <text fg={theme.textMuted}>User: {props.instance.user.email}</text>
       <text fg={theme.textMuted}>Name: {props.instance.user.name || "N/A"}</text>
+      
+      <box marginTop={1}>
+        <text fg={theme.text} attributes={TextAttributes.BOLD}>Usage Statistics</text>
+      </box>
+      <Show when={loading()}>
+        <text fg={theme.textMuted}>Loading usage data...</text>
+      </Show>
+      <Show when={!loading() && usage()}>
+        {(u) => (
+          <>
+            <text fg={theme.textMuted}>Total Tokens: {formatNumber(u().total_tokens)}</text>
+            <text fg={theme.textMuted}>  Input: {formatNumber(u().prompt_tokens)}</text>
+            <text fg={theme.textMuted}>  Output: {formatNumber(u().completion_tokens)}</text>
+            <text fg={theme.textMuted}>Messages: {formatNumber(u().message_count)}</text>
+          </>
+        )}
+      </Show>
+      <Show when={!loading() && !usage()}>
+        <text fg={theme.textMuted}>No usage data available</text>
+      </Show>
+      
       <box marginTop={1}>
         <text fg={theme.textMuted}>Press Escape to close</text>
       </box>
@@ -393,6 +476,23 @@ function DialogVaultAIContext(props: { instance: z.infer<typeof Auth.VaultAI> })
               {(project) => (
                 <text fg={theme.textMuted}>
                   • {project.name}
+                </text>
+              )}
+            </For>
+
+            {/* Tasks */}
+            <box marginTop={1}>
+              <text fg={theme.text} attributes={TextAttributes.BOLD}>
+                Tasks in Progress ({ctx().tasks?.length || 0})
+              </text>
+            </box>
+            <Show when={!ctx().tasks || ctx().tasks!.length === 0}>
+              <text fg={theme.textMuted}>No tasks in progress</text>
+            </Show>
+            <For each={(ctx().tasks || []).slice(0, 5)}>
+              {(task) => (
+                <text fg={theme.textMuted}>
+                  • {task.title}
                 </text>
               )}
             </For>

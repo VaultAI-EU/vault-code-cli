@@ -37,6 +37,7 @@ import { createPerplexity } from "@ai-sdk/perplexity"
 import { createVercel } from "@ai-sdk/vercel"
 import { createGitLab } from "@gitlab/gitlab-ai-provider"
 import { ProviderTransform } from "./transform"
+import { createVaultAIClient, type VaultAIV1Model } from "../vaultai/client"
 
 export namespace Provider {
   const log = Log.create({ service: "provider" })
@@ -506,6 +507,94 @@ export namespace Provider {
         },
       }
     },
+    vaultai: async () => {
+      // Check if user is connected to VaultAI
+      const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
+      if (!vaultaiAuth?.sessionToken || !vaultaiAuth?.instanceUrl) {
+        return { autoload: false }
+      }
+
+      // Fetch available models from VaultAI
+      const client = createVaultAIClient(vaultaiAuth.instanceUrl, vaultaiAuth.sessionToken)
+      
+      try {
+        const modelsResponse = await client.getV1Models()
+        if (!modelsResponse?.data || modelsResponse.data.length === 0) {
+          log.warn("VaultAI: No models available")
+          return { autoload: false }
+        }
+
+        // Build models map from VaultAI models
+        const models: Record<string, Model> = {}
+        for (const m of modelsResponse.data) {
+          const vaultaiMeta = m.vaultai
+          models[m.id] = {
+            id: m.id,
+            providerID: "vaultai",
+            name: vaultaiMeta?.name || m.id,
+            family: vaultaiMeta?.provider || "unknown",
+            api: {
+              id: m.id,
+              url: client.getV1BaseURL(),
+              npm: "@ai-sdk/openai-compatible",
+            },
+            status: "active",
+            headers: {},
+            options: {},
+            cost: { input: 0, output: 0, cache: { read: 0, write: 0 } },
+            limit: { context: 128000, output: 4096 },
+            capabilities: {
+              temperature: true,
+              reasoning: false,
+              attachment: vaultaiMeta?.supportsVision || false,
+              toolcall: !vaultaiMeta?.toolsDisabled,
+              input: {
+                text: true,
+                audio: false,
+                image: vaultaiMeta?.supportsVision || false,
+                video: false,
+                pdf: false,
+              },
+              output: {
+                text: true,
+                audio: false,
+                image: vaultaiMeta?.modality === "image",
+                video: false,
+                pdf: false,
+              },
+              interleaved: false,
+            },
+            release_date: new Date().toISOString().split("T")[0],
+            variants: {},
+          }
+        }
+
+        // Find default model
+        const defaultModel = modelsResponse.data.find(m => m.vaultai?.isDefault)
+
+        log.info("VaultAI: Loaded models", { 
+          count: modelsResponse.data.length,
+          defaultModel: defaultModel?.id 
+        })
+
+        return {
+          autoload: true,
+          options: {
+            baseURL: client.getV1BaseURL(),
+            // Use session token as API key - VaultAI validates via Cookie header
+            headers: {
+              "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+            },
+          },
+          async getModel(sdk: any, modelID: string) {
+            return sdk.languageModel(modelID)
+          },
+        }
+      } catch (error) {
+        log.error("VaultAI: Failed to load models", { error })
+        return { autoload: false }
+      }
+    },
   }
 
   export const Model = z
@@ -956,13 +1045,135 @@ export namespace Provider {
     return state().then((state) => state.providers)
   }
 
+  /**
+   * Refresh VaultAI provider after login
+   * This reloads VaultAI models into the existing state without requiring a restart
+   */
+  export async function refreshVaultAI() {
+    const s = await state()
+    
+    // Get VaultAI auth
+    const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
+    if (!vaultaiAuth?.sessionToken || !vaultaiAuth?.instanceUrl) {
+      // Not connected, remove vaultai provider if exists
+      delete s.providers["vaultai"]
+      log.info("VaultAI: Disconnected, provider removed")
+      return
+    }
+
+    // Fetch models from VaultAI
+    const client = createVaultAIClient(vaultaiAuth.instanceUrl, vaultaiAuth.sessionToken)
+    
+    try {
+      const modelsResponse = await client.getV1Models()
+      if (!modelsResponse?.data || modelsResponse.data.length === 0) {
+        log.warn("VaultAI: No models available")
+        return
+      }
+
+      // Build models map from VaultAI models
+      const models: Record<string, Model> = {}
+      for (const m of modelsResponse.data) {
+        const vaultaiMeta = m.vaultai
+        models[m.id] = {
+          id: m.id,
+          providerID: "vaultai",
+          name: vaultaiMeta?.name || m.id,
+          family: vaultaiMeta?.provider || "unknown",
+          api: {
+            id: m.id,
+            url: client.getV1BaseURL(),
+            npm: "@ai-sdk/openai-compatible",
+          },
+          status: "active",
+          headers: {},
+          options: {},
+          cost: { input: 0, output: 0, cache: { read: 0, write: 0 } },
+          limit: { context: 128000, output: 4096 },
+          capabilities: {
+            temperature: true,
+            reasoning: false,
+            attachment: vaultaiMeta?.supportsVision || false,
+            toolcall: !vaultaiMeta?.toolsDisabled,
+            input: {
+              text: true,
+              audio: false,
+              image: vaultaiMeta?.supportsVision || false,
+              video: false,
+              pdf: false,
+            },
+            output: {
+              text: true,
+              audio: false,
+              image: vaultaiMeta?.modality === "image",
+              video: false,
+              pdf: false,
+            },
+            interleaved: false,
+          },
+          release_date: new Date().toISOString().split("T")[0],
+          variants: {},
+        }
+      }
+
+      // Update/create VaultAI provider in state
+      s.providers["vaultai"] = {
+        id: "vaultai",
+        name: "VaultAI",
+        source: "custom",
+        env: [],
+        options: {
+          baseURL: client.getV1BaseURL(),
+          headers: {
+            "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+          },
+        },
+        models,
+      }
+
+      // Register model loader
+      s.modelLoaders["vaultai"] = async (sdk: any, modelID: string) => {
+        return sdk.languageModel(modelID)
+      }
+
+      log.info("VaultAI: Provider refreshed", { modelCount: modelsResponse.data.length })
+    } catch (error) {
+      log.error("VaultAI: Failed to refresh models", { error })
+    }
+  }
+
   async function getSDK(model: Model) {
     try {
       using _ = log.time("getSDK", {
         providerID: model.providerID,
       })
       const s = await state()
-      const provider = s.providers[model.providerID]
+      let provider = s.providers[model.providerID]
+      
+      // Handle VaultAI provider dynamically
+      if (!provider && model.providerID === "vaultai") {
+        const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
+        if (vaultaiAuth?.sessionToken && vaultaiAuth?.instanceUrl) {
+          provider = {
+            id: "vaultai",
+            name: "VaultAI",
+            source: "custom",
+            env: [],
+            options: {
+              baseURL: `${vaultaiAuth.instanceUrl}/api/v1`,
+              headers: {
+                "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+              },
+            },
+            models: {},
+          }
+        }
+      }
+      
+      if (!provider) {
+        throw new Error(`Provider ${model.providerID} not found`)
+      }
+      
       const options = { ...provider.options }
 
       if (model.api.npm.includes("@ai-sdk/openai-compatible") && options["includeUsage"] !== false) {
@@ -1060,11 +1271,89 @@ export namespace Provider {
   }
 
   export async function getProvider(providerID: string) {
-    return state().then((s) => s.providers[providerID])
+    const s = await state()
+    let provider = s.providers[providerID]
+    
+    // Handle VaultAI provider dynamically
+    if (!provider && providerID === "vaultai") {
+      const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
+      if (vaultaiAuth?.sessionToken && vaultaiAuth?.instanceUrl) {
+        provider = {
+          id: "vaultai",
+          name: "VaultAI",
+          source: "custom",
+          env: [],
+          options: {
+            baseURL: `${vaultaiAuth.instanceUrl}/api/v1`,
+            headers: {
+              "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+            },
+          },
+          models: {},
+        }
+      }
+    }
+    
+    return provider
   }
 
   export async function getModel(providerID: string, modelID: string) {
     const s = await state()
+    
+    // Handle VaultAI models dynamically
+    if (providerID === "vaultai") {
+      // Check if VaultAI provider exists in state
+      if (!s.providers["vaultai"]) {
+        // Try to refresh VaultAI provider
+        try {
+          await refreshVaultAI()
+        } catch {
+          // Ignore refresh errors and try to create model directly
+        }
+      }
+      
+      const vaultaiProvider = s.providers["vaultai"]
+      if (vaultaiProvider?.models[modelID]) {
+        return vaultaiProvider.models[modelID]
+      }
+      
+      // Create a dynamic model for VaultAI if not in provider
+      const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
+      if (vaultaiAuth?.sessionToken && vaultaiAuth?.instanceUrl) {
+        const client = createVaultAIClient(vaultaiAuth.instanceUrl, vaultaiAuth.sessionToken)
+        const dynamicModel: Model = {
+          id: modelID,
+          providerID: "vaultai",
+          name: modelID,
+          family: "vaultai",
+          api: {
+            id: modelID,
+            url: client.getV1BaseURL(),
+            npm: "@ai-sdk/openai-compatible",
+          },
+          status: "active",
+          headers: {},
+          options: {},
+          cost: { input: 0, output: 0, cache: { read: 0, write: 0 } },
+          limit: { context: 128000, output: 4096 },
+          capabilities: {
+            temperature: true,
+            reasoning: false,
+            attachment: false,
+            toolcall: true,
+            input: { text: true, audio: false, image: false, video: false, pdf: false },
+            output: { text: true, audio: false, image: false, video: false, pdf: false },
+            interleaved: false,
+          },
+          release_date: new Date().toISOString().split("T")[0],
+          variants: {},
+        }
+        return dynamicModel
+      }
+      
+      throw new ModelNotFoundError({ providerID, modelID, suggestions: [] })
+    }
+    
     const provider = s.providers[providerID]
     if (!provider) {
       const availableProviders = Object.keys(s.providers)
@@ -1088,12 +1377,33 @@ export namespace Provider {
     const key = `${model.providerID}/${model.id}`
     if (s.models.has(key)) return s.models.get(key)!
 
-    const provider = s.providers[model.providerID]
+    let provider = s.providers[model.providerID]
+    
+    // Handle VaultAI provider dynamically
+    if (!provider && model.providerID === "vaultai") {
+      const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
+      if (vaultaiAuth?.sessionToken && vaultaiAuth?.instanceUrl) {
+        provider = {
+          id: "vaultai",
+          name: "VaultAI",
+          source: "custom",
+          env: [],
+          options: {
+            baseURL: `${vaultaiAuth.instanceUrl}/api/v1`,
+            headers: {
+              "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+            },
+          },
+          models: {},
+        }
+      }
+    }
+    
     const sdk = await getSDK(model)
 
     try {
       const language = s.modelLoaders[model.providerID]
-        ? await s.modelLoaders[model.providerID](sdk, model.api.id, provider.options)
+        ? await s.modelLoaders[model.providerID](sdk, model.api.id, provider?.options ?? {})
         : sdk.languageModel(model.api.id)
       s.models.set(key, language)
       return language

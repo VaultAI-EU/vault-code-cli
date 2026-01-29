@@ -136,6 +136,10 @@ export class VaultAIClient {
     return this.baseURL
   }
 
+  get instanceUrl(): string {
+    return this.baseURL
+  }
+
   // ============================================================================
   // INTERNAL HELPERS
   // ============================================================================
@@ -240,33 +244,66 @@ export class VaultAIClient {
     if (!this.sessionToken) return null
 
     try {
-      const [historyData, session] = await Promise.all([
-        this.fetchJSON<HistoryResponse>("/api/history?limit=10"),
+      // Fetch session, history, projects, and tasks in parallel
+      const [session, historyData, projectsResult, tasksResult] = await Promise.all([
         this.getSession(),
+        this.fetchJSON<HistoryResponse>("/api/history?limit=10").catch(() => null),
+        this.executeCode(`const projects = await vault.projects.list(); return projects;`).catch(() => ({ success: false, result: [] })),
+        this.executeCode(`const tasks = await vault.tasks.list({ status: "in_progress" }); return tasks;`).catch(() => ({ success: false, result: [] })),
       ])
 
-      if (!session.user || !historyData) return null
+      if (!session.user) return null
+
+      // Parse projects from execute result
+      const projects = projectsResult.success && Array.isArray(projectsResult.result)
+        ? projectsResult.result.map((p: any) => ({
+            id: p.id,
+            name: p.name || p.title || "Untitled",
+            description: p.description || null,
+            createdAt: p.createdAt || p.created_at || new Date().toISOString(),
+          }))
+        : []
+
+      // Parse tasks from execute result
+      const tasks = tasksResult.success && Array.isArray(tasksResult.result)
+        ? tasksResult.result.map((t: any) => ({
+            id: t.id,
+            title: t.title || t.name || "Untitled",
+            description: t.description || null,
+            status: t.status || "in_progress",
+            priority: t.priority || null,
+            dueDate: t.dueDate || t.due_date || null,
+            projectId: t.projectId || t.project_id || null,
+          }))
+        : []
+
+      // Parse chats from history
+      const recentChats = historyData?.chatsWithoutProject
+        ? historyData.chatsWithoutProject.map((chat: any) => ({
+            id: chat.id,
+            title: chat.title || "New chat",
+            projectId: chat.projectId,
+            createdAt: chat.createdAt,
+            updatedAt: chat.updatedAt,
+            isFavorite: chat.is_favorite || false,
+          }))
+        : []
 
       return {
         user: session.user,
-        projects: historyData.projects || [],
-        recentChats: (historyData.chatsWithoutProject || []).map((chat: any) => ({
-          id: chat.id,
-          title: chat.title || "New chat",
-          projectId: chat.projectId,
-          createdAt: chat.createdAt,
-          updatedAt: chat.updatedAt,
-          isFavorite: chat.is_favorite || false,
-        })),
+        projects,
+        tasks,
+        recentChats,
         mcpServers: [],
         quotas: {
           tokensUsed: 0,
           tokensLimit: null,
-          messagesUsed: (historyData.chatsWithoutProject || []).length,
+          messagesUsed: recentChats.length,
           messagesLimit: null,
         },
       }
-    } catch {
+    } catch (error) {
+      console.error("[VaultAI getContext] Error:", error)
       return null
     }
   }
@@ -492,6 +529,78 @@ export class VaultAIClient {
     }
 
     return textContent.trim()
+  }
+
+  // ============================================================================
+  // V1 API (OpenAI-Compatible)
+  // ============================================================================
+
+  /**
+   * Get models list in OpenAI-compatible format
+   */
+  async getV1Models(): Promise<VaultAIV1ModelsResponse | null> {
+    return this.fetchJSON<VaultAIV1ModelsResponse>("/api/v1/models")
+  }
+
+  /**
+   * Get usage statistics
+   */
+  async getV1Usage(): Promise<VaultAIV1UsageResponse | null> {
+    return this.fetchJSON<VaultAIV1UsageResponse>("/api/v1/usage")
+  }
+
+  /**
+   * Get the base URL for OpenAI-compatible API
+   */
+  getV1BaseURL(): string {
+    return `${this.instanceUrl}/api/v1`
+  }
+}
+
+// ============================================================================
+// V1 API TYPES (OpenAI-Compatible)
+// ============================================================================
+
+export interface VaultAIV1Model {
+  id: string
+  object: "model"
+  created: number
+  owned_by: string
+  vaultai?: {
+    provider: string
+    name: string
+    description: string | null
+    supportsVision: boolean
+    isDefault: boolean
+    isDefaultThinking: boolean
+    modality: string
+    toolsDisabled: boolean
+  }
+}
+
+export interface VaultAIV1ModelsResponse {
+  object: "list"
+  data: VaultAIV1Model[]
+}
+
+export interface VaultAIV1UsageResponse {
+  object: "usage"
+  total_tokens: number
+  prompt_tokens: number
+  completion_tokens: number
+  message_count: number
+  by_model: Array<{
+    model: string
+    prompt_tokens: number
+    completion_tokens: number
+    total_tokens: number
+    message_count: number
+  }>
+  quota: {
+    tokens_limit: number | null
+    tokens_remaining: number | null
+    messages_limit: number | null
+    messages_remaining: number | null
   }
 }
 

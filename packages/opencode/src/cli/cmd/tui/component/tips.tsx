@@ -10,7 +10,7 @@ const VAULTAI_TIPS = [
   "Run {highlight}/vaultai{/highlight} to connect to your VaultAI instance and access your tasks, projects, and files",
   "Run {highlight}/connect{/highlight} to configure AI providers (Claude, GPT, Gemini, etc.)",
   "Use the {highlight}vaultai{/highlight} tool to query your tasks: \"What are my tasks?\"",
-  "Already connected to VaultAI? Ask \"Quelles sont mes tâches ?\" to see your tasks",
+  "Already connected to VaultAI? Ask \"Show my tasks\" to see your task list",
   "Run {highlight}/models{/highlight} to see and switch between available AI models",
 ]
 

@@ -1,4 +1,4 @@
-import { createMemo, createSignal } from "solid-js"
+import { createMemo, createSignal, createResource } from "solid-js"
 import { useLocal } from "@tui/context/local"
 import { useSync } from "@tui/context/sync"
 import { map, pipe, flatMap, entries, filter, sortBy, take } from "remeda"
@@ -7,12 +7,25 @@ import { useDialog } from "@tui/ui/dialog"
 import { createDialogProviderOptions, DialogProvider } from "./dialog-provider"
 import { useKeybind } from "../context/keybind"
 import * as fuzzysort from "fuzzysort"
+import { Auth } from "@/auth"
+import { createVaultAIClient } from "@/vaultai"
 
 export function useConnected() {
   const sync = useSync()
   return createMemo(() =>
     sync.data.provider.some((x) => x.id !== "opencode" || Object.values(x.models).some((y) => y.cost?.input !== 0)),
   )
+}
+
+// Fetch VaultAI models if connected
+async function getVaultAIModels() {
+  const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
+  if (!vaultaiAuth?.sessionToken || !vaultaiAuth?.instanceUrl) {
+    return null
+  }
+  const client = createVaultAIClient(vaultaiAuth.instanceUrl, vaultaiAuth.sessionToken)
+  const response = await client.getV1Models()
+  return response?.data ?? null
 }
 
 export function DialogModel(props: { providerID?: string }) {
@@ -22,6 +35,9 @@ export function DialogModel(props: { providerID?: string }) {
   const keybind = useKeybind()
   const [ref, setRef] = createSignal<DialogSelectRef<unknown>>()
   const [query, setQuery] = createSignal("")
+
+  // Load VaultAI models
+  const [vaultaiModels] = createResource(getVaultAIModels)
 
   const connected = useConnected()
   const providers = createDialogProviderOptions()
@@ -111,6 +127,40 @@ export function DialogModel(props: { providerID?: string }) {
         })
       : []
 
+    // VaultAI models (shown first when connected)
+    // Filter out embedding and image models - only show language models
+    const vaultaiOptions = vaultaiModels()
+      ? vaultaiModels()!
+          .filter((m) => {
+            const modality = m.vaultai?.modality?.toLowerCase() || "language"
+            // Only show language/chat models, not embeddings or image generators
+            return modality === "language" || modality === "chat" || modality === "text"
+          })
+          .filter((m) => {
+            // Also filter by name patterns
+            const name = (m.vaultai?.name || m.id).toLowerCase()
+            return !name.includes("embedding") && !name.includes("embed") && !name.includes("image")
+          })
+          .map((m) => {
+            const value = {
+              providerID: "vaultai",
+              modelID: m.id,
+            }
+            const isDefault = m.vaultai?.isDefault
+            return {
+              value,
+              title: m.vaultai?.name || m.id,
+              description: isDefault ? "(Default)" : undefined,
+              category: "VaultAI",
+              footer: "Connected",
+              onSelect() {
+                dialog.clear()
+                local.model.set(value, { recent: true })
+              },
+            }
+          })
+      : []
+
     const providerOptions = pipe(
       sync.data.provider,
       sortBy(
@@ -187,12 +237,13 @@ export function DialogModel(props: { providerID?: string }) {
 
     // Search shows a single merged list (favorites inline)
     if (needle) {
+      const filteredVaultai = fuzzysort.go(needle, vaultaiOptions, { keys: ["title"] }).map((x) => x.obj)
       const filteredProviders = fuzzysort.go(needle, providerOptions, { keys: ["title", "category"] }).map((x) => x.obj)
       const filteredPopular = fuzzysort.go(needle, popularProviders, { keys: ["title"] }).map((x) => x.obj)
-      return [...filteredProviders, ...filteredPopular]
+      return [...filteredVaultai, ...filteredProviders, ...filteredPopular]
     }
 
-    return [...favoriteOptions, ...recentOptions, ...providerOptions, ...popularProviders]
+    return [...favoriteOptions, ...recentOptions, ...vaultaiOptions, ...providerOptions, ...popularProviders]
   })
 
   const provider = createMemo(() =>

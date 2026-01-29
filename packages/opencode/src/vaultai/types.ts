@@ -80,6 +80,7 @@ export interface TaskItem {
 export interface VaultAIContext {
   user: VaultAIUser
   projects: ProjectMetadata[]
+  tasks?: TaskItem[]
   recentChats: ChatMetadata[]
   mcpServers: Array<{ id: string; name: string }>
   quotas: {
