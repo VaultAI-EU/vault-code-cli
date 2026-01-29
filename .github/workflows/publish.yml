@@ -236,3 +236,4 @@ jobs:
           OPENCODE_VERSION: ${{ needs.publish.outputs.version  }}
           AUR_KEY: ${{ secrets.AUR_KEY }}
           GITHUB_TOKEN: ${{ secrets.SST_GITHUB_TOKEN }}
+
