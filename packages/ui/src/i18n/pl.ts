@@ -1,5 +1,6 @@
 export const dict = {
   "ui.sessionReview.title": "Zmiany w sesji",
+  "ui.sessionReview.title.lastTurn": "Zmiany z ostatniej tury",
   "ui.sessionReview.diffStyle.unified": "Ujednolicony",
   "ui.sessionReview.diffStyle.split": "Podzielony",
   "ui.sessionReview.expandAll": "Rozwiń wszystko",
@@ -54,6 +55,7 @@ export const dict = {
   "ui.imagePreview.alt": "Podgląd obrazu",
 
   "ui.tool.read": "Odczyt",
+  "ui.tool.loaded": "Załadowano",
   "ui.tool.list": "Lista",
   "ui.tool.glob": "Glob",
   "ui.tool.grep": "Grep",

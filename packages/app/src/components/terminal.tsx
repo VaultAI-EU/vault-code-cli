@@ -1,5 +1,6 @@
 import type { Ghostty, Terminal as Term, FitAddon } from "ghostty-web"
 import { ComponentProps, createEffect, createSignal, onCleanup, onMount, splitProps } from "solid-js"
+import { usePlatform } from "@/context/platform"
 import { useSDK } from "@/context/sdk"
 import { monoFontFamily, useSettings } from "@/context/settings"
 import { SerializeAddon } from "@/addons/serialize"
@@ -7,6 +8,7 @@ import { LocalPTY } from "@/context/terminal"
 import { resolveThemeVariant, useTheme, withAlpha, type HexColor } from "@opencode-ai/ui/theme"
 import { useLanguage } from "@/context/language"
 import { showToast } from "@opencode-ai/ui/toast"
+import { ptySocketUrl } from "./terminal-url"
 
 export interface TerminalProps extends ComponentProps<"div"> {
   pty: LocalPTY
@@ -14,6 +16,19 @@ export interface TerminalProps extends ComponentProps<"div"> {
   onCleanup?: (pty: LocalPTY) => void
   onConnect?: () => void
   onConnectError?: (error: unknown) => void
+}
+
+let shared: Promise<{ mod: typeof import("ghostty-web"); ghostty: Ghostty }> | undefined
+
+const loadGhostty = () => {
+  if (shared) return shared
+  shared = import("ghostty-web")
+    .then(async (mod) => ({ mod, ghostty: await mod.Ghostty.load() }))
+    .catch((err) => {
+      shared = undefined
+      throw err
+    })
+  return shared
 }
 
 type TerminalColors = {
@@ -39,6 +54,7 @@ const DEFAULT_TERMINAL_COLORS: Record<"light" | "dark", TerminalColors> = {
 }
 
 export const Terminal = (props: TerminalProps) => {
+  const platform = usePlatform()
   const sdk = useSDK()
   const settings = useSettings()
   const theme = useTheme()
@@ -53,8 +69,20 @@ export const Terminal = (props: TerminalProps) => {
   let handleResize: () => void
   let handleTextareaFocus: () => void
   let handleTextareaBlur: () => void
-  let reconnect: number | undefined
   let disposed = false
+  const cleanups: VoidFunction[] = []
+
+  const cleanup = () => {
+    if (!cleanups.length) return
+    const fns = cleanups.splice(0).reverse()
+    for (const fn of fns) {
+      try {
+        fn()
+      } catch {
+        // ignore
+      }
+    }
+  }
 
   const getTerminalColors = (): TerminalColors => {
     const mode = theme.mode()
@@ -110,19 +138,45 @@ export const Terminal = (props: TerminalProps) => {
     focusTerminal()
   }
 
+  const handleLinkClick = (event: MouseEvent) => {
+    if (!event.shiftKey && !event.ctrlKey && !event.metaKey) return
+    if (event.altKey) return
+    if (event.button !== 0) return
+
+    const t = term
+    if (!t) return
+
+    const link = (t as unknown as { currentHoveredLink?: { text: string } }).currentHoveredLink
+    if (!link?.text) return
+
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    platform.openLink(link.text)
+  }
+
   onMount(() => {
     const run = async () => {
-      const mod = await import("ghostty-web")
-      ghostty = await mod.Ghostty.load()
+      const loaded = await loadGhostty()
+      if (disposed) return
+
+      const mod = loaded.mod
+      const g = loaded.ghostty
 
       const once = { value: false }
 
-      const url = new URL(sdk.url + `/pty/${local.pty.id}/connect?directory=${encodeURIComponent(sdk.directory)}`)
+      const url = ptySocketUrl(sdk.url, local.pty.id, sdk.directory, window.location)
       if (window.__OPENCODE__?.serverPassword) {
         url.username = "opencode"
         url.password = window.__OPENCODE__?.serverPassword
       }
       const socket = new WebSocket(url)
+      cleanups.push(() => {
+        if (socket.readyState !== WebSocket.CLOSED && socket.readyState !== WebSocket.CLOSING) socket.close()
+      })
+      if (disposed) {
+        cleanup()
+        return
+      }
       ws = socket
 
       const t = new mod.Terminal({
@@ -131,10 +185,17 @@ export const Terminal = (props: TerminalProps) => {
         fontSize: 14,
         fontFamily: monoFontFamily(settings.appearance.font()),
         allowTransparency: true,
+        convertEol: true,
         theme: terminalColors(),
         scrollback: 10_000,
-        ghostty,
+        ghostty: g,
       })
+      cleanups.push(() => t.dispose())
+      if (disposed) {
+        cleanup()
+        return
+      }
+      ghostty = g
       term = t
 
       const copy = () => {
@@ -186,13 +247,20 @@ export const Terminal = (props: TerminalProps) => {
         return false
       })
 
-      fitAddon = new mod.FitAddon()
-      serializeAddon = new SerializeAddon()
-      t.loadAddon(serializeAddon)
-      t.loadAddon(fitAddon)
+      const fit = new mod.FitAddon()
+      const serializer = new SerializeAddon()
+      cleanups.push(() => (fit as unknown as { dispose?: VoidFunction }).dispose?.())
+      t.loadAddon(serializer)
+      t.loadAddon(fit)
+      fitAddon = fit
+      serializeAddon = serializer
 
       t.open(container)
       container.addEventListener("pointerdown", handlePointerDown)
+      cleanups.push(() => container.removeEventListener("pointerdown", handlePointerDown))
+
+      container.addEventListener("click", handleLinkClick, { capture: true })
+      cleanups.push(() => container.removeEventListener("click", handleLinkClick, { capture: true }))
 
       handleTextareaFocus = () => {
         t.options.cursorBlink = true
@@ -203,6 +271,8 @@ export const Terminal = (props: TerminalProps) => {
 
       t.textarea?.addEventListener("focus", handleTextareaFocus)
       t.textarea?.addEventListener("blur", handleTextareaBlur)
+      cleanups.push(() => t.textarea?.removeEventListener("focus", handleTextareaFocus))
+      cleanups.push(() => t.textarea?.removeEventListener("blur", handleTextareaBlur))
 
       focusTerminal()
 
@@ -218,10 +288,11 @@ export const Terminal = (props: TerminalProps) => {
         })
       }
 
-      fitAddon.observeResize()
-      handleResize = () => fitAddon.fit()
+      fit.observeResize()
+      handleResize = () => fit.fit()
       window.addEventListener("resize", handleResize)
-      t.onResize(async (size) => {
+      cleanups.push(() => window.removeEventListener("resize", handleResize))
+      const onResize = t.onResize(async (size) => {
         if (socket.readyState === WebSocket.OPEN) {
           await sdk.client.pty
             .update({
@@ -234,20 +305,24 @@ export const Terminal = (props: TerminalProps) => {
             .catch(() => {})
         }
       })
-      t.onData((data) => {
+      cleanups.push(() => (onResize as unknown as { dispose?: VoidFunction }).dispose?.())
+      const onData = t.onData((data) => {
         if (socket.readyState === WebSocket.OPEN) {
           socket.send(data)
         }
       })
-      t.onKey((key) => {
+      cleanups.push(() => (onData as unknown as { dispose?: VoidFunction }).dispose?.())
+      const onKey = t.onKey((key) => {
         if (key.key == "Enter") {
           props.onSubmit?.()
         }
       })
+      cleanups.push(() => (onKey as unknown as { dispose?: VoidFunction }).dispose?.())
       // t.onScroll((ydisp) => {
       // console.log("Scroll position:", ydisp)
       // })
-      socket.addEventListener("open", () => {
+
+      const handleOpen = () => {
         local.onConnect?.()
         sdk.client.pty
           .update({
@@ -258,18 +333,27 @@ export const Terminal = (props: TerminalProps) => {
             },
           })
           .catch(() => {})
-      })
-      socket.addEventListener("message", (event) => {
+      }
+      socket.addEventListener("open", handleOpen)
+      cleanups.push(() => socket.removeEventListener("open", handleOpen))
+
+      const handleMessage = (event: MessageEvent) => {
         t.write(event.data)
-      })
-      socket.addEventListener("error", (error) => {
+      }
+      socket.addEventListener("message", handleMessage)
+      cleanups.push(() => socket.removeEventListener("message", handleMessage))
+
+      const handleError = (error: Event) => {
         if (disposed) return
         if (once.value) return
         once.value = true
         console.error("WebSocket error:", error)
         local.onConnectError?.(error)
-      })
-      socket.addEventListener("close", (event) => {
+      }
+      socket.addEventListener("error", handleError)
+      cleanups.push(() => socket.removeEventListener("error", handleError))
+
+      const handleClose = (event: CloseEvent) => {
         if (disposed) return
         // Normal closure (code 1000) means PTY process exited - server event handles cleanup
         // For other codes (network issues, server restart), trigger error handler
@@ -278,7 +362,9 @@ export const Terminal = (props: TerminalProps) => {
           once.value = true
           local.onConnectError?.(new Error(`WebSocket closed abnormally: ${event.code}`))
         }
-      })
+      }
+      socket.addEventListener("close", handleClose)
+      cleanups.push(() => socket.removeEventListener("close", handleClose))
     }
 
     void run().catch((err) => {
@@ -294,13 +380,6 @@ export const Terminal = (props: TerminalProps) => {
 
   onCleanup(() => {
     disposed = true
-    if (handleResize) {
-      window.removeEventListener("resize", handleResize)
-    }
-    container.removeEventListener("pointerdown", handlePointerDown)
-    term?.textarea?.removeEventListener("focus", handleTextareaFocus)
-    term?.textarea?.removeEventListener("blur", handleTextareaBlur)
-
     const t = term
     if (serializeAddon && props.onCleanup && t) {
       const buffer = (() => {
@@ -319,8 +398,7 @@ export const Terminal = (props: TerminalProps) => {
       })
     }
 
-    ws?.close()
-    t?.dispose()
+    cleanup()
   })
 
   return (

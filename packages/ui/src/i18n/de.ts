@@ -4,6 +4,7 @@ type Keys = keyof typeof en
 
 export const dict = {
   "ui.sessionReview.title": "Sitzungsänderungen",
+  "ui.sessionReview.title.lastTurn": "Änderungen der letzten Runde",
   "ui.sessionReview.diffStyle.unified": "Vereinheitlicht",
   "ui.sessionReview.diffStyle.split": "Geteilt",
   "ui.sessionReview.expandAll": "Alle erweitern",
@@ -58,6 +59,7 @@ export const dict = {
   "ui.imagePreview.alt": "Bildvorschau",
 
   "ui.tool.read": "Lesen",
+  "ui.tool.loaded": "Geladen",
   "ui.tool.list": "Auflisten",
   "ui.tool.glob": "Glob",
   "ui.tool.grep": "Grep",

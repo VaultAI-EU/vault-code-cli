@@ -4,6 +4,7 @@ type Keys = keyof typeof en
 
 export const dict = {
   "ui.sessionReview.title": "工作階段變更",
+  "ui.sessionReview.title.lastTurn": "上一輪變更",
   "ui.sessionReview.diffStyle.unified": "整合",
   "ui.sessionReview.diffStyle.split": "拆分",
   "ui.sessionReview.expandAll": "全部展開",
@@ -58,6 +59,7 @@ export const dict = {
   "ui.imagePreview.alt": "圖片預覽",
 
   "ui.tool.read": "讀取",
+  "ui.tool.loaded": "已載入",
   "ui.tool.list": "清單",
   "ui.tool.glob": "Glob",
   "ui.tool.grep": "Grep",
