@@ -1433,6 +1433,9 @@ function ToolPart(props: { last: boolean; part: ToolPart; message: AssistantMess
         <Match when={props.part.tool === "question"}>
           <Question {...toolprops} />
         </Match>
+        <Match when={props.part.tool === "vaultai_query"}>
+          <VaultAIQuery {...toolprops} />
+        </Match>
         <Match when={true}>
           <GenericTool {...toolprops} />
         </Match>
@@ -2016,6 +2019,47 @@ function Question(props: ToolProps<typeof QuestionTool>) {
       <Match when={true}>
         <InlineTool icon="→" pending="Asking questions..." complete={count()} part={props.part}>
           Asked {count()} question{count() !== 1 ? "s" : ""}
+        </InlineTool>
+      </Match>
+    </Switch>
+  )
+}
+
+function VaultAIQuery(props: ToolProps<any> & { input: { query?: string } }) {
+  const { theme } = useTheme()
+  const output = createMemo(() => props.output?.trim() ?? "")
+  const [expanded, setExpanded] = createSignal(false)
+  const lines = createMemo(() => output().split("\n"))
+  const overflow = createMemo(() => lines().length > 15)
+  const limited = createMemo(() => {
+    if (expanded() || !overflow()) return output()
+    return [...lines().slice(0, 15), "…"].join("\n")
+  })
+  const itemCount = createMemo(() => props.metadata?.itemCount ?? 0)
+
+  return (
+    <Switch>
+      <Match when={output()}>
+        <BlockTool
+          title={`# VaultAI Query`}
+          part={props.part}
+          onClick={overflow() ? () => setExpanded((prev) => !prev) : undefined}
+        >
+          <box gap={1}>
+            <text fg={theme.accent}>❯ {props.input.query}</text>
+            <text fg={theme.text}>{limited()}</text>
+            <Show when={overflow()}>
+              <text fg={theme.textMuted}>{expanded() ? "Click to collapse" : "Click to expand"}</text>
+            </Show>
+            <Show when={itemCount() > 0}>
+              <text fg={theme.textMuted}>{itemCount()} result{itemCount() !== 1 ? "s" : ""}</text>
+            </Show>
+          </box>
+        </BlockTool>
+      </Match>
+      <Match when={true}>
+        <InlineTool icon="◈" iconColor={theme.accent} pending="Querying VaultAI..." complete={props.input.query} part={props.part}>
+          VaultAI: "{props.input.query}"
         </InlineTool>
       </Match>
     </Switch>

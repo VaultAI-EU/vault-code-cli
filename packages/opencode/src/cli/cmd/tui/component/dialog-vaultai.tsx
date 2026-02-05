@@ -232,6 +232,19 @@ function DialogVaultAIPassword(props: { instanceInfo: VaultAIInstanceInfo; email
       const client = createVaultAIClient(props.instanceInfo.url)
       const result = await client.loginWithCredentials(props.email, password)
 
+      // Check if 2FA is required
+      if (result.twoFactorRequired) {
+        toast.show({ variant: "info", message: "Two-factor authentication required" })
+        dialog.replace(() => (
+          <DialogVaultAITotp 
+            instanceInfo={props.instanceInfo} 
+            email={props.email}
+            client={client}
+          />
+        ))
+        return
+      }
+
       if (!result.token || !result.user) {
         toast.show({ variant: "error", message: result.error || "Login failed" })
         return
@@ -276,6 +289,193 @@ function DialogVaultAIPassword(props: { instanceInfo: VaultAIInstanceInfo; email
     <DialogPrompt
       title={`Password for ${props.email}`}
       placeholder="Enter your password"
+      onConfirm={handleSubmit}
+    />
+  )
+}
+
+/**
+ * Step 3b-2: Enter TOTP code for 2FA (with option to use backup code)
+ */
+function DialogVaultAITotp(props: { 
+  instanceInfo: VaultAIInstanceInfo
+  email: string
+  client: ReturnType<typeof createVaultAIClient>
+}) {
+  const dialog = useDialog()
+  const toast = useToast()
+
+  const options = createMemo((): DialogSelectOption<string>[] => [
+    {
+      value: "totp",
+      title: "Authenticator App Code",
+      description: "Enter the 6-digit code from your authenticator app",
+      onSelect() {
+        dialog.replace(() => (
+          <DialogVaultAITotpInput 
+            instanceInfo={props.instanceInfo} 
+            email={props.email}
+            client={props.client}
+          />
+        ))
+      },
+    },
+    {
+      value: "backup",
+      title: "Use Backup Code",
+      description: "Use one of your saved backup codes",
+      onSelect() {
+        dialog.replace(() => (
+          <DialogVaultAIBackupCode 
+            instanceInfo={props.instanceInfo} 
+            email={props.email}
+            client={props.client}
+          />
+        ))
+      },
+    },
+  ])
+
+  return <DialogSelect title={`2FA for ${props.email}`} options={options()} />
+}
+
+/**
+ * Step 3b-2a: Enter TOTP code
+ */
+function DialogVaultAITotpInput(props: { 
+  instanceInfo: VaultAIInstanceInfo
+  email: string
+  client: ReturnType<typeof createVaultAIClient>
+}) {
+  const dialog = useDialog()
+  const toast = useToast()
+
+  const handleSubmit = async (code: string) => {
+    if (!code || code.length !== 6) {
+      toast.show({ variant: "error", message: "Please enter a 6-digit code" })
+      return
+    }
+
+    toast.show({ variant: "info", message: "Verifying code..." })
+
+    try {
+      const result = await props.client.verifyTotp(code)
+
+      if (!result.token || !result.user) {
+        toast.show({ variant: "error", message: result.error || "Invalid code" })
+        return
+      }
+
+      await Auth.VaultAIHelper.save(props.instanceInfo.url, result.token, {
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name ?? undefined,
+        organization_id: result.user.organizationId ?? undefined,
+      })
+
+      // Try to refresh VaultAI provider
+      let refreshed = false
+      try {
+        await Provider.refreshVaultAI()
+        refreshed = true
+      } catch {
+        // Context not ready
+      }
+
+      // Fetch and show available models
+      const clientWithToken = createVaultAIClient(props.instanceInfo.url, result.token)
+      const modelsResponse = await clientWithToken.getV1Models()
+      const modelCount = modelsResponse?.data?.length ?? 0
+      const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+
+      const restartHint = refreshed ? "" : " Use /models after selecting a project."
+      toast.show({
+        variant: "success",
+        message: `Connected as ${result.user.email}. ${modelCount} VaultAI models available!${defaultModel ? ` (default: ${defaultModel.vaultai?.name || defaultModel.id})` : ""}${restartHint}`,
+        duration: 5000,
+      })
+
+      dialog.clear()
+    } catch {
+      toast.show({ variant: "error", message: "2FA verification failed" })
+    }
+  }
+
+  return (
+    <DialogPrompt
+      title={`2FA Code for ${props.email}`}
+      placeholder="Enter 6-digit code from your authenticator app"
+      onConfirm={handleSubmit}
+    />
+  )
+}
+
+/**
+ * Step 3b-2b: Enter backup code
+ */
+function DialogVaultAIBackupCode(props: { 
+  instanceInfo: VaultAIInstanceInfo
+  email: string
+  client: ReturnType<typeof createVaultAIClient>
+}) {
+  const dialog = useDialog()
+  const toast = useToast()
+
+  const handleSubmit = async (code: string) => {
+    if (!code) {
+      toast.show({ variant: "error", message: "Please enter a backup code" })
+      return
+    }
+
+    toast.show({ variant: "info", message: "Verifying backup code..." })
+
+    try {
+      const result = await props.client.verifyBackupCode(code.toUpperCase())
+
+      if (!result.token || !result.user) {
+        toast.show({ variant: "error", message: result.error || "Invalid backup code" })
+        return
+      }
+
+      await Auth.VaultAIHelper.save(props.instanceInfo.url, result.token, {
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name ?? undefined,
+        organization_id: result.user.organizationId ?? undefined,
+      })
+
+      // Try to refresh VaultAI provider
+      let refreshed = false
+      try {
+        await Provider.refreshVaultAI()
+        refreshed = true
+      } catch {
+        // Context not ready
+      }
+
+      // Fetch and show available models
+      const clientWithToken = createVaultAIClient(props.instanceInfo.url, result.token)
+      const modelsResponse = await clientWithToken.getV1Models()
+      const modelCount = modelsResponse?.data?.length ?? 0
+      const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+
+      const restartHint = refreshed ? "" : " Use /models after selecting a project."
+      toast.show({
+        variant: "success",
+        message: `Connected as ${result.user.email}. ${modelCount} VaultAI models available!${defaultModel ? ` (default: ${defaultModel.vaultai?.name || defaultModel.id})` : ""}${restartHint}`,
+        duration: 5000,
+      })
+
+      dialog.clear()
+    } catch {
+      toast.show({ variant: "error", message: "Backup code verification failed" })
+    }
+  }
+
+  return (
+    <DialogPrompt
+      title={`Backup Code for ${props.email}`}
+      placeholder="Enter one of your backup codes"
       onConfirm={handleSubmit}
     />
   )

@@ -201,7 +201,7 @@ export class VaultAIClient {
   async loginWithCredentials(
     email: string,
     password: string
-  ): Promise<{ token: string | null; user: VaultAIUser | null; error?: string }> {
+  ): Promise<{ token: string | null; user: VaultAIUser | null; error?: string; twoFactorRequired?: boolean }> {
     try {
       const response = await fetch(`${this.baseURL}/api/auth/sign-in/email`, {
         method: "POST",
@@ -215,6 +215,18 @@ export class VaultAIClient {
       }
 
       const data = await response.json()
+
+      // Check if 2FA is required
+      if (data.twoFactorRedirect) {
+        // Extract the 2FA session token from cookies
+        const setCookie = response.headers.get("set-cookie")
+        const twoFactorMatch = setCookie?.match(/better-auth\.two_factor=([^;]+)/)
+        if (twoFactorMatch) {
+          this.sessionToken = twoFactorMatch[1]
+        }
+        return { token: null, user: null, twoFactorRequired: true }
+      }
+
       const token = data.token || data.session?.token
 
       if (!token) {
@@ -233,6 +245,98 @@ export class VaultAIClient {
       return { token, user: session.user }
     } catch (error) {
       return { token: null, user: null, error: error instanceof Error ? error.message : "Login failed" }
+    }
+  }
+
+  async verifyTotp(code: string): Promise<{ token: string | null; user: VaultAIUser | null; error?: string }> {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      }
+      // Include the 2FA session token if we have one
+      if (this.sessionToken) {
+        headers["Cookie"] = `better-auth.two_factor=${this.sessionToken}`
+      }
+
+      const response = await fetch(`${this.baseURL}/api/auth/two-factor/verify-totp`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ code }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        return { token: null, user: null, error: errorData.message || "Invalid code" }
+      }
+
+      // Extract session token from response
+      const setCookie = response.headers.get("set-cookie")
+      const tokenMatch = setCookie?.match(/better-auth\.session_token=([^;]+)/)
+      
+      if (tokenMatch) {
+        this.sessionToken = tokenMatch[1]
+        const session = await this.getSession()
+        return { token: tokenMatch[1], user: session.user }
+      }
+
+      const data = await response.json()
+      const token = data.token || data.session?.token
+      
+      if (token) {
+        this.sessionToken = token
+        const session = await this.getSession()
+        return { token, user: session.user }
+      }
+
+      return { token: null, user: null, error: "No session token received after 2FA" }
+    } catch (error) {
+      return { token: null, user: null, error: error instanceof Error ? error.message : "2FA verification failed" }
+    }
+  }
+
+  async verifyBackupCode(code: string): Promise<{ token: string | null; user: VaultAIUser | null; error?: string }> {
+    try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      }
+      // Include the 2FA session token if we have one
+      if (this.sessionToken) {
+        headers["Cookie"] = `better-auth.two_factor=${this.sessionToken}`
+      }
+
+      const response = await fetch(`${this.baseURL}/api/auth/two-factor/verify-backup-code`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ code }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        return { token: null, user: null, error: errorData.message || "Invalid backup code" }
+      }
+
+      // Extract session token from response
+      const setCookie = response.headers.get("set-cookie")
+      const tokenMatch = setCookie?.match(/better-auth\.session_token=([^;]+)/)
+      
+      if (tokenMatch) {
+        this.sessionToken = tokenMatch[1]
+        const session = await this.getSession()
+        return { token: tokenMatch[1], user: session.user }
+      }
+
+      const data = await response.json()
+      const token = data.token || data.session?.token
+      
+      if (token) {
+        this.sessionToken = token
+        const session = await this.getSession()
+        return { token, user: session.user }
+      }
+
+      return { token: null, user: null, error: "No session token received after backup code verification" }
+    } catch (error) {
+      return { token: null, user: null, error: error instanceof Error ? error.message : "Backup code verification failed" }
     }
   }
 
