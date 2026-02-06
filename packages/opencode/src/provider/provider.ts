@@ -86,6 +86,7 @@ export namespace Provider {
     autoload: boolean
     getModel?: CustomModelLoader
     options?: Record<string, any>
+    models?: Record<string, Model>
   }>
 
   const CUSTOM_LOADERS: Record<string, CustomLoader> = {
@@ -538,7 +539,7 @@ export namespace Provider {
 
       // Fetch available models from VaultAI
       const client = createVaultAIClient(vaultaiAuth.instanceUrl, vaultaiAuth.sessionToken)
-      
+
       try {
         const modelsResponse = await client.getV1Models()
         if (!modelsResponse?.data || modelsResponse.data.length === 0) {
@@ -592,20 +593,21 @@ export namespace Provider {
         }
 
         // Find default model
-        const defaultModel = modelsResponse.data.find(m => m.vaultai?.isDefault)
+        const defaultModel = modelsResponse.data.find((m) => m.vaultai?.isDefault)
 
-        log.info("VaultAI: Loaded models", { 
+        log.info("VaultAI: Loaded models", {
           count: modelsResponse.data.length,
-          defaultModel: defaultModel?.id 
+          defaultModel: defaultModel?.id,
         })
 
         return {
           autoload: true,
+          models,
           options: {
             baseURL: client.getV1BaseURL(),
             // Use session token as API key - VaultAI validates via Cookie header
             headers: {
-              "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+              Cookie: `better-auth.session_token=${vaultaiAuth.sessionToken}`,
             },
           },
           async getModel(sdk: any, modelID: string) {
@@ -992,6 +994,27 @@ export namespace Provider {
     for (const [providerID, fn] of Object.entries(CUSTOM_LOADERS)) {
       if (disabled.has(providerID)) continue
       const data = database[providerID]
+
+      // Special handling for VaultAI - it creates its own provider dynamically
+      if (providerID === "vaultai") {
+        const result = await fn({} as any)
+        if (result && result.autoload) {
+          if (result.getModel) modelLoaders[providerID] = result.getModel
+          // VaultAI provides its own models, create the provider directly
+          if (result.models) {
+            providers[providerID] = {
+              id: providerID,
+              name: "VaultAI",
+              source: "custom",
+              env: [],
+              options: result.options ?? {},
+              models: result.models,
+            }
+          }
+        }
+        continue
+      }
+
       if (!data) {
         log.error("Provider does not exist in model list " + providerID)
         continue
@@ -1073,7 +1096,7 @@ export namespace Provider {
    */
   export async function refreshVaultAI() {
     const s = await state()
-    
+
     // Get VaultAI auth
     const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
     if (!vaultaiAuth?.sessionToken || !vaultaiAuth?.instanceUrl) {
@@ -1085,7 +1108,7 @@ export namespace Provider {
 
     // Fetch models from VaultAI
     const client = createVaultAIClient(vaultaiAuth.instanceUrl, vaultaiAuth.sessionToken)
-    
+
     try {
       const modelsResponse = await client.getV1Models()
       if (!modelsResponse?.data || modelsResponse.data.length === 0) {
@@ -1147,7 +1170,7 @@ export namespace Provider {
         options: {
           baseURL: client.getV1BaseURL(),
           headers: {
-            "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+            Cookie: `better-auth.session_token=${vaultaiAuth.sessionToken}`,
           },
         },
         models,
@@ -1171,7 +1194,7 @@ export namespace Provider {
       })
       const s = await state()
       let provider = s.providers[model.providerID]
-      
+
       // Handle VaultAI provider dynamically
       if (!provider && model.providerID === "vaultai") {
         const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
@@ -1184,18 +1207,18 @@ export namespace Provider {
             options: {
               baseURL: `${vaultaiAuth.instanceUrl}/api/v1`,
               headers: {
-                "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+                Cookie: `better-auth.session_token=${vaultaiAuth.sessionToken}`,
               },
             },
             models: {},
           }
         }
       }
-      
+
       if (!provider) {
         throw new Error(`Provider ${model.providerID} not found`)
       }
-      
+
       const options = { ...provider.options }
 
       if (model.api.npm.includes("@ai-sdk/openai-compatible") && options["includeUsage"] !== false) {
@@ -1292,7 +1315,7 @@ export namespace Provider {
   export async function getProvider(providerID: string) {
     const s = await state()
     let provider = s.providers[providerID]
-    
+
     // Handle VaultAI provider dynamically
     if (!provider && providerID === "vaultai") {
       const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
@@ -1305,20 +1328,20 @@ export namespace Provider {
           options: {
             baseURL: `${vaultaiAuth.instanceUrl}/api/v1`,
             headers: {
-              "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+              Cookie: `better-auth.session_token=${vaultaiAuth.sessionToken}`,
             },
           },
           models: {},
         }
       }
     }
-    
+
     return provider
   }
 
   export async function getModel(providerID: string, modelID: string) {
     const s = await state()
-    
+
     // Handle VaultAI models dynamically
     if (providerID === "vaultai") {
       // Check if VaultAI provider exists in state
@@ -1330,12 +1353,12 @@ export namespace Provider {
           // Ignore refresh errors and try to create model directly
         }
       }
-      
+
       const vaultaiProvider = s.providers["vaultai"]
       if (vaultaiProvider?.models[modelID]) {
         return vaultaiProvider.models[modelID]
       }
-      
+
       // Create a dynamic model for VaultAI if not in provider
       const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
       if (vaultaiAuth?.sessionToken && vaultaiAuth?.instanceUrl) {
@@ -1369,10 +1392,10 @@ export namespace Provider {
         }
         return dynamicModel
       }
-      
+
       throw new ModelNotFoundError({ providerID, modelID, suggestions: [] })
     }
-    
+
     const provider = s.providers[providerID]
     if (!provider) {
       const availableProviders = Object.keys(s.providers)
@@ -1397,7 +1420,7 @@ export namespace Provider {
     if (s.models.has(key)) return s.models.get(key)!
 
     let provider = s.providers[model.providerID]
-    
+
     // Handle VaultAI provider dynamically
     if (!provider && model.providerID === "vaultai") {
       const vaultaiAuth = await Auth.VaultAIHelper.getCurrent()
@@ -1410,14 +1433,14 @@ export namespace Provider {
           options: {
             baseURL: `${vaultaiAuth.instanceUrl}/api/v1`,
             headers: {
-              "Cookie": `better-auth.session_token=${vaultaiAuth.sessionToken}`,
+              Cookie: `better-auth.session_token=${vaultaiAuth.sessionToken}`,
             },
           },
           models: {},
         }
       }
     }
-    
+
     const sdk = await getSDK(model)
 
     try {

@@ -107,13 +107,7 @@ function DialogVaultAIInstanceUrl() {
     dialog.replace(() => <DialogVaultAILogin instanceInfo={validation.info!} />)
   }
 
-  return (
-    <DialogPrompt
-      title="VaultAI Instance URL"
-      placeholder="https://app.vaultai.eu"
-      onConfirm={handleSubmit}
-    />
-  )
+  return <DialogPrompt title="VaultAI Instance URL" placeholder="https://app.vaultai.eu" onConfirm={handleSubmit} />
 }
 
 /**
@@ -204,13 +198,7 @@ function DialogVaultAIEmail(props: { instanceInfo: VaultAIInstanceInfo }) {
     dialog.replace(() => <DialogVaultAIPassword instanceInfo={props.instanceInfo} email={email} />)
   }
 
-  return (
-    <DialogPrompt
-      title="Email"
-      placeholder="your@email.com"
-      onConfirm={handleSubmit}
-    />
-  )
+  return <DialogPrompt title="Email" placeholder="your@email.com" onConfirm={handleSubmit} />
 }
 
 /**
@@ -236,11 +224,7 @@ function DialogVaultAIPassword(props: { instanceInfo: VaultAIInstanceInfo; email
       if (result.twoFactorRequired) {
         toast.show({ variant: "info", message: "Two-factor authentication required" })
         dialog.replace(() => (
-          <DialogVaultAITotp 
-            instanceInfo={props.instanceInfo} 
-            email={props.email}
-            client={client}
-          />
+          <DialogVaultAITotp instanceInfo={props.instanceInfo} email={props.email} client={client} />
         ))
         return
       }
@@ -270,7 +254,7 @@ function DialogVaultAIPassword(props: { instanceInfo: VaultAIInstanceInfo; email
       const clientWithToken = createVaultAIClient(props.instanceInfo.url, result.token)
       const modelsResponse = await clientWithToken.getV1Models()
       const modelCount = modelsResponse?.data?.length ?? 0
-      const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+      const defaultModel = modelsResponse?.data?.find((m) => m.vaultai?.isDefault)
 
       const restartHint = refreshed ? "" : " Use /models after selecting a project."
       toast.show({
@@ -286,18 +270,14 @@ function DialogVaultAIPassword(props: { instanceInfo: VaultAIInstanceInfo; email
   }
 
   return (
-    <DialogPrompt
-      title={`Password for ${props.email}`}
-      placeholder="Enter your password"
-      onConfirm={handleSubmit}
-    />
+    <DialogPrompt title={`Password for ${props.email}`} placeholder="Enter your password" onConfirm={handleSubmit} />
   )
 }
 
 /**
  * Step 3b-2: Enter TOTP code for 2FA (with option to use backup code)
  */
-function DialogVaultAITotp(props: { 
+function DialogVaultAITotp(props: {
   instanceInfo: VaultAIInstanceInfo
   email: string
   client: ReturnType<typeof createVaultAIClient>
@@ -312,11 +292,7 @@ function DialogVaultAITotp(props: {
       description: "Enter the 6-digit code from your authenticator app",
       onSelect() {
         dialog.replace(() => (
-          <DialogVaultAITotpInput 
-            instanceInfo={props.instanceInfo} 
-            email={props.email}
-            client={props.client}
-          />
+          <DialogVaultAITotpInput instanceInfo={props.instanceInfo} email={props.email} client={props.client} />
         ))
       },
     },
@@ -326,11 +302,7 @@ function DialogVaultAITotp(props: {
       description: "Use one of your saved backup codes",
       onSelect() {
         dialog.replace(() => (
-          <DialogVaultAIBackupCode 
-            instanceInfo={props.instanceInfo} 
-            email={props.email}
-            client={props.client}
-          />
+          <DialogVaultAIBackupCode instanceInfo={props.instanceInfo} email={props.email} client={props.client} />
         ))
       },
     },
@@ -342,7 +314,7 @@ function DialogVaultAITotp(props: {
 /**
  * Step 3b-2a: Enter TOTP code
  */
-function DialogVaultAITotpInput(props: { 
+function DialogVaultAITotpInput(props: {
   instanceInfo: VaultAIInstanceInfo
   email: string
   client: ReturnType<typeof createVaultAIClient>
@@ -386,7 +358,7 @@ function DialogVaultAITotpInput(props: {
       const clientWithToken = createVaultAIClient(props.instanceInfo.url, result.token)
       const modelsResponse = await clientWithToken.getV1Models()
       const modelCount = modelsResponse?.data?.length ?? 0
-      const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+      const defaultModel = modelsResponse?.data?.find((m) => m.vaultai?.isDefault)
 
       const restartHint = refreshed ? "" : " Use /models after selecting a project."
       toast.show({
@@ -413,7 +385,7 @@ function DialogVaultAITotpInput(props: {
 /**
  * Step 3b-2b: Enter backup code
  */
-function DialogVaultAIBackupCode(props: { 
+function DialogVaultAIBackupCode(props: {
   instanceInfo: VaultAIInstanceInfo
   email: string
   client: ReturnType<typeof createVaultAIClient>
@@ -457,7 +429,7 @@ function DialogVaultAIBackupCode(props: {
       const clientWithToken = createVaultAIClient(props.instanceInfo.url, result.token)
       const modelsResponse = await clientWithToken.getV1Models()
       const modelCount = modelsResponse?.data?.length ?? 0
-      const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+      const defaultModel = modelsResponse?.data?.find((m) => m.vaultai?.isDefault)
 
       const restartHint = refreshed ? "" : " Use /models after selecting a project."
       toast.show({
@@ -523,7 +495,7 @@ function DialogVaultAIToken(props: { instanceInfo: VaultAIInstanceInfo }) {
     // Fetch and show available models
     const modelsResponse = await client.getV1Models()
     const modelCount = modelsResponse?.data?.length ?? 0
-    const defaultModel = modelsResponse?.data?.find(m => m.vaultai?.isDefault)
+    const defaultModel = modelsResponse?.data?.find((m) => m.vaultai?.isDefault)
 
     const restartHint = refreshed ? "" : " Use /models after selecting a project."
     toast.show({
@@ -580,13 +552,17 @@ function DialogVaultAIStatus(props: { instance: z.infer<typeof Auth.VaultAI> }) 
 
   return (
     <box flexDirection="column" padding={2} gap={1}>
-      <text fg={theme.text} attributes={TextAttributes.BOLD}>VaultAI Status</text>
+      <text fg={theme.text} attributes={TextAttributes.BOLD}>
+        VaultAI Status
+      </text>
       <text fg={theme.textMuted}>Instance: {new URL(props.instance.instanceUrl).host}</text>
       <text fg={theme.textMuted}>User: {props.instance.user.email}</text>
       <text fg={theme.textMuted}>Name: {props.instance.user.name || "N/A"}</text>
-      
+
       <box marginTop={1}>
-        <text fg={theme.text} attributes={TextAttributes.BOLD}>Usage Statistics</text>
+        <text fg={theme.text} attributes={TextAttributes.BOLD}>
+          Usage Statistics
+        </text>
       </box>
       <Show when={loading()}>
         <text fg={theme.textMuted}>Loading usage data...</text>
@@ -595,8 +571,8 @@ function DialogVaultAIStatus(props: { instance: z.infer<typeof Auth.VaultAI> }) 
         {(u) => (
           <>
             <text fg={theme.textMuted}>Total Tokens: {formatNumber(u().total_tokens)}</text>
-            <text fg={theme.textMuted}>  Input: {formatNumber(u().prompt_tokens)}</text>
-            <text fg={theme.textMuted}>  Output: {formatNumber(u().completion_tokens)}</text>
+            <text fg={theme.textMuted}> Input: {formatNumber(u().prompt_tokens)}</text>
+            <text fg={theme.textMuted}> Output: {formatNumber(u().completion_tokens)}</text>
             <text fg={theme.textMuted}>Messages: {formatNumber(u().message_count)}</text>
           </>
         )}
@@ -604,7 +580,7 @@ function DialogVaultAIStatus(props: { instance: z.infer<typeof Auth.VaultAI> }) 
       <Show when={!loading() && !usage()}>
         <text fg={theme.textMuted}>No usage data available</text>
       </Show>
-      
+
       <box marginTop={1}>
         <text fg={theme.textMuted}>Press Escape to close</text>
       </box>
@@ -657,7 +633,9 @@ function DialogVaultAIContext(props: { instance: z.infer<typeof Auth.VaultAI> })
           <>
             {/* User info */}
             <box marginTop={1}>
-              <text fg={theme.text} attributes={TextAttributes.BOLD}>User</text>
+              <text fg={theme.text} attributes={TextAttributes.BOLD}>
+                User
+              </text>
             </box>
             <text fg={theme.textMuted}>
               {ctx().user.email} ({ctx().user.role || "member"})
@@ -673,11 +651,7 @@ function DialogVaultAIContext(props: { instance: z.infer<typeof Auth.VaultAI> })
               <text fg={theme.textMuted}>No projects yet</text>
             </Show>
             <For each={ctx().projects.slice(0, 5)}>
-              {(project) => (
-                <text fg={theme.textMuted}>
-                  • {project.name}
-                </text>
-              )}
+              {(project) => <text fg={theme.textMuted}>• {project.name}</text>}
             </For>
 
             {/* Tasks */}
@@ -690,11 +664,7 @@ function DialogVaultAIContext(props: { instance: z.infer<typeof Auth.VaultAI> })
               <text fg={theme.textMuted}>No tasks in progress</text>
             </Show>
             <For each={(ctx().tasks || []).slice(0, 5)}>
-              {(task) => (
-                <text fg={theme.textMuted}>
-                  • {task.title}
-                </text>
-              )}
+              {(task) => <text fg={theme.textMuted}>• {task.title}</text>}
             </For>
 
             {/* Recent chats */}
@@ -709,14 +679,17 @@ function DialogVaultAIContext(props: { instance: z.infer<typeof Auth.VaultAI> })
             <For each={ctx().recentChats.slice(0, 5)}>
               {(chat) => (
                 <text fg={theme.textMuted}>
-                  • {chat.title}{chat.isFavorite ? " ★" : ""}
+                  • {chat.title}
+                  {chat.isFavorite ? " ★" : ""}
                 </text>
               )}
             </For>
 
             {/* Quotas */}
             <box marginTop={1}>
-              <text fg={theme.text} attributes={TextAttributes.BOLD}>Usage</text>
+              <text fg={theme.text} attributes={TextAttributes.BOLD}>
+                Usage
+              </text>
             </box>
             <text fg={theme.textMuted}>
               Messages: {ctx().quotas.messagesUsed}

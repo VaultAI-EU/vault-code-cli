@@ -86,22 +86,14 @@ export namespace Auth {
 
   // VaultAI-specific helpers
   export namespace VaultAIHelper {
-    const VAULTAI_KEY_PREFIX = "vaultai:"
+    // Single key for VaultAI - only one instance allowed at a time
+    const VAULTAI_KEY = "vaultai"
 
     /**
-     * Get the key for a VaultAI instance
+     * Get the current VaultAI auth
      */
-    export function getKey(instanceUrl: string): string {
-      const url = new URL(instanceUrl)
-      return `${VAULTAI_KEY_PREFIX}${url.host}`
-    }
-
-    /**
-     * Get VaultAI auth for a specific instance
-     */
-    export async function getForInstance(instanceUrl: string): Promise<z.infer<typeof VaultAI> | null> {
-      const key = getKey(instanceUrl)
-      const auth = await get(key)
+    export async function getCurrent(): Promise<z.infer<typeof VaultAI> | null> {
+      const auth = await get(VAULTAI_KEY)
       if (auth?.type === "vaultai") {
         return auth
       }
@@ -109,40 +101,37 @@ export namespace Auth {
     }
 
     /**
-     * Get all VaultAI instances
+     * Get VaultAI auth for a specific instance (for backwards compatibility)
+     */
+    export async function getForInstance(instanceUrl: string): Promise<z.infer<typeof VaultAI> | null> {
+      const current = await getCurrent()
+      if (current && current.instanceUrl === instanceUrl) {
+        return current
+      }
+      return null
+    }
+
+    /**
+     * Get all VaultAI instances (returns single instance as array for compatibility)
      */
     export async function getAllInstances(): Promise<Array<{ key: string; auth: z.infer<typeof VaultAI> }>> {
-      const allAuth = await all()
-      const instances: Array<{ key: string; auth: z.infer<typeof VaultAI> }> = []
-      for (const [key, auth] of Object.entries(allAuth)) {
-        if (key.startsWith(VAULTAI_KEY_PREFIX) && auth.type === "vaultai") {
-          instances.push({ key, auth })
-        }
+      const current = await getCurrent()
+      if (current) {
+        return [{ key: VAULTAI_KEY, auth: current }]
       }
-      return instances
+      return []
     }
 
     /**
-     * Get the current/default VaultAI instance
-     */
-    export async function getCurrent(): Promise<z.infer<typeof VaultAI> | null> {
-      const instances = await getAllInstances()
-      if (instances.length === 0) return null
-      // Return the first instance for now (could add a "current" flag later)
-      return instances[0].auth
-    }
-
-    /**
-     * Save VaultAI auth for an instance
+     * Save VaultAI auth - replaces any existing VaultAI connection
      */
     export async function save(
       instanceUrl: string,
       sessionToken: string,
       user: { id: string; email: string; name?: string; organization_id?: string },
-      expiresAt?: string
+      expiresAt?: string,
     ) {
-      const key = getKey(instanceUrl)
-      await set(key, {
+      await set(VAULTAI_KEY, {
         type: "vaultai",
         instanceUrl,
         sessionToken,
@@ -152,11 +141,10 @@ export namespace Auth {
     }
 
     /**
-     * Remove VaultAI auth for an instance
+     * Remove VaultAI auth
      */
-    export async function removeInstance(instanceUrl: string) {
-      const key = getKey(instanceUrl)
-      await remove(key)
+    export async function removeInstance(_instanceUrl?: string) {
+      await remove(VAULTAI_KEY)
     }
 
     /**

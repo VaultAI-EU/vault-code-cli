@@ -1831,6 +1831,13 @@ export type BadRequestError = {
   success: false
 }
 
+export type NotFoundError = {
+  name: "NotFoundError"
+  data: {
+    message: string
+  }
+}
+
 export type OAuth = {
   type: "oauth"
   refresh: string
@@ -1851,14 +1858,20 @@ export type WellKnownAuth = {
   token: string
 }
 
-export type Auth = OAuth | ApiAuth | WellKnownAuth
-
-export type NotFoundError = {
-  name: "NotFoundError"
-  data: {
-    message: string
+export type VaultAiAuth = {
+  type: "vaultai"
+  instanceUrl: string
+  sessionToken: string
+  user: {
+    id: string
+    email: string
+    name?: string
+    organization_id?: string
   }
+  expiresAt?: string
 }
+
+export type Auth = OAuth | ApiAuth | WellKnownAuth | VaultAiAuth
 
 export type Model = {
   id: string
@@ -2268,6 +2281,364 @@ export type GlobalDisposeResponses = {
 }
 
 export type GlobalDisposeResponse = GlobalDisposeResponses[keyof GlobalDisposeResponses]
+
+export type VaultaiValidateData = {
+  body?: {
+    /**
+     * VaultAI instance URL
+     */
+    url: string
+  }
+  path?: never
+  query?: never
+  url: "/vaultai/validate"
+}
+
+export type VaultaiValidateErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type VaultaiValidateError = VaultaiValidateErrors[keyof VaultaiValidateErrors]
+
+export type VaultaiValidateResponses = {
+  /**
+   * Validation result
+   */
+  200: {
+    valid: boolean
+    info?: {
+      type: "vaultai"
+      apiVersion: number
+      minCliVersion: string
+      url: string
+      name: string
+      logo: string | null
+      auth: {
+        google: boolean
+        microsoft: boolean
+        email: boolean
+        credentials: boolean
+      }
+      features: {
+        chat: boolean
+        rag: boolean
+        projects: boolean
+        mcp: boolean
+      }
+    }
+    error?: string
+  }
+}
+
+export type VaultaiValidateResponse = VaultaiValidateResponses[keyof VaultaiValidateResponses]
+
+export type VaultaiLoginData = {
+  body?: {
+    /**
+     * VaultAI instance URL
+     */
+    instanceUrl: string
+    /**
+     * User email
+     */
+    email: string
+    /**
+     * User password
+     */
+    password: string
+  }
+  path?: never
+  query?: never
+  url: "/vaultai/login"
+}
+
+export type VaultaiLoginErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type VaultaiLoginError = VaultaiLoginErrors[keyof VaultaiLoginErrors]
+
+export type VaultaiLoginResponses = {
+  /**
+   * Login result
+   */
+  200: {
+    success: boolean
+    user?: {
+      id: string
+      email: string
+      name: string | null
+      firstName: string | null
+      lastName: string | null
+      avatarUrl: string | null
+      organizationId: string | null
+      role: string
+    }
+    twoFactorRequired?: boolean
+    error?: string
+  }
+}
+
+export type VaultaiLoginResponse = VaultaiLoginResponses[keyof VaultaiLoginResponses]
+
+export type VaultaiVerifyTotpData = {
+  body?: {
+    /**
+     * VaultAI instance URL
+     */
+    instanceUrl: string
+    /**
+     * User email
+     */
+    email: string
+    /**
+     * User password
+     */
+    password: string
+    /**
+     * TOTP code
+     */
+    code: string
+  }
+  path?: never
+  query?: never
+  url: "/vaultai/verify-totp"
+}
+
+export type VaultaiVerifyTotpErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type VaultaiVerifyTotpError = VaultaiVerifyTotpErrors[keyof VaultaiVerifyTotpErrors]
+
+export type VaultaiVerifyTotpResponses = {
+  /**
+   * Verification result
+   */
+  200: {
+    success: boolean
+    user?: {
+      id: string
+      email: string
+      name: string | null
+      firstName: string | null
+      lastName: string | null
+      avatarUrl: string | null
+      organizationId: string | null
+      role: string
+    }
+    error?: string
+  }
+}
+
+export type VaultaiVerifyTotpResponse = VaultaiVerifyTotpResponses[keyof VaultaiVerifyTotpResponses]
+
+export type VaultaiVerifyBackupData = {
+  body?: {
+    /**
+     * VaultAI instance URL
+     */
+    instanceUrl: string
+    /**
+     * User email
+     */
+    email: string
+    /**
+     * User password
+     */
+    password: string
+    /**
+     * Backup code
+     */
+    code: string
+  }
+  path?: never
+  query?: never
+  url: "/vaultai/verify-backup"
+}
+
+export type VaultaiVerifyBackupErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type VaultaiVerifyBackupError = VaultaiVerifyBackupErrors[keyof VaultaiVerifyBackupErrors]
+
+export type VaultaiVerifyBackupResponses = {
+  /**
+   * Verification result
+   */
+  200: {
+    success: boolean
+    user?: {
+      id: string
+      email: string
+      name: string | null
+      firstName: string | null
+      lastName: string | null
+      avatarUrl: string | null
+      organizationId: string | null
+      role: string
+    }
+    error?: string
+  }
+}
+
+export type VaultaiVerifyBackupResponse = VaultaiVerifyBackupResponses[keyof VaultaiVerifyBackupResponses]
+
+export type VaultaiOauthUrlData = {
+  body?: never
+  path?: never
+  query: {
+    /**
+     * VaultAI instance URL
+     */
+    instanceUrl: string
+    /**
+     * OAuth provider
+     */
+    provider: "google" | "microsoft"
+  }
+  url: "/vaultai/oauth-url"
+}
+
+export type VaultaiOauthUrlErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type VaultaiOauthUrlError = VaultaiOauthUrlErrors[keyof VaultaiOauthUrlErrors]
+
+export type VaultaiOauthUrlResponses = {
+  /**
+   * OAuth URL
+   */
+  200: {
+    url: string
+  }
+}
+
+export type VaultaiOauthUrlResponse = VaultaiOauthUrlResponses[keyof VaultaiOauthUrlResponses]
+
+export type VaultaiOauthTokenData = {
+  body?: {
+    /**
+     * VaultAI instance URL
+     */
+    instanceUrl: string
+    /**
+     * Session token from OAuth callback
+     */
+    token: string
+  }
+  path?: never
+  query?: never
+  url: "/vaultai/oauth-token"
+}
+
+export type VaultaiOauthTokenErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type VaultaiOauthTokenError = VaultaiOauthTokenErrors[keyof VaultaiOauthTokenErrors]
+
+export type VaultaiOauthTokenResponses = {
+  /**
+   * Login result
+   */
+  200: {
+    success: boolean
+    user?: {
+      id: string
+      email: string
+      name: string | null
+      firstName: string | null
+      lastName: string | null
+      avatarUrl: string | null
+      organizationId: string | null
+      role: string
+    }
+    error?: string
+  }
+}
+
+export type VaultaiOauthTokenResponse = VaultaiOauthTokenResponses[keyof VaultaiOauthTokenResponses]
+
+export type VaultaiInstancesData = {
+  body?: never
+  path?: never
+  query?: never
+  url: "/vaultai/instances"
+}
+
+export type VaultaiInstancesResponses = {
+  /**
+   * List of connected instances
+   */
+  200: Array<{
+    key: string
+    instanceUrl: string
+    user: {
+      id: string
+      email: string
+      name?: string
+      organization_id?: string
+    }
+    sessionValid: boolean
+  }>
+}
+
+export type VaultaiInstancesResponse = VaultaiInstancesResponses[keyof VaultaiInstancesResponses]
+
+export type VaultaiDisconnectData = {
+  body?: never
+  path: {
+    /**
+     * Instance key
+     */
+    key: string
+  }
+  query?: never
+  url: "/vaultai/instances/{key}"
+}
+
+export type VaultaiDisconnectErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * Not found
+   */
+  404: NotFoundError
+}
+
+export type VaultaiDisconnectError = VaultaiDisconnectErrors[keyof VaultaiDisconnectErrors]
+
+export type VaultaiDisconnectResponses = {
+  /**
+   * Disconnected successfully
+   */
+  200: boolean
+}
+
+export type VaultaiDisconnectResponse = VaultaiDisconnectResponses[keyof VaultaiDisconnectResponses]
 
 export type AuthRemoveData = {
   body?: never
@@ -3940,6 +4311,28 @@ export type QuestionRejectResponses = {
 }
 
 export type QuestionRejectResponse = QuestionRejectResponses[keyof QuestionRejectResponses]
+
+export type ProviderRefreshVaultaiData = {
+  body?: never
+  path?: never
+  query?: {
+    directory?: string
+  }
+  url: "/provider/refresh-vaultai"
+}
+
+export type ProviderRefreshVaultaiResponses = {
+  /**
+   * VaultAI provider refreshed
+   */
+  200: {
+    success: boolean
+    modelCount?: number
+    error?: string
+  }
+}
+
+export type ProviderRefreshVaultaiResponse = ProviderRefreshVaultaiResponses[keyof ProviderRefreshVaultaiResponses]
 
 export type ProviderListData = {
   body?: never

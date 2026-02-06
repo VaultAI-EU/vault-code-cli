@@ -221,11 +221,7 @@ export const AuthVaultAICommand = cmd({
   },
 })
 
-async function handleVaultAILogin(
-  instanceUrl?: string,
-  token?: string,
-  provider: OAuthProvider = "google"
-) {
+async function handleVaultAILogin(instanceUrl?: string, token?: string, provider: OAuthProvider = "google") {
   prompts.intro("VaultAI Login")
 
   // Get instance URL if not provided
@@ -262,16 +258,12 @@ async function handleVaultAILogin(
       return
     }
 
-    await Auth.VaultAIHelper.save(
-      validation.info!.url,
-      token,
-      {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name ?? undefined,
-        organization_id: session.user.organizationId ?? undefined,
-      }
-    )
+    await Auth.VaultAIHelper.save(validation.info!.url, token, {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name ?? undefined,
+      organization_id: session.user.organizationId ?? undefined,
+    })
 
     prompts.log.success(`Logged in as ${session.user.email}`)
     prompts.outro("Done")
@@ -336,16 +328,12 @@ async function handleVaultAILogin(
     return
   }
 
-  await Auth.VaultAIHelper.save(
-    validation.info!.url,
-    pastedToken,
-    {
-      id: session.user.id,
-      email: session.user.email,
-      name: session.user.name ?? undefined,
-      organization_id: session.user.organizationId ?? undefined,
-    }
-  )
+  await Auth.VaultAIHelper.save(validation.info!.url, pastedToken, {
+    id: session.user.id,
+    email: session.user.email,
+    name: session.user.name ?? undefined,
+    organization_id: session.user.organizationId ?? undefined,
+  })
 
   prompts.log.success(`Logged in as ${session.user.email}`)
   prompts.outro("Done")

@@ -79,6 +79,7 @@ import type {
   ProviderOauthAuthorizeResponses,
   ProviderOauthCallbackErrors,
   ProviderOauthCallbackResponses,
+  ProviderRefreshVaultaiResponses,
   PtyConnectErrors,
   PtyConnectResponses,
   PtyCreateErrors,
@@ -162,6 +163,21 @@ import type {
   TuiSelectSessionResponses,
   TuiShowToastResponses,
   TuiSubmitPromptResponses,
+  VaultaiDisconnectErrors,
+  VaultaiDisconnectResponses,
+  VaultaiInstancesResponses,
+  VaultaiLoginErrors,
+  VaultaiLoginResponses,
+  VaultaiOauthTokenErrors,
+  VaultaiOauthTokenResponses,
+  VaultaiOauthUrlErrors,
+  VaultaiOauthUrlResponses,
+  VaultaiValidateErrors,
+  VaultaiValidateResponses,
+  VaultaiVerifyBackupErrors,
+  VaultaiVerifyBackupResponses,
+  VaultaiVerifyTotpErrors,
+  VaultaiVerifyTotpResponses,
   VcsGetResponses,
   WorktreeCreateErrors,
   WorktreeCreateInput,
@@ -296,6 +312,245 @@ export class Global extends HeyApiClient {
   private _config?: Config
   get config(): Config {
     return (this._config ??= new Config({ client: this.client }))
+  }
+}
+
+export class Vaultai extends HeyApiClient {
+  /**
+   * Validate VaultAI instance
+   *
+   * Check if a URL is a valid VaultAI instance and get instance info
+   */
+  public validate<ThrowOnError extends boolean = false>(
+    parameters?: {
+      url?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "body", key: "url" }] }])
+    return (options?.client ?? this.client).post<VaultaiValidateResponses, VaultaiValidateErrors, ThrowOnError>({
+      url: "/vaultai/validate",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  /**
+   * Login to VaultAI
+   *
+   * Authenticate with VaultAI using email/password credentials
+   */
+  public login<ThrowOnError extends boolean = false>(
+    parameters?: {
+      instanceUrl?: string
+      email?: string
+      password?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "body", key: "instanceUrl" },
+            { in: "body", key: "email" },
+            { in: "body", key: "password" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<VaultaiLoginResponses, VaultaiLoginErrors, ThrowOnError>({
+      url: "/vaultai/login",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  /**
+   * Verify TOTP code
+   *
+   * Complete 2FA login with TOTP authenticator code
+   */
+  public verifyTotp<ThrowOnError extends boolean = false>(
+    parameters?: {
+      instanceUrl?: string
+      email?: string
+      password?: string
+      code?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "body", key: "instanceUrl" },
+            { in: "body", key: "email" },
+            { in: "body", key: "password" },
+            { in: "body", key: "code" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<VaultaiVerifyTotpResponses, VaultaiVerifyTotpErrors, ThrowOnError>({
+      url: "/vaultai/verify-totp",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  /**
+   * Verify backup code
+   *
+   * Complete 2FA login with backup code
+   */
+  public verifyBackup<ThrowOnError extends boolean = false>(
+    parameters?: {
+      instanceUrl?: string
+      email?: string
+      password?: string
+      code?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "body", key: "instanceUrl" },
+            { in: "body", key: "email" },
+            { in: "body", key: "password" },
+            { in: "body", key: "code" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<VaultaiVerifyBackupResponses, VaultaiVerifyBackupErrors, ThrowOnError>(
+      {
+        url: "/vaultai/verify-backup",
+        ...options,
+        ...params,
+        headers: {
+          "Content-Type": "application/json",
+          ...options?.headers,
+          ...params.headers,
+        },
+      },
+    )
+  }
+
+  /**
+   * Get OAuth login URL
+   *
+   * Get the URL to redirect user for OAuth login
+   */
+  public oauthUrl<ThrowOnError extends boolean = false>(
+    parameters: {
+      instanceUrl: string
+      provider: "google" | "microsoft"
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "instanceUrl" },
+            { in: "query", key: "provider" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<VaultaiOauthUrlResponses, VaultaiOauthUrlErrors, ThrowOnError>({
+      url: "/vaultai/oauth-url",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Complete OAuth login with token
+   *
+   * Complete OAuth login by providing the session token
+   */
+  public oauthToken<ThrowOnError extends boolean = false>(
+    parameters?: {
+      instanceUrl?: string
+      token?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "body", key: "instanceUrl" },
+            { in: "body", key: "token" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<VaultaiOauthTokenResponses, VaultaiOauthTokenErrors, ThrowOnError>({
+      url: "/vaultai/oauth-token",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  /**
+   * List VaultAI instances
+   *
+   * Get all connected VaultAI instances
+   */
+  public instances<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
+    return (options?.client ?? this.client).get<VaultaiInstancesResponses, unknown, ThrowOnError>({
+      url: "/vaultai/instances",
+      ...options,
+    })
+  }
+
+  /**
+   * Disconnect VaultAI instance
+   *
+   * Remove a connected VaultAI instance
+   */
+  public disconnect<ThrowOnError extends boolean = false>(
+    parameters: {
+      key: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "path", key: "key" }] }])
+    return (options?.client ?? this.client).delete<VaultaiDisconnectResponses, VaultaiDisconnectErrors, ThrowOnError>({
+      url: "/vaultai/instances/{key}",
+      ...options,
+      ...params,
+    })
   }
 }
 
@@ -2118,6 +2373,25 @@ export class Oauth extends HeyApiClient {
 
 export class Provider extends HeyApiClient {
   /**
+   * Refresh VaultAI provider
+   *
+   * Reload VaultAI models after connecting to a VaultAI instance
+   */
+  public refreshVaultai<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "query", key: "directory" }] }])
+    return (options?.client ?? this.client).post<ProviderRefreshVaultaiResponses, unknown, ThrowOnError>({
+      url: "/provider/refresh-vaultai",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
    * List providers
    *
    * Get a list of all available AI providers, including both available and connected ones.
@@ -3189,6 +3463,11 @@ export class OpencodeClient extends HeyApiClient {
   private _global?: Global
   get global(): Global {
     return (this._global ??= new Global({ client: this.client }))
+  }
+
+  private _vaultai?: Vaultai
+  get vaultai(): Vaultai {
+    return (this._vaultai ??= new Vaultai({ client: this.client }))
   }
 
   private _auth?: Auth

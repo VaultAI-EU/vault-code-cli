@@ -3,13 +3,15 @@ import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
 import { Tag } from "@opencode-ai/ui/tag"
 import { showToast } from "@opencode-ai/ui/toast"
+import { Spinner } from "@opencode-ai/ui/spinner"
 import { iconNames, type IconName } from "@opencode-ai/ui/icons/provider"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
-import { createMemo, type Component, For, Show } from "solid-js"
+import { createMemo, createResource, type Component, For, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useGlobalSDK } from "@/context/global-sdk"
 import { useGlobalSync } from "@/context/global-sync"
 import { DialogConnectProvider } from "./dialog-connect-provider"
+import { DialogConnectVaultAI } from "./dialog-connect-vaultai"
 import { DialogSelectProvider } from "./dialog-select-provider"
 import { DialogCustomProvider } from "./dialog-custom-provider"
 
@@ -22,6 +24,12 @@ export const SettingsProviders: Component = () => {
   const globalSDK = useGlobalSDK()
   const globalSync = useGlobalSync()
   const providers = useProviders()
+
+  // Fetch VaultAI instances
+  const [vaultaiInstances, { refetch: refetchVaultAI }] = createResource(async () => {
+    const result = await globalSDK.client.vaultai.instances()
+    return result.data ?? []
+  })
 
   const icon = (id: string): IconName => {
     if (iconNames.includes(id as IconName)) return id as IconName
@@ -114,6 +122,25 @@ export const SettingsProviders: Component = () => {
       })
   }
 
+  const disconnectVaultAI = async (key: string, email: string) => {
+    await globalSDK.client.vaultai
+      .disconnect({ key })
+      .then(async () => {
+        await globalSDK.client.global.dispose()
+        refetchVaultAI()
+        showToast({
+          variant: "success",
+          icon: "circle-check",
+          title: "Disconnected from VaultAI",
+          description: `Logged out ${email}`,
+        })
+      })
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err)
+        showToast({ title: language.t("common.requestFailed"), description: message })
+      })
+  }
+
   return (
     <div class="flex flex-col h-full overflow-y-auto no-scrollbar px-4 pb-10 sm:px-10 sm:pb-10">
       <div class="sticky top-0 z-10 bg-[linear-gradient(to_bottom,var(--surface-raised-stronger-non-alpha)_calc(100%_-_24px),transparent)]">
@@ -123,6 +150,92 @@ export const SettingsProviders: Component = () => {
       </div>
 
       <div class="flex flex-col gap-8 max-w-[720px]">
+        {/* VaultAI Instances Section */}
+        <div class="flex flex-col gap-1" data-component="vaultai-instances-section">
+          <h3 class="text-14-medium text-text-strong pb-2">VaultAI Instances</h3>
+          <div class="bg-surface-raised-base px-4 rounded-lg">
+            <Show
+              when={!vaultaiInstances.loading}
+              fallback={
+                <div class="py-4 flex items-center gap-2 text-14-regular text-text-weak">
+                  <Spinner class="size-4" />
+                  Loading...
+                </div>
+              }
+            >
+              <Show
+                when={vaultaiInstances()?.length}
+                fallback={
+                  <div class="flex items-center justify-between gap-4 min-h-16 py-3">
+                    <div class="flex flex-col min-w-0">
+                      <div class="flex items-center gap-x-3">
+                        <div class="size-5 shrink-0 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                          <span class="text-white text-xs font-bold">V</span>
+                        </div>
+                        <span class="text-14-medium text-text-strong">VaultAI</span>
+                        <Tag>Enterprise</Tag>
+                      </div>
+                      <span class="text-12-regular text-text-weak pl-8">
+                        Connect to your VaultAI instance for enterprise models
+                      </span>
+                    </div>
+                    <Button
+                      size="large"
+                      variant="secondary"
+                      icon="plus-small"
+                      onClick={() => {
+                        dialog.show(() => <DialogConnectVaultAI />)
+                      }}
+                    >
+                      {language.t("common.connect")}
+                    </Button>
+                  </div>
+                }
+              >
+                <For each={vaultaiInstances()}>
+                  {(instance) => {
+                    const host = new URL(instance.instanceUrl).host
+                    return (
+                      <div class="group flex flex-wrap items-center justify-between gap-4 min-h-16 py-3 border-b border-border-weak-base last:border-none">
+                        <div class="flex items-center gap-3 min-w-0">
+                          <div class="size-5 shrink-0 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white text-xs font-bold">V</span>
+                          </div>
+                          <div class="flex flex-col min-w-0">
+                            <span class="text-14-medium text-text-strong truncate">{instance.user.email}</span>
+                            <span class="text-12-regular text-text-weak">{host}</span>
+                          </div>
+                          <Tag>{instance.sessionValid ? "Active" : "Expired"}</Tag>
+                        </div>
+                        <Button
+                          size="large"
+                          variant="ghost"
+                          onClick={() => void disconnectVaultAI(instance.key, instance.user.email)}
+                        >
+                          {language.t("common.disconnect")}
+                        </Button>
+                      </div>
+                    )
+                  }}
+                </For>
+                <div class="flex items-center justify-between gap-4 min-h-16 py-3 border-t border-border-weak-base">
+                  <span class="text-14-regular text-text-weak">Add another VaultAI instance</span>
+                  <Button
+                    size="large"
+                    variant="ghost"
+                    icon="plus-small"
+                    onClick={() => {
+                      dialog.show(() => <DialogConnectVaultAI />)
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+              </Show>
+            </Show>
+          </div>
+        </div>
+
         <div class="flex flex-col gap-1" data-component="connected-providers-section">
           <h3 class="text-14-medium text-text-strong pb-2">{language.t("settings.providers.section.connected")}</h3>
           <div class="bg-surface-raised-base px-4 rounded-lg">
@@ -172,7 +285,7 @@ export const SettingsProviders: Component = () => {
                       <ProviderIcon id={icon(item.id)} class="size-5 shrink-0 icon-strong-base" />
                       <span class="text-14-medium text-text-strong">{item.name}</span>
                       <Show when={item.id === "opencode"}>
-                        <Tag>{language.t("dialog.provider.tag.recommended")}</Tag>
+                        <Tag>Pay-as-you-go</Tag>
                       </Show>
                     </div>
                     <Show when={item.id === "opencode"}>

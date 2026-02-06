@@ -1,6 +1,6 @@
 /**
  * VaultAI Context Enrichment
- * 
+ *
  * Fetches context from VaultAI to enrich the system prompt.
  * This allows the LLM to know about the user's VaultAI data.
  */
@@ -30,12 +30,12 @@ export namespace VaultAIContextEnrichment {
     try {
       const client = createVaultAIClient(vaultaiAuth.instanceUrl, vaultaiAuth.sessionToken)
       const context = await client.getContext()
-      
+
       if (context) {
         cachedContext = context
         cacheTimestamp = Date.now()
       }
-      
+
       return context
     } catch (error) {
       console.error("[VaultAI Context] Error fetching context:", error)
@@ -58,7 +58,7 @@ export namespace VaultAIContextEnrichment {
     const sections: string[] = []
 
     sections.push(`  Connected as: ${context.user.email}`)
-    
+
     // Projects
     if (context.projects.length > 0) {
       sections.push(``)

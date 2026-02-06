@@ -1,6 +1,6 @@
 /**
  * VaultAI Types (Simplified)
- * 
+ *
  * Only the types needed for vault-code-cli integration.
  * The full SDK runs server-side in VaultAI.
  */

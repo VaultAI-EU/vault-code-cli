@@ -82,20 +82,24 @@ Examples:
             formattedOutput = "Aucun élément trouvé."
           } else {
             // Format array results as a readable list
-            formattedOutput = result.result.map((item: any, idx: number) => {
-              if (typeof item === "object") {
-                // Format task/project/meeting objects nicely
-                const title = item.title || item.name || item.id || "Sans titre"
-                const status = item.status ? ` [${item.status}]` : ""
-                const priority = item.priority ? ` (${item.priority})` : ""
-                const dueDate = item.dueDate ? ` - Échéance: ${new Date(item.dueDate).toLocaleDateString("fr-FR")}` : ""
-                const desc = item.description 
-                  ? `\n   ${item.description.substring(0, 100)}${item.description.length > 100 ? "..." : ""}` 
-                  : ""
-                return `${idx + 1}. ${title}${status}${priority}${dueDate}${desc}`
-              }
-              return `${idx + 1}. ${item}`
-            }).join("\n")
+            formattedOutput = result.result
+              .map((item: any, idx: number) => {
+                if (typeof item === "object") {
+                  // Format task/project/meeting objects nicely
+                  const title = item.title || item.name || item.id || "Sans titre"
+                  const status = item.status ? ` [${item.status}]` : ""
+                  const priority = item.priority ? ` (${item.priority})` : ""
+                  const dueDate = item.dueDate
+                    ? ` - Échéance: ${new Date(item.dueDate).toLocaleDateString("fr-FR")}`
+                    : ""
+                  const desc = item.description
+                    ? `\n   ${item.description.substring(0, 100)}${item.description.length > 100 ? "..." : ""}`
+                    : ""
+                  return `${idx + 1}. ${title}${status}${priority}${dueDate}${desc}`
+                }
+                return `${idx + 1}. ${item}`
+              })
+              .join("\n")
           }
         } else if (typeof result.result === "object") {
           formattedOutput = JSON.stringify(result.result, null, 2)

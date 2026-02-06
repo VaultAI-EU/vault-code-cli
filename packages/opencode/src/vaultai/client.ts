@@ -19,74 +19,46 @@ import type {
 const QUERY_PATTERNS: Array<{ patterns: RegExp[]; code: string; description: string }> = [
   // Tasks
   {
-    patterns: [
-      /tâches?\s*(en cours|actives?|in.?progress)/i,
-      /tasks?\s*(in.?progress|active|current)/i,
-    ],
+    patterns: [/tâches?\s*(en cours|actives?|in.?progress)/i, /tasks?\s*(in.?progress|active|current)/i],
     code: `const tasks = await vault.tasks.list({ status: "in_progress" }); return tasks;`,
     description: "Tâches en cours",
   },
   {
-    patterns: [
-      /tâches?|tasks?|todo/i,
-      /mes\s+tâches/i,
-      /my\s+tasks/i,
-    ],
+    patterns: [/tâches?|tasks?|todo/i, /mes\s+tâches/i, /my\s+tasks/i],
     code: `const tasks = await vault.tasks.list(); return tasks;`,
     description: "Toutes les tâches",
   },
   {
-    patterns: [
-      /tâches?\s*(aujourd'?hui|du jour|today)/i,
-      /tasks?\s*due\s*today/i,
-    ],
+    patterns: [/tâches?\s*(aujourd'?hui|du jour|today)/i, /tasks?\s*due\s*today/i],
     code: `const tasks = await vault.tasks.listDueToday(); return tasks;`,
     description: "Tâches du jour",
   },
   {
-    patterns: [
-      /tâches?\s*(en retard|overdue|late)/i,
-      /overdue\s*tasks?/i,
-    ],
+    patterns: [/tâches?\s*(en retard|overdue|late)/i, /overdue\s*tasks?/i],
     code: `const tasks = await vault.tasks.listOverdue(); return tasks;`,
     description: "Tâches en retard",
   },
   // Projects
   {
-    patterns: [
-      /projets?|projects?/i,
-      /mes\s+projets/i,
-      /my\s+projects/i,
-    ],
+    patterns: [/projets?|projects?/i, /mes\s+projets/i, /my\s+projects/i],
     code: `const projects = await vault.projects.list(); return projects;`,
     description: "Projets",
   },
   // Meetings
   {
-    patterns: [
-      /réunions?|meetings?/i,
-      /mes\s+réunions/i,
-      /my\s+meetings/i,
-    ],
+    patterns: [/réunions?|meetings?/i, /mes\s+réunions/i, /my\s+meetings/i],
     code: `const meetings = await vault.meetings.list(); return meetings;`,
     description: "Réunions",
   },
   // Files
   {
-    patterns: [
-      /fichiers?|files?|documents?/i,
-      /mes\s+fichiers/i,
-      /my\s+files/i,
-    ],
+    patterns: [/fichiers?|files?|documents?/i, /mes\s+fichiers/i, /my\s+files/i],
     code: `const files = await vault.files.list(); return files;`,
     description: "Fichiers",
   },
   // Chats/History
   {
-    patterns: [
-      /conversations?|chats?|historique/i,
-      /mes\s+conversations/i,
-    ],
+    patterns: [/conversations?|chats?|historique/i, /mes\s+conversations/i],
     code: `const chats = await vault.chats.list(); return chats;`,
     description: "Conversations",
   },
@@ -115,7 +87,7 @@ function generateSearchCode(query: string): string {
     .replace(/^(cherche|search|trouve|find|où|where|quoi|what|comment|how|montre|show|liste|list)\s*/i, "")
     .replace(/\?$/g, "")
     .trim()
-  
+
   return `const results = await vault.search.all("${searchTerms.replace(/"/g, '\\"')}"); return results;`
 }
 
@@ -189,8 +161,23 @@ export class VaultAIClient {
 
   async getSession(): Promise<VaultAISession> {
     if (!this.sessionToken) return { user: null }
-    const data = await this.fetchJSON<VaultAISession>("/api/cli/session")
-    return data ?? { user: null }
+
+    try {
+      const response = await this.authFetch("/api/cli/session")
+
+      if (!response.ok) {
+        console.error(`[VaultAI getSession] HTTP ${response.status}: ${response.statusText}`)
+        const text = await response.text()
+        console.error(`[VaultAI getSession] Response body: ${text}`)
+        return { user: null }
+      }
+
+      const data = await response.json()
+      return data ?? { user: null }
+    } catch (error) {
+      console.error("[VaultAI getSession] Error:", error)
+      return { user: null }
+    }
   }
 
   async isAuthenticated(): Promise<boolean> {
@@ -200,7 +187,7 @@ export class VaultAIClient {
 
   async loginWithCredentials(
     email: string,
-    password: string
+    password: string,
   ): Promise<{ token: string | null; user: VaultAIUser | null; error?: string; twoFactorRequired?: boolean }> {
     try {
       const response = await fetch(`${this.baseURL}/api/auth/sign-in/email`, {
@@ -272,7 +259,7 @@ export class VaultAIClient {
       // Extract session token from response
       const setCookie = response.headers.get("set-cookie")
       const tokenMatch = setCookie?.match(/better-auth\.session_token=([^;]+)/)
-      
+
       if (tokenMatch) {
         this.sessionToken = tokenMatch[1]
         const session = await this.getSession()
@@ -281,7 +268,7 @@ export class VaultAIClient {
 
       const data = await response.json()
       const token = data.token || data.session?.token
-      
+
       if (token) {
         this.sessionToken = token
         const session = await this.getSession()
@@ -318,7 +305,7 @@ export class VaultAIClient {
       // Extract session token from response
       const setCookie = response.headers.get("set-cookie")
       const tokenMatch = setCookie?.match(/better-auth\.session_token=([^;]+)/)
-      
+
       if (tokenMatch) {
         this.sessionToken = tokenMatch[1]
         const session = await this.getSession()
@@ -327,7 +314,7 @@ export class VaultAIClient {
 
       const data = await response.json()
       const token = data.token || data.session?.token
-      
+
       if (token) {
         this.sessionToken = token
         const session = await this.getSession()
@@ -336,7 +323,11 @@ export class VaultAIClient {
 
       return { token: null, user: null, error: "No session token received after backup code verification" }
     } catch (error) {
-      return { token: null, user: null, error: error instanceof Error ? error.message : "Backup code verification failed" }
+      return {
+        token: null,
+        user: null,
+        error: error instanceof Error ? error.message : "Backup code verification failed",
+      }
     }
   }
 
@@ -352,34 +343,41 @@ export class VaultAIClient {
       const [session, historyData, projectsResult, tasksResult] = await Promise.all([
         this.getSession(),
         this.fetchJSON<HistoryResponse>("/api/history?limit=10").catch(() => null),
-        this.executeCode(`const projects = await vault.projects.list(); return projects;`).catch(() => ({ success: false, result: [] })),
-        this.executeCode(`const tasks = await vault.tasks.list({ status: "in_progress" }); return tasks;`).catch(() => ({ success: false, result: [] })),
+        this.executeCode(`const projects = await vault.projects.list(); return projects;`).catch(() => ({
+          success: false,
+          result: [],
+        })),
+        this.executeCode(`const tasks = await vault.tasks.list({ status: "in_progress" }); return tasks;`).catch(
+          () => ({ success: false, result: [] }),
+        ),
       ])
 
       if (!session.user) return null
 
       // Parse projects from execute result
-      const projects = projectsResult.success && Array.isArray(projectsResult.result)
-        ? projectsResult.result.map((p: any) => ({
-            id: p.id,
-            name: p.name || p.title || "Untitled",
-            description: p.description || null,
-            createdAt: p.createdAt || p.created_at || new Date().toISOString(),
-          }))
-        : []
+      const projects =
+        projectsResult.success && Array.isArray(projectsResult.result)
+          ? projectsResult.result.map((p: any) => ({
+              id: p.id,
+              name: p.name || p.title || "Untitled",
+              description: p.description || null,
+              createdAt: p.createdAt || p.created_at || new Date().toISOString(),
+            }))
+          : []
 
       // Parse tasks from execute result
-      const tasks = tasksResult.success && Array.isArray(tasksResult.result)
-        ? tasksResult.result.map((t: any) => ({
-            id: t.id,
-            title: t.title || t.name || "Untitled",
-            description: t.description || null,
-            status: t.status || "in_progress",
-            priority: t.priority || null,
-            dueDate: t.dueDate || t.due_date || null,
-            projectId: t.projectId || t.project_id || null,
-          }))
-        : []
+      const tasks =
+        tasksResult.success && Array.isArray(tasksResult.result)
+          ? tasksResult.result.map((t: any) => ({
+              id: t.id,
+              title: t.title || t.name || "Untitled",
+              description: t.description || null,
+              status: t.status || "in_progress",
+              priority: t.priority || null,
+              dueDate: t.dueDate || t.due_date || null,
+              projectId: t.projectId || t.project_id || null,
+            }))
+          : []
 
       // Parse chats from history
       const recentChats = historyData?.chatsWithoutProject
@@ -427,7 +425,10 @@ export class VaultAIClient {
    * Get available models from VaultAI
    */
   async getModels(): Promise<Array<{ id: string; name: string; isActive: boolean; isDefault: boolean }>> {
-    const data = await this.fetchJSON<Array<{ id: string; name: string; isActive: boolean; isDefault: boolean }>>("/api/models?active=true")
+    const data =
+      await this.fetchJSON<Array<{ id: string; name: string; isActive: boolean; isDefault: boolean }>>(
+        "/api/models?active=true",
+      )
     return data ?? []
   }
 
@@ -437,7 +438,7 @@ export class VaultAIClient {
   async getDefaultModelId(): Promise<string | null> {
     const models = await this.getModels()
     // Find default model first
-    const defaultModel = models.find(m => m.isDefault)
+    const defaultModel = models.find((m) => m.isDefault)
     if (defaultModel) return defaultModel.id
     // Fallback to first active model
     if (models.length > 0) return models[0].id
@@ -460,10 +461,10 @@ export class VaultAIClient {
   }> {
     // Try to match the query to a known pattern
     const match = matchQueryToCode(query)
-    
+
     let code: string
     let description: string
-    
+
     if (match) {
       code = match.code
       description = match.description
@@ -475,7 +476,7 @@ export class VaultAIClient {
 
     // Execute the code directly
     const result = await this.executeCode(code)
-    
+
     return {
       success: result.success,
       result: result.result,
@@ -497,7 +498,7 @@ export class VaultAIClient {
       chatId?: string
       modelId?: string
       signal?: AbortSignal
-    }
+    },
   ): Promise<Response> {
     // Get model ID - use provided or fetch default
     let modelId: string | undefined = options?.modelId
@@ -516,9 +517,7 @@ export class VaultAIClient {
       method: "POST",
       body: JSON.stringify({
         id: chatId,
-        messages: [
-          { role: "user", content: message },
-        ],
+        messages: [{ role: "user", content: message }],
         modelId,
         data: JSON.stringify({
           selectedTools: ["executeTools", "ragSearch", "meetingSearch"],
@@ -550,10 +549,10 @@ export class VaultAIClient {
 
       return await response.json()
     } catch (error) {
-      return { 
-        success: false, 
-        result: null, 
-        error: error instanceof Error ? error.message : "Unknown error" 
+      return {
+        success: false,
+        result: null,
+        error: error instanceof Error ? error.message : "Unknown error",
       }
     }
   }
@@ -561,7 +560,7 @@ export class VaultAIClient {
   /**
    * Parse SSE response and extract tool calls that need execution
    */
-  static parseSSEWithToolCalls(text: string): { 
+  static parseSSEWithToolCalls(text: string): {
     textContent: string
     toolCalls: Array<{ toolName: string; args: any; toolCallId: string }>
     toolResults: string[]
@@ -627,7 +626,7 @@ export class VaultAIClient {
    */
   static parseSSEResponse(text: string): string {
     const { textContent, toolResults } = this.parseSSEWithToolCalls(text)
-    
+
     if (!textContent.trim() && toolResults.length > 0) {
       return toolResults.join("\n\n")
     }
@@ -717,7 +716,7 @@ export function createVaultAIClient(instanceUrl: string, sessionToken?: string):
 }
 
 export async function validateVaultAIInstance(
-  url: string
+  url: string,
 ): Promise<{ valid: boolean; info?: VaultAIInstanceInfo; error?: string }> {
   try {
     let normalizedUrl = url.trim()

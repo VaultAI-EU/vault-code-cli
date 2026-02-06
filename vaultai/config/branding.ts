@@ -23,8 +23,7 @@ export const VAULTAI_BRANDING = {
 
   // Description
   displayName: "VaultAI Code CLI - On-premise AI Code Assistant",
-  description:
-    "Assistant de code IA on-premise pour entreprises avec souveraineté des données",
+  description: "Assistant de code IA on-premise pour entreprises avec souveraineté des données",
   tagline: "Code faster with AI, keep your data sovereign",
 
   // Couleurs (pour themes)

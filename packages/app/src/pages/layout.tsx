@@ -1691,19 +1691,27 @@ export default function Layout(props: ParentProps) {
     const notifications = createMemo(() => notification.project.unseen(props.project.worktree))
     const hasError = createMemo(() => notifications().some((n) => n.type === "error"))
     const name = createMemo(() => props.project.name || getFilename(props.project.worktree))
-    const opencode = "4b0ea68d7af9a6031a7ffda7ad66e0cb83315750"
+    const vaultai = "4b0ea68d7af9a6031a7ffda7ad66e0cb83315750"
+    const isVaultAI = () => props.project.id === vaultai
 
     return (
       <div class={`relative size-8 shrink-0 rounded ${props.class ?? ""}`}>
-        <div class="size-full rounded overflow-clip">
-          <Avatar
-            fallback={name()}
-            src={props.project.id === opencode ? "https://opencode.ai/favicon.svg" : props.project.icon?.override}
-            {...getAvatarColors(props.project.icon?.color)}
-            class="size-full rounded"
-            classList={{ "badge-mask": notifications().length > 0 && props.notify }}
-          />
-        </div>
+        <Show
+          when={isVaultAI()}
+          fallback={
+            <div class="size-full rounded overflow-clip flex items-center justify-center">
+              <Avatar
+                fallback={name()}
+                src={props.project.icon?.override}
+                {...getAvatarColors(props.project.icon?.color)}
+                class="size-full rounded"
+                classList={{ "badge-mask": notifications().length > 0 && props.notify }}
+              />
+            </div>
+          }
+        >
+          <img src="https://www.vaultai.eu/favicon.ico" alt="VaultAI" class="size-full" />
+        </Show>
         <Show when={notifications().length > 0 && props.notify}>
           <div
             classList={{

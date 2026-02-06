@@ -647,6 +647,7 @@ function createGlobalSync() {
     if (directory === "global") {
       switch (event?.type) {
         case "global.disposed": {
+          console.log("[GlobalSync] global.disposed event received, calling refresh()")
           refresh()
           return
         }
@@ -957,6 +958,7 @@ function createGlobalSync() {
   })
 
   async function bootstrap() {
+    console.log("[GlobalSync] bootstrap() called")
     const health = await globalSDK.client.global
       .health()
       .then((x) => x.data)
@@ -994,6 +996,9 @@ function createGlobalSync() {
       ),
       retry(() =>
         globalSDK.client.provider.list().then((x) => {
+          const providerIds = x.data?.all?.map((p: any) => p.id) || []
+          console.log("[GlobalSync] provider.list() - provider IDs:", providerIds)
+          console.log("[GlobalSync] provider.list() - has vaultai:", providerIds.includes("vaultai"))
           setGlobalStore("provider", normalizeProviderList(x.data!))
         }),
       ),

@@ -33,7 +33,7 @@ vault-code auth login vaultai
 
 ### 2. Configurer l'URL de votre instance (optionnel)
 
-Par défaut, l'outil pointe vers `https://api.vaultai.local/v1`. 
+Par défaut, l'outil pointe vers `https://api.vaultai.local/v1`.
 
 Pour changer l'URL, créez un fichier `.opencode/opencode.jsonc` dans votre projet :
 
@@ -41,9 +41,9 @@ Pour changer l'URL, créez un fichier `.opencode/opencode.jsonc` dans votre proj
 {
   "provider": {
     "vaultai": {
-      "api": "https://votre-instance-vaultai.com/v1"
-    }
-  }
+      "api": "https://votre-instance-vaultai.com/v1",
+    },
+  },
 }
 ```
 
@@ -102,11 +102,11 @@ VaultAI Code CLI supporte tous les providers d'OpenCode :
 
 ## Différences avec OpenCode
 
-| Fonctionnalité | VaultAI Code CLI | OpenCode |
-|----------------|------------------|----------|
-| Provider par défaut | VaultAI On-Premise | OpenCode Zen |
-| Télémétrie | Désactivée | Activée |
-| Focus | Souveraineté données | Grand public |
+| Fonctionnalité      | VaultAI Code CLI     | OpenCode     |
+| ------------------- | -------------------- | ------------ |
+| Provider par défaut | VaultAI On-Premise   | OpenCode Zen |
+| Télémétrie          | Désactivée           | Activée      |
+| Focus               | Souveraineté données | Grand public |
 
 ## Développement
 

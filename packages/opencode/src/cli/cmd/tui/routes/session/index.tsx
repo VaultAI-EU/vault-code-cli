@@ -2117,13 +2117,21 @@ function VaultAIQuery(props: ToolProps<any> & { input: { query?: string } }) {
               <text fg={theme.textMuted}>{expanded() ? "Click to collapse" : "Click to expand"}</text>
             </Show>
             <Show when={itemCount() > 0}>
-              <text fg={theme.textMuted}>{itemCount()} result{itemCount() !== 1 ? "s" : ""}</text>
+              <text fg={theme.textMuted}>
+                {itemCount()} result{itemCount() !== 1 ? "s" : ""}
+              </text>
             </Show>
           </box>
         </BlockTool>
       </Match>
       <Match when={true}>
-        <InlineTool icon="◈" iconColor={theme.accent} pending="Querying VaultAI..." complete={props.input.query} part={props.part}>
+        <InlineTool
+          icon="◈"
+          iconColor={theme.accent}
+          pending="Querying VaultAI..."
+          complete={props.input.query}
+          part={props.part}
+        >
           VaultAI: "{props.input.query}"
         </InlineTool>
       </Match>

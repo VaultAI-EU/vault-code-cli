@@ -11,6 +11,42 @@ import { lazy } from "../../util/lazy"
 
 export const ProviderRoutes = lazy(() =>
   new Hono()
+    .post(
+      "/refresh-vaultai",
+      describeRoute({
+        summary: "Refresh VaultAI provider",
+        description: "Reload VaultAI models after connecting to a VaultAI instance",
+        operationId: "provider.refreshVaultai",
+        responses: {
+          200: {
+            description: "VaultAI provider refreshed",
+            content: {
+              "application/json": {
+                schema: resolver(
+                  z.object({
+                    success: z.boolean(),
+                    modelCount: z.number().optional(),
+                    error: z.string().optional(),
+                  }),
+                ),
+              },
+            },
+          },
+        },
+      }),
+      async (c) => {
+        try {
+          await Provider.refreshVaultAI()
+          const providers = await Provider.list()
+          const vaultai = providers["vaultai"]
+          const modelCount = vaultai ? Object.keys(vaultai.models).length : 0
+          return c.json({ success: true, modelCount })
+        } catch (err) {
+          const message = err instanceof Error ? err.message : "Failed to refresh VaultAI"
+          return c.json({ success: false, error: message })
+        }
+      },
+    )
     .get(
       "/",
       describeRoute({

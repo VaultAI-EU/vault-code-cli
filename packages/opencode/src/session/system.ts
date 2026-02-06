@@ -27,10 +27,10 @@ export namespace SystemPrompt {
 
   export async function environment(model: Provider.Model) {
     const project = Instance.project
-    
+
     // Get VaultAI context enrichment (if connected)
     const vaultaiContext = await VaultAIContextEnrichment.getPromptEnrichment()
-    
+
     return [
       [
         `You are powered by the model named ${model.api.id}. The exact model ID is ${model.providerID}/${model.api.id}`,
@@ -52,7 +52,9 @@ export namespace SystemPrompt {
         }`,
         `</directories>`,
         vaultaiContext,
-      ].filter(Boolean).join("\n"),
+      ]
+        .filter(Boolean)
+        .join("\n"),
     ]
   }
 }

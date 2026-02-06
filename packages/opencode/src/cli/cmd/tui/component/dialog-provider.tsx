@@ -36,10 +36,10 @@ export function createDialogProviderOptions() {
   const dialog = useDialog()
   const sdk = useSDK()
   const connected = createMemo(() => new Set(sync.data.provider_next.connected))
-  
+
   // Check VaultAI connection status
   const [vaultaiConnected] = createResource(isVaultAIConnected)
-  
+
   const options = createMemo(() => {
     const baseOptions = pipe(
       sync.data.provider_next.all,
