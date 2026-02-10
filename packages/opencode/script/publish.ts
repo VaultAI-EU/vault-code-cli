@@ -55,7 +55,7 @@ const image = "ghcr.io/anomalyco/opencode"
 const platforms = "linux/amd64,linux/arm64"
 const tags = [`${image}:${version}`, `${image}:${Script.channel}`]
 const tagFlags = tags.flatMap((t) => ["-t", t])
-await $`docker buildx build --platform ${platforms} ${tagFlags} --push .`
+await $`docker buildx build --platform ${platforms} ${tagFlags} --push .`.nothrow()
 
 // registries
 if (!Script.preview) {

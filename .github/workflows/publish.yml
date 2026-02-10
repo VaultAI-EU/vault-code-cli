@@ -174,7 +174,7 @@ jobs:
           bun ./scripts/prepare.ts
         env:
           OPENCODE_VERSION: ${{ needs.version.outputs.version }}
-          GITHUB_TOKEN: ${{ steps.committer.outputs.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           RUST_TARGET: ${{ matrix.settings.target }}
           GH_TOKEN: ${{ github.token }}
           GITHUB_RUN_ID: ${{ github.run_id }}
@@ -278,5 +278,5 @@ jobs:
           OPENCODE_VERSION: ${{ needs.version.outputs.version }}
           OPENCODE_RELEASE: ${{ needs.version.outputs.release }}
           AUR_KEY: ${{ secrets.AUR_KEY }}
-          GITHUB_TOKEN: ${{ steps.committer.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.committer.outputs.token || github.token }}
           NPM_CONFIG_PROVENANCE: false
