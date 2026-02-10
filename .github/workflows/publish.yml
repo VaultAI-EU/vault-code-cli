@@ -213,7 +213,7 @@ jobs:
           APPLE_API_KEY_PATH: ${{ runner.temp }}/apple-api-key.p8
 
   publish:
-    if: ${{ needs.build-cli.result == 'success' && (needs.build-tauri.result == 'success' || needs.build-tauri.result == 'skipped') }}
+    if: ${{ always() && needs.version.result == 'success' && needs.build-cli.result == 'success' && (needs.build-tauri.result == 'success' || needs.build-tauri.result == 'skipped') }}
     needs:
       - version
       - build-cli
