@@ -10,6 +10,14 @@ on:
       - snapshot-*
   workflow_dispatch:
     inputs:
+      target:
+        description: "Release target"
+        required: false
+        default: all
+        type: choice
+        options:
+          - all
+          - cli
       bump:
         description: "Bump major, minor, or patch"
         required: false
@@ -87,6 +95,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
 
   build-tauri:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'all' }}
     needs:
       - build-cli
       - version
@@ -204,6 +213,7 @@ jobs:
           APPLE_API_KEY_PATH: ${{ runner.temp }}/apple-api-key.p8
 
   publish:
+    if: ${{ needs.build-cli.result == 'success' && (needs.build-tauri.result == 'success' || needs.build-tauri.result == 'skipped') }}
     needs:
       - version
       - build-cli
