@@ -7,9 +7,14 @@ import { buildNotes, getLatestRelease } from "./changelog"
 const output = [`version=${Script.version}`]
 
 if (!Script.preview) {
-  const previous = await getLatestRelease()
-  const notes = await buildNotes(previous, "HEAD")
-  const body = notes.join("\n") || "No notable changes"
+  let body = "No notable changes"
+  try {
+    const previous = await getLatestRelease()
+    const notes = await buildNotes(previous, "HEAD")
+    body = notes.join("\n") || body
+  } catch (e) {
+    console.log("Could not generate changelog (first release?):", (e as Error).message)
+  }
   const dir = process.env.RUNNER_TEMP ?? "/tmp"
   const file = `${dir}/opencode-release-notes.txt`
   await Bun.write(file, body)
