@@ -189,7 +189,7 @@ jobs:
 
       - name: Build and upload artifacts
         uses: tauri-apps/tauri-action@390cbe447412ced1303d35abe75287949e43437a
-        timeout-minutes: 60
+        timeout-minutes: 120
         with:
           projectPath: packages/desktop
           uploadWorkflowArtifacts: true
