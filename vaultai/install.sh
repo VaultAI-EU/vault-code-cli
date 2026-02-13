@@ -83,9 +83,7 @@ get_latest_release() {
 download_binary() {
     mkdir -p "$INSTALL_DIR"
     
-    local download_url
     if [ "$LATEST_RELEASE" = "dev" ]; then
-        # For dev, we'd need to build from source or use a nightly URL
         echo -e "${YELLOW}Dev builds not available for direct download.${NC}"
         echo -e "Please build from source or wait for a release."
         echo ""
@@ -94,24 +92,36 @@ download_binary() {
         echo "  cd vault-code-cli/packages/opencode"
         echo "  bun install && bun run build --single"
         exit 1
-    else
-        download_url="https://github.com/$REPO/releases/download/$LATEST_RELEASE/$PLATFORM.tar.gz"
     fi
     
-    echo "Downloading from: $download_url"
-    
-    # Download and extract
     local tmp_dir=$(mktemp -d)
-    curl -sL "$download_url" -o "$tmp_dir/vault-code.tar.gz"
+    local os=$(uname -s | tr '[:upper:]' '[:lower:]')
     
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Download failed${NC}"
-        rm -rf "$tmp_dir"
-        exit 1
+    # Linux uses .tar.gz, macOS/Windows use .zip
+    if [ "$os" = "linux" ]; then
+        local download_url="https://github.com/$REPO/releases/download/$LATEST_RELEASE/$PLATFORM.tar.gz"
+        echo "Downloading from: $download_url"
+        curl -fSL "$download_url" -o "$tmp_dir/archive.tar.gz"
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Download failed${NC}"
+            rm -rf "$tmp_dir"
+            exit 1
+        fi
+        tar -xzf "$tmp_dir/archive.tar.gz" -C "$tmp_dir"
+    else
+        local download_url="https://github.com/$REPO/releases/download/$LATEST_RELEASE/$PLATFORM.zip"
+        echo "Downloading from: $download_url"
+        curl -fSL "$download_url" -o "$tmp_dir/archive.zip"
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Download failed${NC}"
+            rm -rf "$tmp_dir"
+            exit 1
+        fi
+        unzip -q "$tmp_dir/archive.zip" -d "$tmp_dir"
     fi
     
-    tar -xzf "$tmp_dir/vault-code.tar.gz" -C "$tmp_dir"
-    mv "$tmp_dir/$PLATFORM/bin/opencode" "$INSTALL_DIR/$BINARY_NAME"
+    # Binary is at root of archive as "opencode"
+    mv "$tmp_dir/opencode" "$INSTALL_DIR/$BINARY_NAME"
     chmod +x "$INSTALL_DIR/$BINARY_NAME"
     
     rm -rf "$tmp_dir"

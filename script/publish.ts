@@ -58,12 +58,13 @@ await import(`../packages/sdk/js/script/build.ts`)
 
 if (Script.release) {
   await $`git commit -am "release: v${Script.version}"`.nothrow()
-  await $`git tag v${Script.version}`
+  await $`git tag v${Script.version}`.nothrow()
   await $`git fetch origin`
-  await $`git cherry-pick HEAD..origin/dev`.nothrow()
-  await $`git push origin HEAD --tags --no-verify --force-with-lease`
+  const pick = await $`git cherry-pick HEAD..origin/dev`.nothrow()
+  if (pick.exitCode !== 0) await $`git cherry-pick --abort`.nothrow()
+  await $`git push origin HEAD --tags --no-verify --force-with-lease`.nothrow()
   await new Promise((resolve) => setTimeout(resolve, 5_000))
-  await $`gh release edit v${Script.version} --draft=false`
+  await $`gh release edit v${Script.version} --draft=false`.nothrow()
 }
 
 console.log("\n=== cli ===\n")
